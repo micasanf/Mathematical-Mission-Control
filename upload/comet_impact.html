@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ARC-7 NOVA — Comet Intercept</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; background:#000814; overflow:hidden; font-family:'Courier New',monospace; }
+canvas { position:absolute; top:0; left:0; }
+#ui { position:absolute; inset:0; pointer-events:none; color:rgba(0,220,255,0.85); font-size:11px; }
+.hud-tl { position:absolute; top:18px; left:20px; line-height:1.9; }
+.hud-tr { position:absolute; top:18px; right:20px; line-height:1.9; text-align:right; }
+.hud-bl { position:absolute; bottom:20px; left:20px; line-height:1.9; }
+.hud-br { position:absolute; bottom:20px; right:20px; line-height:1.9; text-align:right; }
+.lbl { color:rgba(0,220,255,0.42); font-size:9px; letter-spacing:1.5px; }
+.val { color:rgba(0,255,200,0.95); font-weight:bold; text-shadow:0 0 6px rgba(0,255,180,0.4); }
+.warn { color:rgba(255,180,0,0.9); font-weight:bold; }
+.danger { color:rgba(255,40,0,0.95); font-weight:bold; text-shadow:0 0 8px rgba(255,0,0,0.6); }
+.ok { color:rgba(0,255,130,0.9); font-weight:bold; }
+.corner { position:absolute; width:13px; height:13px; border-color:rgba(0,220,255,0.35); border-style:solid; }
+.tl { top:8px; left:8px; border-width:1px 0 0 1px; }
+.tr { top:8px; right:8px; border-width:1px 1px 0 0; }
+.bl { bottom:8px; left:8px; border-width:0 0 1px 1px; }
+.br { bottom:8px; right:8px; border-width:0 1px 1px 0; }
+.scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,220,255,0.2),transparent); animation:scan 4s linear infinite; }
+@keyframes scan { 0%{top:0} 100%{top:100%} }
+#flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:10; }
+#impact-word { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(1); display:flex; align-items:center; justify-content:center; font-size:90px; font-weight:900; letter-spacing:10px; color:#fff; text-shadow:0 0 60px rgba(255,140,0,1),0 0 120px rgba(255,60,0,0.8); opacity:0; pointer-events:none; z-index:11; white-space:nowrap; }
+#phase { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); font-size:9px; letter-spacing:3px; color:rgba(0,255,180,0.75); white-space:nowrap; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div class="corner tl"></div><div class="corner tr"></div>
+  <div class="corner bl"></div><div class="corner br"></div>
+  <div class="scan"></div>
+
+  <div class="hud-tl">
+    <div class="lbl">VEHICLE ID</div><div class="val">ARC-7 NOVA</div>
+    <div class="lbl" style="margin-top:5px">THRUST</div><div class="val" id="h-thrust">100%</div>
+    <div class="lbl" style="margin-top:5px">STATUS</div><div class="ok" id="h-status">ASCENDING</div>
+    <div class="lbl" style="margin-top:5px">FUEL</div><div class="val" id="h-fuel">96%</div>
+    <div class="lbl" style="margin-top:5px">STAGE</div><div class="val">02 / 02</div>
+  </div>
+
+  <div class="hud-tr">
+    <div class="lbl">ALTITUDE</div><div class="val" id="h-alt">48,200 km</div>
+    <div class="lbl" style="margin-top:5px">VELOCITY</div><div class="val" id="h-vel">8,400 m/s</div>
+    <div class="lbl" style="margin-top:5px">TEMP</div><div class="warn" id="h-temp">2,100 K</div>
+    <div class="lbl" style="margin-top:5px">COMMS</div><div class="val" id="h-comms">NOMINAL</div>
+    <div class="lbl" style="margin-top:5px">NAV LOCK</div><div class="danger" id="h-nav">ACQUIRED</div>
+  </div>
+
+  <div class="hud-bl">
+    <div class="lbl">TARGET</div><div class="val">COMET 67P/C-G</div>
+    <div class="lbl" style="margin-top:5px">MISSION</div><div class="val">DART-9 INTERCEPT</div>
+    <div class="lbl" style="margin-top:5px">GUIDANCE</div><div class="val">AUTONOMOUS</div>
+  </div>
+
+  <div class="hud-br">
+    <div class="lbl">IMPACT ENERGY</div><div class="warn">21.4 GJ</div>
+    <div class="lbl" style="margin-top:5px">RANGE</div><div class="val" id="h-range">48,200 km</div>
+    <div class="lbl" style="margin-top:5px">ETA IMPACT</div><div class="danger" id="h-eta">T-5.0s</div>
+  </div>
+
+  <div id="phase">&#9632; TERMINAL GUIDANCE ENGAGED</div>
+  <div id="flash"></div>
+  <div id="impact-word">IMPACT</div>
+</div>
+
+<script>
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
+var W, H;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+var T = 0, prevTS = null;
+var DUR = 3.0;
+var impacted = false, impactTS = 0, shakeAmt = 0, shakePhase = 0;
+
+var debris = [], ejecta = [], shocks = [], trails = [], frags = [];
+
+var STARS = [];
+for (var i = 0; i < 380; i++) {
+  STARS.push({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() < 0.08 ? 2 : Math.random() < 0.25 ? 1.3 : 0.7,
+    a: 0.3 + Math.random()*0.7,
+    spd: 0.5 + Math.random()*1.8,
+    ph: Math.random() * Math.PI * 2
+  });
+}
+
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function easeIn(t,p){ p=p||2; return Math.pow(clamp(t,0,1),p); }
+function easeOut(t,p){ p=p||2; return 1-Math.pow(1-clamp(t,0,1),p); }
+
+var NPT = [
+  [-0.35,-0.75],[0.05,-0.85],[0.38,-0.6],[0.55,-0.25],
+  [0.45,0.15],[0.7,0.45],[0.5,0.8],[0.1,0.85],
+  [-0.3,0.65],[-0.55,0.3],[-0.7,-0.1],[-0.5,-0.5]
+];
+
+function nucleusPath(cx, cy, r) {
+  ctx.beginPath();
+  ctx.moveTo(cx + NPT[0][0]*r, cy + NPT[0][1]*r);
+  for (var i = 0; i < NPT.length; i++) {
+    var n = (i+1) % NPT.length;
+    ctx.quadraticCurveTo(
+      cx + NPT[i][0]*r, cy + NPT[i][1]*r,
+      cx + (NPT[i][0]+NPT[n][0])/2*r,
+      cy + (NPT[i][1]+NPT[n][1])/2*r
+    );
+  }
+  ctx.closePath();
+}
+
+function drawComet(cx, cy, r, rot, alpha) {
+  if (alpha <= 0 || r <= 0) return;
+  ctx.save();
+  ctx.globalAlpha = clamp(alpha,0,1);
+  ctx.translate(cx,cy); ctx.rotate(rot); ctx.translate(-cx,-cy);
+
+  var dl = r*4.5;
+  var dg = ctx.createLinearGradient(cx,cy,cx-dl*0.6,cy+dl*0.35);
+  dg.addColorStop(0,'rgba(200,170,110,0.22)'); dg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle = dg;
+  ctx.beginPath();
+  ctx.moveTo(cx-r*0.4,cy-r*0.3);
+  ctx.bezierCurveTo(cx-r*2,cy,cx-dl*0.5,cy+dl*0.28,cx-dl*0.62,cy+dl*0.38);
+  ctx.bezierCurveTo(cx-dl*0.45,cy+dl*0.32,cx-r*1.8,cy+r*0.8,cx-r*0.25,cy+r*0.5);
+  ctx.closePath(); ctx.fill();
+
+  var il = r*5.5;
+  var ig = ctx.createLinearGradient(cx,cy,cx-il*0.85,cy-il*0.28);
+  ig.addColorStop(0,'rgba(100,200,255,0.28)'); ig.addColorStop(1,'rgba(60,140,255,0)');
+  ctx.fillStyle = ig;
+  ctx.beginPath();
+  ctx.moveTo(cx-r*0.25,cy-r*0.18);
+  ctx.bezierCurveTo(cx-r*1.4,cy-r*0.75,cx-il*0.75,cy-il*0.3,cx-il,cy-il*0.32);
+  ctx.bezierCurveTo(cx-il*0.75,cy-il*0.26,cx-r*1.4,cy+r*0.18,cx-r*0.25,cy+r*0.1);
+  ctx.closePath(); ctx.fill();
+
+  var cg = ctx.createRadialGradient(cx,cy,r*0.2,cx,cy,r*2.8);
+  cg.addColorStop(0,'rgba(210,190,140,0.3)'); cg.addColorStop(0.5,'rgba(180,160,100,0.08)'); cg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx,cy,r*2.8,0,Math.PI*2); ctx.fill();
+
+  var ng = ctx.createRadialGradient(cx-r*0.18,cy-r*0.22,r*0.04,cx,cy,r);
+  ng.addColorStop(0,'#c8a870'); ng.addColorStop(0.3,'#907050'); ng.addColorStop(0.7,'#584030'); ng.addColorStop(1,'#281808');
+  ctx.fillStyle = ng;
+  nucleusPath(cx,cy,r); ctx.fill();
+
+  ctx.strokeStyle = 'rgba(40,25,10,0.55)'; ctx.lineWidth = Math.max(1,r*0.025);
+  var crts = [[-0.25,-0.4,0.09],[0.2,0.15,0.07],[-0.4,0.3,0.06],[0.35,-0.2,0.05],[-0.1,0.5,0.05]];
+  for (var ci=0;ci<crts.length;ci++) {
+    ctx.beginPath(); ctx.arc(cx+crts[ci][0]*r,cy+crts[ci][1]*r,crts[ci][2]*r,0,Math.PI*2); ctx.stroke();
+  }
+
+  ctx.strokeStyle = 'rgba(220,190,130,0.35)'; ctx.lineWidth = Math.max(1.5,r*0.03);
+  ctx.beginPath(); ctx.arc(cx-r*0.05,cy-r*0.05,r*0.88,Math.PI*1.1,Math.PI*1.85); ctx.stroke();
+
+  var jets = [[-0.6,r*1.9],[-1.5,r*1.3],[0.5,r*1.5],[1.9,r*0.9]];
+  for (var ji=0;ji<jets.length;ji++) {
+    var ja=jets[ji][0], jl=jets[ji][1];
+    var jg = ctx.createLinearGradient(cx+Math.cos(ja)*r*0.5,cy+Math.sin(ja)*r*0.5,cx+Math.cos(ja)*jl,cy+Math.sin(ja)*jl);
+    jg.addColorStop(0,'rgba(200,225,255,0.38)'); jg.addColorStop(1,'rgba(200,225,255,0)');
+    ctx.strokeStyle=jg; ctx.lineWidth=r*0.065;
+    ctx.beginPath(); ctx.moveTo(cx+Math.cos(ja)*r*0.6,cy+Math.sin(ja)*r*0.6);
+    ctx.lineTo(cx+Math.cos(ja)*jl,cy+Math.sin(ja)*jl); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawRocket(cx, cy, angle, S, alpha) {
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalAlpha = clamp(alpha,0,1);
+  ctx.translate(cx,cy);
+  ctx.rotate(angle + Math.PI/2);
+  ctx.scale(S,S);
+  ctx.translate(-26,-80);
+
+  // engine flame
+  ctx.save();
+  ctx.translate(26,160);
+  var p0 = 0.9+Math.sin(T*52)*0.1;
+  var p1 = 0.92+Math.sin(T*66)*0.08;
+  var p2 = 0.9+Math.sin(T*70)*0.1;
+  var fw=48*p0, fh=70*p0;
+  var fg = ctx.createLinearGradient(0,0,0,fh);
+  fg.addColorStop(0,'#ff4400'); fg.addColorStop(0.4,'#ff8800'); fg.addColorStop(0.75,'#ffcc00'); fg.addColorStop(1,'rgba(255,200,0,0)');
+  ctx.fillStyle=fg;
+  ctx.beginPath(); ctx.moveTo(-fw*0.3,0); ctx.lineTo(fw*0.3,0); ctx.lineTo(fw*0.45,fh*0.5); ctx.lineTo(0,fh); ctx.lineTo(-fw*0.45,fh*0.5); ctx.closePath(); ctx.fill();
+  var iw=22*p1, ih=48*p2;
+  var ifg = ctx.createLinearGradient(0,0,0,ih);
+  ifg.addColorStop(0,'#fff'); ifg.addColorStop(0.3,'#ffffaa'); ifg.addColorStop(0.7,'#ffee00'); ifg.addColorStop(1,'rgba(255,220,0,0)');
+  ctx.fillStyle=ifg;
+  ctx.beginPath(); ctx.moveTo(-iw*0.3,0); ctx.lineTo(iw*0.3,0); ctx.lineTo(iw*0.4,ih*0.6); ctx.lineTo(0,ih); ctx.lineTo(-iw*0.4,ih*0.6); ctx.closePath(); ctx.fill();
+  var cfg2 = ctx.createLinearGradient(0,0,0,28);
+  cfg2.addColorStop(0,'#fff'); cfg2.addColorStop(0.5,'#aaffff'); cfg2.addColorStop(1,'rgba(150,255,255,0)');
+  ctx.fillStyle=cfg2;
+  ctx.beginPath(); ctx.moveTo(-5,0); ctx.lineTo(5,0); ctx.lineTo(4,20); ctx.lineTo(0,28); ctx.lineTo(-4,20); ctx.closePath(); ctx.fill();
+  ctx.restore();
+
+  // body
+  var bg = ctx.createLinearGradient(14,0,38,0);
+  bg.addColorStop(0,'#0a2a3a'); bg.addColorStop(0.3,'#0d3d52'); bg.addColorStop(0.6,'#1a5a70'); bg.addColorStop(1,'#0a2a3a');
+  ctx.fillStyle=bg; ctx.beginPath(); ctx.roundRect(14,30,24,90,2); ctx.fill();
+  ctx.strokeStyle='#00aacc'; ctx.lineWidth=0.5; ctx.stroke();
+
+  // teal stripes
+  var ag = ctx.createLinearGradient(0,0,0,4);
+  ag.addColorStop(0,'#00ffcc'); ag.addColorStop(1,'#0088ff');
+  ctx.fillStyle=ag;
+  ctx.globalAlpha=clamp(alpha,0,1)*0.7; ctx.fillRect(14,38,24,2); ctx.fillRect(14,90,24,2);
+  ctx.globalAlpha=clamp(alpha,0,1)*0.5; ctx.fillRect(14,108,24,2);
+  ctx.globalAlpha=clamp(alpha,0,1);
+
+  // window
+  ctx.fillStyle='#020e18'; ctx.strokeStyle='#00aacc'; ctx.lineWidth=0.4;
+  ctx.beginPath(); ctx.roundRect(21,50,10,28,1); ctx.fill(); ctx.stroke();
+
+  // porthole
+  ctx.fillStyle='#000'; ctx.strokeStyle='#00ffcc'; ctx.lineWidth=0.5;
+  ctx.beginPath(); ctx.arc(26,58,3,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='rgba(0,255,204,0.6)'; ctx.beginPath(); ctx.arc(26,58,1.5,0,Math.PI*2); ctx.fill();
+
+  // panel lines
+  ctx.strokeStyle='rgba(0,170,204,0.5)'; ctx.lineWidth=0.3;
+  var plines=[64,68,72];
+  for(var li=0;li<plines.length;li++){ ctx.beginPath(); ctx.moveTo(21,plines[li]); ctx.lineTo(31,plines[li]); ctx.stroke(); }
+
+  // status lights
+  ctx.fillStyle='rgba(0,255,204,0.5)'; ctx.beginPath(); ctx.roundRect(22,84,3,3,0.5); ctx.fill();
+  ctx.fillStyle='rgba(255,68,0,0.5)'; ctx.beginPath(); ctx.roundRect(27,84,3,3,0.5); ctx.fill();
+
+  // fins
+  ctx.fillStyle='#0a1e28'; ctx.strokeStyle='#007a99'; ctx.lineWidth=0.5;
+  ctx.beginPath(); ctx.moveTo(14,110); ctx.lineTo(4,140); ctx.lineTo(14,138); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(38,110); ctx.lineTo(48,140); ctx.lineTo(38,138); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  // engine housing
+  ctx.fillStyle='#030f18'; ctx.strokeStyle='#00aacc'; ctx.lineWidth=0.5;
+  ctx.beginPath(); ctx.roundRect(12,118,28,22,2); ctx.fill(); ctx.stroke();
+
+  // nozzle ellipses
+  ctx.fillStyle='#020a10'; ctx.strokeStyle='#007799'; ctx.lineWidth=0.5;
+  ctx.beginPath(); ctx.ellipse(26,140,10,4,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#000'; ctx.strokeStyle='#00ccff'; ctx.lineWidth=0.6;
+  ctx.beginPath(); ctx.ellipse(26,140,6,2.5,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#001122'; ctx.beginPath(); ctx.ellipse(26,140,3,1.5,0,0,Math.PI*2); ctx.fill();
+
+  // ARC7 label
+  ctx.fillStyle='#010a10'; ctx.strokeStyle='#00aacc'; ctx.lineWidth=0.4;
+  ctx.beginPath(); ctx.roundRect(22,94,8,6,1); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='rgba(0,255,204,0.7)'; ctx.font='3.5px monospace'; ctx.textAlign='center';
+  ctx.fillText('ARC7',26,99.5);
+
+  // nose cone
+  var ng2 = ctx.createLinearGradient(14,0,38,0);
+  ng2.addColorStop(0,'#062030'); ng2.addColorStop(0.5,'#0a3a50'); ng2.addColorStop(1,'#062030');
+  ctx.fillStyle=ng2; ctx.beginPath(); ctx.moveTo(26,4); ctx.lineTo(34,32); ctx.lineTo(18,32); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#00ccff'; ctx.lineWidth=0.5; ctx.stroke();
+
+  // nose tip dot
+  ctx.strokeStyle='rgba(0,255,204,0.8)'; ctx.lineWidth=0.8;
+  ctx.beginPath(); ctx.moveTo(26,4); ctx.lineTo(26,0); ctx.stroke();
+  ctx.fillStyle='rgba(0,255,204,0.9)'; ctx.beginPath(); ctx.arc(26,0,1.5,0,Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+
+
+function spawnImpact(cx,cy,cr) {
+  var cols=['#b09060','#d0a870','#806040','#e0c080','#604828','#f0d090','#fff0a0','#ffc040'];
+  for(var i=0;i<280;i++){
+    var a=Math.random()*Math.PI*2, spd=4+Math.random()*28;
+    debris.push({x:cx,y:cy,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,r:1+Math.random()*8,color:cols[Math.floor(Math.random()*cols.length)],life:1,decay:0.003+Math.random()*0.010,ang:Math.random()*Math.PI*2,rot:(Math.random()-0.5)*0.6});
+  }
+  for(var i=0;i<380;i++){
+    var a=-2.3+(Math.random()-0.5)*1.4, spd=6+Math.random()*42;
+    var h=15+Math.floor(Math.random()*50), s=70+Math.floor(Math.random()*30), l=40+Math.floor(Math.random()*45);
+    ejecta.push({x:cx,y:cy,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,r:0.4+Math.random()*4,color:'hsl('+h+','+s+'%,'+l+'%)',life:1,decay:0.002+Math.random()*0.006});
+  }
+  shocks.push({x:cx,y:cy,r:5,spd:28,color:'rgba(255,180,60,',a:1.0});
+  shocks.push({x:cx,y:cy,r:4,spd:45,color:'rgba(255,220,140,',a:0.95});
+  shocks.push({x:cx,y:cy,r:3,spd:65,color:'rgba(255,255,200,',a:0.85});
+  shocks.push({x:cx,y:cy,r:2,spd:90,color:'rgba(255,255,255,',a:1.0});
+  shocks.push({x:cx,y:cy,r:10,spd:18,color:'rgba(255,100,20,',a:0.9});
+  shocks.push({x:cx,y:cy,r:8,spd:55,color:'rgba(255,60,0,',a:0.75});
+  setTimeout(function(){ shocks.push({x:cx,y:cy,r:5,spd:30,color:'rgba(255,200,100,',a:0.7}); },200);
+  setTimeout(function(){ shocks.push({x:cx,y:cy,r:3,spd:40,color:'rgba(200,150,80,',a:0.5}); },450);
+  for(var i=0;i<18;i++){
+    var a=Math.random()*Math.PI*2, spd=0.5+Math.random()*5;
+    frags.push({x:cx+(Math.random()-0.5)*cr,y:cy+(Math.random()-0.5)*cr,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,r:cr*(0.08+Math.random()*0.32),rot:Math.random()*Math.PI*2,rotSpd:(Math.random()-0.5)*0.08,a:1,decay:0.002+Math.random()*0.004});
+  }
+}
+
+var hThrust=document.getElementById('h-thrust');
+var hAlt=document.getElementById('h-alt');
+var hVel=document.getElementById('h-vel');
+var hTemp=document.getElementById('h-temp');
+var hFuel=document.getElementById('h-fuel');
+var hComms=document.getElementById('h-comms');
+var hNav=document.getElementById('h-nav');
+var hStatus=document.getElementById('h-status');
+var hRange=document.getElementById('h-range');
+var hEta=document.getElementById('h-eta');
+var hPhase=document.getElementById('phase');
+var flashEl=document.getElementById('flash');
+var impWrd=document.getElementById('impact-word');
+
+function frame(ts) {
+  if(!prevTS) prevTS=ts;
+  var dt=Math.min((ts-prevTS)/1000,0.05);
+  prevTS=ts;
+  if(!impacted) T+=dt;
+
+  shakePhase += dt * 80;
+  if (impacted) {
+    var at2 = (prevTS - impactTS) / 1000;
+    // multi-wave aftershock: big initial, then decaying pulses
+    if (at2 < 0.08) {
+      shakeAmt = 65;
+    } else if (at2 < 0.35) {
+      shakeAmt = Math.max(shakeAmt, 45 * (1 - (at2 - 0.08) / 0.27));
+    } else if (at2 < 0.55) {
+      shakeAmt = Math.max(shakeAmt, 22);
+    } else {
+      shakeAmt = Math.max(0, shakeAmt - dt * 40);
+    }
+  } else {
+    // approach rumble: grows as rocket closes in
+    var approachRumble = clamp((prog - 0.55) / 0.45, 0, 1);
+    shakeAmt = Math.max(approachRumble * 14, shakeAmt - dt * 30);
+  }
+
+  ctx.fillStyle='#000814'; ctx.fillRect(0,0,W,H);
+
+  // RED DANGER VIGNETTE — pulses in on final approach
+  var prog=clamp(T/DUR,0,1);
+  if(!impacted && prog > 0.5){
+    var dangerP = clamp((prog-0.5)/0.5,0,1);
+    var pulse = 0.5 + 0.5*Math.sin(T * (6 + dangerP*14));
+    var vigAlpha = dangerP * dangerP * 0.55 * (0.6 + 0.4*pulse);
+    var vg = ctx.createRadialGradient(W/2,H/2,H*0.2,W/2,H/2,H*0.85);
+    vg.addColorStop(0,'rgba(0,0,0,0)');
+    vg.addColorStop(0.6,'rgba(80,0,0,'+vigAlpha*0.4+')');
+    vg.addColorStop(1,'rgba(200,0,0,'+vigAlpha+')');
+    ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+  }
+
+  var nb=ctx.createRadialGradient(W*0.6,H*0.35,0,W*0.6,H*0.35,W*0.55);
+  nb.addColorStop(0,'rgba(20,10,3,0.3)'); nb.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=nb; ctx.fillRect(0,0,W,H);
+
+  // comet position — must be computed before star streaks use cX/cY
+  var minD=Math.min(W,H);
+  var cR=minD*0.09+easeIn(prog,2)*minD*0.04;
+  var cX=W*0.72-easeIn(prog,1.5)*W*0.06;
+  var cY=H*0.28+easeIn(prog,1.5)*H*0.04;
+  var cRot=T*0.018;
+
+  // stars — streak toward camera on final approach
+  for(var si=0;si<STARS.length;si++){
+    var s=STARS[si];
+    var sa=s.a*(0.5+0.5*Math.sin(T*s.spd+s.ph));
+    var streakP = !impacted ? clamp((prog-0.6)/0.4,0,1) : 0;
+    var streakLen = streakP * streakP * s.spd * 18;
+    var sx2 = s.x*W, sy2 = s.y*H;
+    if(streakLen > 0.5){
+      // streak away from comet center
+      var sdx = sx2 - cX, sdy = sy2 - cY;
+      var slen = Math.sqrt(sdx*sdx+sdy*sdy)||1;
+      ctx.save(); ctx.globalAlpha=sa*0.9;
+      ctx.strokeStyle='rgba(255,255,255,'+sa+')';
+      ctx.lineWidth=s.r*0.8;
+      ctx.beginPath();
+      ctx.moveTo(sx2,sy2);
+      ctx.lineTo(sx2-(sdx/slen)*streakLen, sy2-(sdy/slen)*streakLen);
+      ctx.stroke(); ctx.restore();
+    } else {
+      ctx.fillStyle='rgba(255,255,255,'+sa+')';
+      ctx.beginPath(); ctx.arc(sx2,sy2,s.r,0,Math.PI*2); ctx.fill();
+    }
+  }
+
+  // rocket — bottom-left flying upper-right toward comet
+  var startX=W*0.08, startY=H*0.88;
+  var endX=cX+Math.cos(Math.PI+0.4)*cR*0.6;
+  var endY=cY+Math.sin(Math.PI+0.4)*cR*0.6;
+  var rp=easeIn(prog,1.8);
+  var rX=lerp(startX,endX,rp);
+  var rY=lerp(startY,endY,rp);
+  var rAngle=Math.atan2(endY-startY,endX-startX);
+  var baseS=minD/700;
+  var rScale=(0.22+easeIn(prog,2.2)*1.0)*baseS;
+
+  if(!impacted) {
+    // danger glow around comet — blooms as rocket approaches
+    if(prog > 0.4){
+      var glowP = clamp((prog-0.4)/0.6,0,1);
+      var glowPulse = 0.7+0.3*Math.sin(T*(8+glowP*20));
+      var glowR = cR*(2.5+glowP*4)*glowPulse;
+      var glowA = glowP*glowP*0.7;
+      var cg2=ctx.createRadialGradient(cX,cY,cR*0.5,cX,cY,glowR);
+      cg2.addColorStop(0,'rgba(255,160,40,'+glowA+')');
+      cg2.addColorStop(0.4,'rgba(255,80,0,'+(glowA*0.4)+')');
+      cg2.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=cg2; ctx.beginPath(); ctx.arc(cX,cY,glowR,0,Math.PI*2); ctx.fill();
+    }
+    drawComet(cX,cY,cR,cRot,1);
+  }
+
+  // engine trail — gets MASSIVE and frantic on final approach
+  var trailProb = 0.6 + clamp((prog-0.5)/0.5,0,1)*0.38;
+  var trailSize = 1.5 + clamp((prog-0.5)/0.5,0,1)*5;
+  if(!impacted && Math.random()<trailProb){
+    var ta=rAngle+Math.PI+(Math.random()-0.5)*0.2;
+    var trailSpread = 1 + clamp((prog-0.7)/0.3,0,1)*3;
+    trails.push({
+      x:rX+Math.cos(ta)*10*rScale,
+      y:rY+Math.sin(ta)*10*rScale,
+      vx:Math.cos(ta)*2+(Math.random()-0.5)*trailSpread,
+      vy:Math.sin(ta)*2+(Math.random()-0.5)*trailSpread,
+      life:1, r:rScale*trailSize, decay:0.035+Math.random()*0.06,
+      hot: prog > 0.75
+    });
+  }
+
+  for(var ti=trails.length-1;ti>=0;ti--){
+    var tr=trails[ti];
+    tr.x+=tr.vx; tr.y+=tr.vy;
+    tr.life-=dt*38*tr.decay;
+    if(tr.life<=0){ trails.splice(ti,1); continue; }
+    ctx.save(); ctx.globalAlpha=clamp(tr.life,0,1)*0.7;
+    var tg=ctx.createRadialGradient(tr.x,tr.y,0,tr.x,tr.y,tr.r*3.5);
+    if(tr.hot){
+      tg.addColorStop(0,'rgba(255,240,200,1)'); tg.addColorStop(0.25,'rgba(255,160,20,0.7)'); tg.addColorStop(1,'rgba(0,0,0,0)');
+    } else {
+      tg.addColorStop(0,'rgba(255,120,0,0.9)'); tg.addColorStop(0.4,'rgba(255,80,0,0.4)'); tg.addColorStop(1,'rgba(0,0,0,0)');
+    }
+    ctx.fillStyle=tg; ctx.beginPath(); ctx.arc(tr.x,tr.y,tr.r*3.5,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  if(!impacted) drawRocket(rX,rY,rAngle,rScale,1);
+
+  // impact trigger
+  if(!impacted && prog>=1.0){
+    impacted=true; impactTS=ts;
+    spawnImpact(cX,cY,cR);
+    shakeAmt=65;
+    // clean double-flash
+    flashEl.style.transition='none'; flashEl.style.opacity='1';
+    setTimeout(function(){ flashEl.style.transition='opacity 0.12s'; flashEl.style.opacity='0';
+      setTimeout(function(){ flashEl.style.transition='none'; flashEl.style.opacity='0.4';
+        setTimeout(function(){ flashEl.style.transition='opacity 0.5s'; flashEl.style.opacity='0'; },60);
+      },120);
+    },50);
+    impWrd.style.transition='none'; impWrd.style.opacity='1'; impWrd.style.transform='translate(-50%,-50%) scale(1.1)';
+    setTimeout(function(){ impWrd.style.transition='opacity 1.2s, transform 1.2s'; impWrd.style.opacity='0'; impWrd.style.transform='translate(-50%,-50%) scale(1.7)'; },400);
+    hStatus.textContent='IMPACT CONFIRMED'; hStatus.className='val';
+    hPhase.textContent='KINETIC IMPACT CONFIRMED';
+    hPhase.style.color='rgba(0,255,180,0.85)';
+    hNav.textContent='SIGNAL LOST'; hNav.className='danger';
+    hComms.textContent='SIGNAL LOST'; hComms.className='danger';
+    setTimeout(function(){
+      hVel.textContent='--- m/s';
+      hAlt.textContent='--- km';
+      hTemp.textContent='--- K';
+      hRange.textContent='---';
+      hEta.textContent='---';
+    },80);
+  }
+
+  // post-impact glow
+  if(impacted){
+    var at=(ts-impactTS)/1000;
+    var gr=Math.min(at*500,cR*4);
+    var ga=Math.max(0,0.9-at*0.22);
+    if(ga>0){
+      var gg=ctx.createRadialGradient(cX,cY,0,cX,cY,gr);
+      gg.addColorStop(0,'rgba(255,240,160,'+ga+')');
+      gg.addColorStop(0.3,'rgba(255,140,40,'+(ga*0.55)+')');
+      gg.addColorStop(0.7,'rgba(180,70,10,'+(ga*0.2)+')');
+      gg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(cX,cY,gr,0,Math.PI*2); ctx.fill();
+    }
+    for(var fi=0;fi<frags.length;fi++){
+      var f=frags[fi];
+      f.x+=f.vx; f.y+=f.vy; f.rot+=f.rotSpd;
+      f.a=Math.max(0,f.a-f.decay);
+      if(f.a<0.01) continue;
+      ctx.save(); ctx.globalAlpha=f.a;
+      ctx.translate(f.x,f.y); ctx.rotate(f.rot);
+      var fg2=ctx.createRadialGradient(-f.r*0.2,-f.r*0.2,0,0,0,f.r);
+      fg2.addColorStop(0,'#b09060'); fg2.addColorStop(0.5,'#705038'); fg2.addColorStop(1,'#302018');
+      ctx.fillStyle=fg2; nucleusPath(0,0,f.r); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // shockwaves
+  for(var shi=0;shi<shocks.length;shi++){
+    var sw=shocks[shi];
+    sw.r+=sw.spd; sw.a=Math.max(0,sw.a-dt*1.4);
+    if(sw.a<=0) continue;
+    ctx.save();
+    ctx.strokeStyle=sw.color+sw.a+')'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.ellipse(sw.x,sw.y,sw.r,sw.r*0.38,0,0,Math.PI*2); ctx.stroke();
+    ctx.lineWidth=10; ctx.strokeStyle=sw.color+(sw.a*0.1)+')'; ctx.stroke();
+    ctx.restore();
+  }
+
+  // debris
+  for(var di=0;di<debris.length;di++){
+    var d=debris[di];
+    d.x+=d.vx; d.y+=d.vy; d.vy+=0.12; d.vx*=0.993; d.vy*=0.993;
+    d.life-=d.decay; d.ang+=d.rot;
+    if(d.life<=0) continue;
+    ctx.save(); ctx.globalAlpha=clamp(d.life,0,1);
+    ctx.translate(d.x,d.y); ctx.rotate(d.ang);
+    ctx.fillStyle=d.color; ctx.fillRect(-d.r*0.5,-d.r*0.4,d.r,d.r*0.8);
+    ctx.restore();
+  }
+
+  // ejecta
+  for(var ei=0;ei<ejecta.length;ei++){
+    var e=ejecta[ei];
+    e.x+=e.vx; e.y+=e.vy; e.vy+=0.06; e.life-=e.decay;
+    if(e.life<=0) continue;
+    ctx.save(); ctx.globalAlpha=clamp(e.life*0.8,0,1);
+    ctx.fillStyle=e.color; ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  // live HUD
+  if(!impacted){
+    var pct=prog;
+    // HUD flicker on final approach
+    var flickerHide = pct > 0.75 && Math.random() < clamp((pct-0.75)/0.25,0,1)*0.18;
+    if(!flickerHide){
+      hVel.textContent=Math.round(8400+pct*7800).toLocaleString()+' m/s';
+      hAlt.textContent=Math.round(48200*(1-pct)).toLocaleString()+' km';
+      hTemp.textContent=Math.round(2100+pct*1800).toLocaleString()+' K';
+      hFuel.textContent=Math.max(0,Math.round(96-pct*92))+'%';
+      hRange.textContent=Math.round(48200*(1-pct)).toLocaleString()+' km';
+      hEta.textContent='T-'+Math.max(0,DUR-T).toFixed(1)+'s';
+    } else {
+      // static glitch
+      hVel.textContent='█ '+Math.round(8400+pct*7800).toLocaleString()+' m/s';
+    }
+    if(pct>0.6){ hStatus.textContent='TERMINAL APPROACH'; hStatus.className='danger'; }
+    if(pct>0.82){
+      hStatus.textContent='COLLISION IMMINENT';
+      hPhase.textContent='⚠ COLLISION IMMINENT ⚠';
+      hPhase.style.color='rgba(255,60,0,0.95)';
+      // blink phase text
+      if(Math.floor(T*6)%2===0) hPhase.style.opacity='1'; else hPhase.style.opacity='0.2';
+    }
+    if(pct>0.9){
+      // temp goes DANGER red
+      hTemp.className='danger';
+      // thrust flickering down
+      hThrust.textContent=Math.round(100-Math.random()*8)+'%';
+    }
+  }
+
+  // screen shake
+  if(shakeAmt>0.3){
+    var sx=(Math.sin(shakePhase*1.7)*0.6+(Math.random()-0.5)*0.4)*shakeAmt;
+    var sy=(Math.sin(shakePhase*2.3+1.2)*0.6+(Math.random()-0.5)*0.4)*shakeAmt;
+    var sr=(Math.random()-0.5)*shakeAmt*0.04;
+    document.getElementById('ui').style.transform='translate('+sx+'px,'+sy+'px) rotate('+sr+'deg)';
+    canvas.style.transform='translate('+sx+'px,'+sy+'px) rotate('+sr+'deg)';
+  } else {
+    document.getElementById('ui').style.transform='';
+    canvas.style.transform='';
+  }
+
+  requestAnimationFrame(frame);
+}
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

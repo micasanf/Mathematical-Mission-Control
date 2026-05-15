@@ -1,0 +1,123 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .outer { background: #050B18; padding: 22px; border-radius: 14px; font-family: var(--font-sans); }
+  .palette-title { font-size: 16px; font-weight: 500; color: #00CEC9; margin-bottom: 3px; }
+  .palette-sub { font-size: 12px; color: #7A8CA5; }
+  .divider { border: none; border-top: 1px solid rgba(0,206,201,0.12); margin: 14px 0; }
+  .section-label { font-size: 10.5px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: #7A8CA5; margin: 18px 0 9px; }
+  .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+  .swatch { border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
+  .swatch-color { height: 52px; }
+  .swatch-info { background: #0D1B2A; padding: 7px 10px; }
+  .swatch-name { font-size: 11px; font-weight: 500; color: #B8C4D6; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .swatch-hex { font-size: 10.5px; color: #7A8CA5; font-family: var(--font-mono); }
+  .mission-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .mcard { border-radius: 11px; overflow: hidden; border: 1px solid rgba(255,255,255,0.07); }
+  .mcard-top { height: 72px; display: flex; flex-direction: column; justify-content: space-between; padding: 9px 10px; }
+  .mcard-badge { font-size: 9px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; align-self: flex-start; }
+  .mcard-title { font-size: 13px; font-weight: 500; }
+  .mcard-bottom { background: #0D1B2A; padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .mcard-type { font-size: 10px; color: #7A8CA5; }
+  .mcard-hex { font-size: 10.5px; color: #5A7A9A; font-family: var(--font-mono); }
+</style>
+
+<div class="outer">
+  <div class="palette-title">Sci-Fi Rocket · Final Color Palette</div>
+  <div class="palette-sub">Complete token reference — v3 final</div>
+  <hr class="divider">
+
+  <div class="section-label">Backgrounds</div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-color" style="background:#050B18;border-bottom:1px solid #111;"></div><div class="swatch-info"><div class="swatch-name">Main bg</div><div class="swatch-hex">#050B18</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#0D1B2A;"></div><div class="swatch-info"><div class="swatch-name">Secondary bg</div><div class="swatch-hex">#0D1B2A</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#132238;"></div><div class="swatch-info"><div class="swatch-name">Card bg</div><div class="swatch-hex">#132238</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#1B2F4A;"></div><div class="swatch-info"><div class="swatch-name">Panel bg</div><div class="swatch-hex">#1B2F4A</div></div></div>
+  </div>
+
+  <div class="section-label">Primary Accents</div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-color" style="background:#00CEC9;"></div><div class="swatch-info"><div class="swatch-name">Primary turquoise</div><div class="swatch-hex">#00CEC9</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#00F5FF;"></div><div class="swatch-info"><div class="swatch-name">Primary hover</div><div class="swatch-hex">#00F5FF</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7DF9C0;"></div><div class="swatch-info"><div class="swatch-name">Reactor green</div><div class="swatch-hex">#7DF9C0</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7B6FFF;"></div><div class="swatch-info"><div class="swatch-name">Nebula purple</div><div class="swatch-hex">#7B6FFF</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#4DA8FF;"></div><div class="swatch-info"><div class="swatch-name">Ion blue</div><div class="swatch-hex">#4DA8FF</div></div></div>
+  </div>
+
+  <div class="section-label">Status Colors</div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-color" style="background:#7DF9C0;"></div><div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#7DF9C0</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FFC857;"></div><div class="swatch-info"><div class="swatch-name">Warning</div><div class="swatch-hex">#FFC857</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FF4D00;"></div><div class="swatch-info"><div class="swatch-name">Danger</div><div class="swatch-hex">#FF4D00</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FF3B30;"></div><div class="swatch-info"><div class="swatch-name">Error</div><div class="swatch-hex">#FF3B30</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#4DA8FF;"></div><div class="swatch-info"><div class="swatch-name">Info</div><div class="swatch-hex">#4DA8FF</div></div></div>
+  </div>
+
+  <div class="section-label">Text Colors</div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-color" style="background:#F8FAFC;"></div><div class="swatch-info"><div class="swatch-name">Text primary</div><div class="swatch-hex">#F8FAFC</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#B8C4D6;"></div><div class="swatch-info"><div class="swatch-name">Text secondary</div><div class="swatch-hex">#B8C4D6</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7A8CA5;"></div><div class="swatch-info"><div class="swatch-name">Text muted</div><div class="swatch-hex">#7A8CA5</div></div></div>
+  </div>
+
+  <div class="section-label">Mission Cards — 6 Distinct Colors</div>
+  <div class="mission-grid">
+
+    <div class="mcard">
+      <div class="mcard-top" style="background:#003A5C;">
+        <span class="mcard-badge" style="background:rgba(0,210,255,0.2);color:#00D2FF;">Featured</span>
+        <span class="mcard-title" style="color:#00D2FF;">Collatz</span>
+      </div>
+      <div class="mcard-bottom"><span class="mcard-type">Deep Solar Blue</span><span class="mcard-hex">#00D2FF</span></div>
+    </div>
+
+    <div class="mcard">
+      <div class="mcard-top" style="background:#1A0A4A;">
+        <span class="mcard-badge" style="background:rgba(180,100,255,0.2);color:#B44DFF;">Exploration</span>
+        <span class="mcard-title" style="color:#B44DFF;">Division</span>
+      </div>
+      <div class="mcard-bottom"><span class="mcard-type">Warp Violet</span><span class="mcard-hex">#B44DFF</span></div>
+    </div>
+
+    <div class="mcard">
+      <div class="mcard-top" style="background:#003322;">
+        <span class="mcard-badge" style="background:rgba(0,255,160,0.2);color:#00FF9F;">Advanced</span>
+        <span class="mcard-title" style="color:#00FF9F;">Fibonacci</span>
+      </div>
+      <div class="mcard-bottom"><span class="mcard-type">Quantum Green</span><span class="mcard-hex">#00FF9F</span></div>
+    </div>
+
+    <div class="mcard">
+      <div class="mcard-top" style="background:#3A1200;">
+        <span class="mcard-badge" style="background:rgba(255,140,0,0.2);color:#FF8C00;">Completed</span>
+        <span class="mcard-title" style="color:#FF8C00;">Lucas</span>
+      </div>
+      <div class="mcard-bottom"><span class="mcard-type">Pulsar Amber</span><span class="mcard-hex">#FF8C00</span></div>
+    </div>
+
+    <div class="mcard">
+      <div class="mcard-top" style="background:#2A0030;">
+        <span class="mcard-badge" style="background:rgba(255,80,180,0.2);color:#FF50B4;">Pending</span>
+        <span class="mcard-title" style="color:#FF50B4;">Tribonacci</span>
+      </div>
+      <div class="mcard-bottom"><span class="mcard-type">Nova Pink</span><span class="mcard-hex">#FF50B4</span></div>
+    </div>
+
+    <div class="mcard">
+      <div class="mcard-top" style="background:#3A0A00;">
+        <span class="mcard-badge" style="background:rgba(255,80,40,0.2);color:#FF5C2E;">Challenge</span>
+        <span class="mcard-title" style="color:#FF5C2E;">Euclidean</span>
+      </div>
+      <div class="mcard-bottom"><span class="mcard-type">Ion Crimson</span><span class="mcard-hex">#FF5C2E</span></div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Gradients</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+    <div class="swatch"><div class="swatch-color" style="background:linear-gradient(135deg,#00CEC9,#00F5FF);"></div><div class="swatch-info"><div class="swatch-name">Primary gradient</div><div class="swatch-hex">#00CEC9 → #00F5FF</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:linear-gradient(180deg,#050B18,#0D1B2A);"></div><div class="swatch-info"><div class="swatch-name">Space gradient</div><div class="swatch-hex">#050B18 → #0D1B2A</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:linear-gradient(135deg,#132238,#1B2F4A);"></div><div class="swatch-info"><div class="swatch-name">Mission gradient</div><div class="swatch-hex">#132238 → #1B2F4A</div></div></div>
+  </div>
+
+</div>
