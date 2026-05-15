@@ -1,0 +1,132 @@
+// Mathematical algorithms for all missions
+
+export function collatzSequence(start: number): number[] {
+  const sequence: number[] = [start];
+  let current = start;
+  while (current !== 1) {
+    if (current % 2 === 0) {
+      current = current / 2;
+    } else {
+      current = 3 * current + 1;
+    }
+    sequence.push(current);
+  }
+  return sequence;
+}
+
+export function collatzSteps(start: number): { step: number; value: number; rule: string }[] {
+  const steps: { step: number; value: number; rule: string }[] = [];
+  let current = start;
+  let step = 0;
+  steps.push({ step, value: current, rule: 'Starting value' });
+  while (current !== 1) {
+    step++;
+    if (current % 2 === 0) {
+      current = current / 2;
+      steps.push({ step, value: current, rule: `${current * 2} is even → ${current * 2} ÷ 2 = ${current}` });
+    } else {
+      const prev = current;
+      current = 3 * current + 1;
+      steps.push({ step, value: current, rule: `${prev} is odd → 3 × ${prev} + 1 = ${current}` });
+    }
+  }
+  return steps;
+}
+
+export function fibonacciSequence(n: number): number[] {
+  if (n <= 0) return [];
+  if (n === 1) return [0];
+  const seq: number[] = [0, 1];
+  for (let i = 2; i < n; i++) {
+    seq.push(seq[i - 1] + seq[i - 2]);
+  }
+  return seq;
+}
+
+export function fibonacciNth(n: number): number {
+  if (n <= 0) return 0;
+  if (n === 1) return 0;
+  if (n === 2) return 1;
+  let a = 0, b = 1;
+  for (let i = 2; i < n; i++) {
+    [a, b] = [b, a + b];
+  }
+  return b;
+}
+
+export function tribonacciSequence(n: number): number[] {
+  if (n <= 0) return [];
+  if (n === 1) return [0];
+  if (n === 2) return [0, 0];
+  const seq: number[] = [0, 0, 1];
+  for (let i = 3; i < n; i++) {
+    seq.push(seq[i - 1] + seq[i - 2] + seq[i - 3]);
+  }
+  return seq.slice(0, n);
+}
+
+export function tribonacciNth(n: number): number {
+  if (n <= 0) return 0;
+  if (n <= 2) return 0;
+  if (n === 3) return 1;
+  const seq = tribonacciSequence(n);
+  return seq[seq.length - 1];
+}
+
+export function lucasSequence(n: number): number[] {
+  if (n <= 0) return [];
+  if (n === 1) return [2];
+  const seq: number[] = [2, 1];
+  for (let i = 2; i < n; i++) {
+    seq.push(seq[i - 1] + seq[i - 2]);
+  }
+  return seq;
+}
+
+export function lucasNth(n: number): number {
+  if (n <= 0) return 0;
+  if (n === 1) return 2;
+  if (n === 2) return 1;
+  let a = 2, b = 1;
+  for (let i = 2; i < n; i++) {
+    [a, b] = [b, a + b];
+  }
+  return b;
+}
+
+export function euclideanAlgorithm(a: number, b: number): { gcd: number; steps: { a: number; b: number; quotient: number; remainder: number }[] } {
+  const steps: { a: number; b: number; quotient: number; remainder: number }[] = [];
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y !== 0) {
+    const quotient = Math.floor(x / y);
+    const remainder = x % y;
+    steps.push({ a: x, b: y, quotient, remainder });
+    x = y;
+    y = remainder;
+  }
+  return { gcd: x, steps };
+}
+
+export function divisionAlgorithm(dividend: number, divisor: number): { quotient: number; remainder: number; steps: string[] } {
+  const steps: string[] = [];
+  const absDividend = Math.abs(dividend);
+  const absDivisor = Math.abs(divisor);
+
+  if (absDivisor === 0) {
+    return { quotient: 0, remainder: 0, steps: ['Division by zero is undefined'] };
+  }
+
+  const quotient = Math.floor(absDividend / absDivisor);
+  const remainder = absDividend % absDivisor;
+
+  steps.push(`Dividend = ${absDividend}, Divisor = ${absDivisor}`);
+  steps.push(`${absDividend} ÷ ${absDivisor} = ${quotient} remainder ${remainder}`);
+  steps.push(`Quotient (q) = ${quotient}`);
+  steps.push(`Remainder (r) = ${remainder}`);
+  steps.push(`Verification: ${absDivisor} × ${quotient} + ${remainder} = ${absDivisor * quotient + remainder} = ${absDividend}`);
+  steps.push(`Division Algorithm: a = bq + r where 0 ≤ r < |b|`);
+  steps.push(`${absDividend} = ${absDivisor} × ${quotient} + ${remainder}`);
+
+  return { quotient, remainder, steps };
+}
