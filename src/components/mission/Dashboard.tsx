@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useAppStore } from '@/store/appStore';
 import { soundEngine } from '@/lib/soundEngine';
@@ -9,6 +10,16 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Volume2, VolumeX, LogOut, Rocket, Trophy } from 'lucide-react';
+
+// Planet image mapping for each mission
+const PLANET_IMAGES: Record<string, string> = {
+  collatz: '/planets/planet-collatz.png',
+  fibonacci: '/planets/planet-fibonacci.png',
+  tribonacci: '/planets/planet-tribonacci.png',
+  lucas: '/planets/planet-lucas.png',
+  euclidean: '/planets/planet-euclidean.png',
+  division: '/planets/planet-division.png',
+};
 
 // Color mapping for neon glow effects
 const COLOR_MAP: Record<string, { hex: string; tailwind: string; bg: string; border: string; shadow: string }> = {
@@ -341,7 +352,30 @@ export function Dashboard() {
                       }}
                     />
 
-                    <div className="p-5 sm:p-6">
+                    {/* Planet image - decorative background element */}
+                    {PLANET_IMAGES[mission.id] && (
+                      <div
+                        className="absolute right-[-20px] top-1/2 translate-y-[-45%] z-0 pointer-events-none"
+                        style={{
+                          width: '140px',
+                          height: '140px',
+                        }}
+                      >
+                        <Image
+                          src={PLANET_IMAGES[mission.id]}
+                          alt={`${mission.title} planet`}
+                          width={140}
+                          height={140}
+                          className="object-contain opacity-35 group-hover:opacity-55 transition-opacity duration-500"
+                          style={{
+                            filter: `drop-shadow(0 0 12px ${colors.hex}60) drop-shadow(0 0 24px ${colors.hex}30)`,
+                            mixBlendMode: 'screen',
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    <div className="relative z-10 p-5 sm:p-6">
                       {/* Mission icon + title row */}
                       <div className="flex items-start gap-3 mb-3">
                         <span

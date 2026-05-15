@@ -293,14 +293,20 @@ export default function LogoutAnimation() {
         timers.push(setTimeout(() => setPhase('launch'), 600));
         break;
       case 'launch':
-        if (soundEnabled) soundEngine.launch();
+        if (soundEnabled) {
+          soundEngine.launch();
+          soundEngine.playRocketLaunch();
+        }
         timers.push(setTimeout(() => setPhase('comet-enter'), 1200));
         break;
       case 'comet-enter':
         timers.push(setTimeout(() => setPhase('collision'), 800));
         break;
       case 'collision':
-        if (soundEnabled) soundEngine.crash();
+        if (soundEnabled) {
+          soundEngine.crash();
+          soundEngine.playRocketCrash();
+        }
         timers.push(setTimeout(() => setPhase('explosion'), 100));
         break;
       case 'explosion':

@@ -4,6 +4,7 @@ class SoundEngine {
   private audioContext: AudioContext | null = null;
   private volume = 0.5;
   private muted = false;
+  private bgAudioRef: HTMLAudioElement | null = null;
 
   private getContext(): AudioContext {
     if (!this.audioContext) {
@@ -25,6 +26,11 @@ class SoundEngine {
 
   setMuted(muted: boolean) {
     this.muted = muted;
+    if (muted && this.bgAudioRef) {
+      this.bgAudioRef.pause();
+    } else if (!muted && this.bgAudioRef) {
+      this.bgAudioRef.play().catch(() => {});
+    }
   }
 
   isMuted(): boolean {
@@ -46,6 +52,99 @@ class SoundEngine {
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + duration);
   }
+
+  /**
+   * Plays an audio file from the public folder.
+   * Falls back to the provided synthetic callback if the file fails to load.
+   */
+  private playAudioFile(src: string, volume: number, fallback: () => void) {
+    if (this.muted) return;
+    const audio = new Audio(src);
+    audio.volume = volume * this.volume;
+    audio.play().catch(() => {
+      // Autoplay blocked or file not found — fall back to synthetic sound
+      fallback();
+    });
+    audio.addEventListener('error', () => {
+      // File failed to load — fall back to synthetic sound
+      fallback();
+    });
+  }
+
+  // ─── Background Music ────────────────────────────────────────────────
+
+  playBGM() {
+    if (this.bgAudioRef) {
+      // Already playing or paused — just resume
+      if (!this.muted) {
+        this.bgAudioRef.play().catch(() => {});
+      }
+      return;
+    }
+
+    const audio = new Audio('/audio/bg.mp4');
+    audio.loop = true;
+    audio.volume = 0.4 * this.volume;
+    this.bgAudioRef = audio;
+
+    audio.play().catch(() => {
+      // Autoplay blocked — will be retried on next user interaction via setMuted or explicit call
+    });
+  }
+
+  stopBGM() {
+    if (this.bgAudioRef) {
+      this.bgAudioRef.pause();
+      this.bgAudioRef.currentTime = 0;
+      this.bgAudioRef = null;
+    }
+  }
+
+  // ─── Rocket Sound Effects ────────────────────────────────────────────
+
+  playRocketLaunch() {
+    this.playAudioFile('/audio/rocketlaunch.mp4', 0.6, () => this.launch());
+  }
+
+  playRocketCrash() {
+    this.playAudioFile('/audio/rocketcrash.mp4', 0.6, () => this.crash());
+  }
+
+  // ─── V1 Sound Effects (file-based) ───────────────────────────────────
+
+  playDeploy() {
+    this.playAudioFile('/audio/deploy.mp3', 0.6, () => this.success());
+  }
+
+  playExpand() {
+    this.playAudioFile('/audio/expand.mp3', 0.6, () => this.achievement());
+  }
+
+  playFade() {
+    this.playAudioFile('/audio/fade.mp3', 0.6, () => this.failure());
+  }
+
+  playHoverFile() {
+    this.playAudioFile('/audio/hover.mp3', 0.5, () => this.hover());
+  }
+
+  playStart() {
+    this.playAudioFile('/audio/start.mp3', 0.6, () => this.success());
+  }
+
+  playTransmission() {
+    this.playAudioFile('/audio/transmission.mp3', 0.6, () => this.achievement());
+  }
+
+  playTypingFile() {
+    this.playAudioFile('/audio/typing.mp3', 0.5, () => this.type());
+  }
+
+  playClickFile() {
+    this.playAudioFile('/audio/click.mp3', 0.5, () => this.click());
+  }
+
+  // ─── Synthetic Sound Effects (original) ──────────────────────────────
 
   click() {
     this.playTone(800, 0.08, 'square', 0.15);
