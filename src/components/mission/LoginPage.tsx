@@ -471,7 +471,7 @@ export function LoginPage() {
           </div>
 
           {/* Telemetry Grid — 2 columns */}
-          <div className="w-full grid grid-cols-2 gap-1.5">
+          <div className="w-full grid grid-cols-2 gap-1.5 mt-3">
             <GridCell
               label="OXYGEN"
               value="98.2%"
