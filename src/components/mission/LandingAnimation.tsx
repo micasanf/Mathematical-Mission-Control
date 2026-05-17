@@ -1213,16 +1213,7 @@ export default function LandingAnimation() {
         {planetName}
       </div>
 
-      {/* ── Phase label at bottom ── */}
-      <div className="absolute z-30 text-center" style={{
-        bottom: 14, left: '50%', transform: 'translateX(-50%)',
-        fontSize: '9px', letterSpacing: '2px',
-        color: phaseLabel === 'TOUCHDOWN CONFIRMED' ? surfaceColors.phaseLabelColor : surfaceColors.accent,
-        animation: phaseLabel === 'TOUCHDOWN CONFIRMED' ? 'la-hud-blink 0.8s linear infinite' : 'none',
-        fontFamily: "var(--font-share-tech-mono), monospace",
-      }}>
-        {phaseLabel}
-      </div>
+
     </div>
   );
 }
