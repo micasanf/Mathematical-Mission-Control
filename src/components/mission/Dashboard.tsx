@@ -941,23 +941,22 @@ export function Dashboard() {
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="w-full border-b"
+          className="w-full border-b overflow-visible"
           style={{
             background: 'rgba(5, 11, 24, 0.88)',
             backdropFilter: 'blur(20px)',
             borderColor: 'rgba(0, 206, 201, 0.12)',
           }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 overflow-visible">
             {/* Left: Title with glitch */}
-            <div className="flex items-center gap-3 shrink-0">
-              <Rocket className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: '#00CEC9' }} />
+            <div className="flex items-center gap-3 shrink-0 overflow-visible" style={{ padding: '4px 8px' }}>
+              <Rocket className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" style={{ color: '#00CEC9' }} />
               <h1
-                className="text-sm sm:text-lg lg:text-xl font-bold tracking-[0.2em] sm:tracking-[0.3em]"
+                className="text-sm sm:text-lg lg:text-xl font-bold tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap"
                 style={{
                   color: '#00CEC9',
-                  textShadow:
-                    '0 0 10px rgba(0,206,201,0.8), 0 0 20px rgba(0,206,201,0.4), 0 0 40px rgba(0,206,201,0.2)',
+                  animation: 'title-breathe 3s ease-in-out infinite',
                   position: 'relative',
                   display: 'inline-block',
                 }}
