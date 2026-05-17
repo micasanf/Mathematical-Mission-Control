@@ -246,7 +246,7 @@ export function LoginPage() {
         .para-input::placeholder {
           color: rgba(122,140,165,0.5);
           letter-spacing: 0.12em;
-          font-size: 14px;
+          font-size: 11px;
           text-transform: uppercase;
         }
         .para-btn {
@@ -550,11 +550,11 @@ export function LoginPage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.7 }}
-          className="flex flex-col items-center lg:items-start w-full lg:w-[55%] xl:w-[58%] py-5 px-6 sm:px-10 lg:px-14 overflow-hidden"
+          className="flex flex-col items-center lg:items-start w-full lg:w-[55%] xl:w-[58%] py-4 px-5 sm:px-8 lg:px-10 overflow-hidden"
         >
           {/* Subtitle */}
           <div
-            className="text-[13px] sm:text-[14px] tracking-[0.2em] uppercase mb-2 text-center lg:text-left shrink-0"
+            className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase mb-1.5 text-center lg:text-left shrink-0"
             style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
           >
             XLR8 VESSEL // FINALS MISSION IV
@@ -562,7 +562,7 @@ export function LoginPage() {
 
           {/* Title with glitch — BIGGER */}
           <div
-            className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-[0.08em] uppercase text-center lg:text-left mb-3 shrink-0"
+            className="text-2xl sm:text-3xl font-bold tracking-[0.08em] uppercase text-center lg:text-left mb-2 shrink-0"
             style={{
               fontFamily: "var(--font-orbitron), sans-serif",
               animation: 'glitch-float 4s ease-in-out infinite',
@@ -599,14 +599,14 @@ export function LoginPage() {
           </div>
 
           {/* Restricted + Encryption row */}
-          <div className="w-full flex items-center justify-between mb-3 shrink-0">
-            <span className="text-[14px] tracking-[0.1em]" style={{ color: P.textMuted }}>
+          <div className="w-full flex items-center justify-between mb-2 shrink-0">
+            <span className="text-[11px] tracking-[0.1em]" style={{ color: P.textMuted }}>
               Restricted terminal — authorized personnel only
             </span>
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full"
+              <div className="w-1.5 h-1.5 rounded-full"
                 style={{ backgroundColor: P.green, boxShadow: `0 0 4px ${P.green}` }} />
-              <span className="text-[12px] tracking-[0.15em] uppercase"
+              <span className="text-[10px] tracking-[0.15em] uppercase"
                 style={{ color: `rgba(125,249,192,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
                 AES-256
               </span>
@@ -614,7 +614,7 @@ export function LoginPage() {
           </div>
 
           {/* Divider */}
-          <div className="w-full flex items-center gap-2 mb-4 shrink-0">
+          <div className="w-full flex items-center gap-2 mb-3 shrink-0">
             <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
             <div className="w-1.5 h-1.5 rotate-45" style={{ backgroundColor: P.primary, opacity: 0.3 }} />
             <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
@@ -622,7 +622,7 @@ export function LoginPage() {
 
           {/* Mission Brief — expands to fill space */}
           <div
-            className="w-full border rounded p-5 mb-4 shrink-0"
+            className="w-full border rounded p-3 mb-3 shrink-0"
             style={{
               borderColor: `rgba(0,206,201,0.1)`,
               background: `linear-gradient(180deg, rgba(5,11,24,0.65), rgba(13,27,42,0.45))`,
@@ -630,22 +630,22 @@ export function LoginPage() {
             }}
           >
             <div
-              className="text-[12px] tracking-[0.18em] uppercase mb-2"
+              className="text-[10px] tracking-[0.18em] uppercase mb-1"
               style={{ color: `rgba(0,206,201,0.45)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               MISSION BRIEF
             </div>
-            <p className="text-[15px] leading-relaxed" style={{ color: P.textSec }}>
+            <p className="text-[12px] leading-relaxed" style={{ color: P.textSec }}>
               XLR8 Vessel inbound on Orbit-IV Lab Node. Docking corridor requires biometric-level crew verification before approach vector is cleared. All unauthorized personnel will be flagged to RECURSION Command. Authenticate to proceed.
             </p>
           </div>
 
           {/* Form — flex-1 to fill remaining space */}
-          <form onSubmit={handleSubmit} className="w-full flex flex-col flex-1 gap-4">
+          <form onSubmit={handleSubmit} className="w-full flex flex-col flex-1 gap-2.5">
             {/* Crew Identifier */}
             <div>
               <label
-                className="block text-[13px] tracking-[0.18em] uppercase mb-2"
+                className="block text-[10px] tracking-[0.18em] uppercase mb-1"
                 style={{ color: `rgba(0,206,201,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}
               >
                 [ Crew Identifier ]
@@ -657,7 +657,7 @@ export function LoginPage() {
                 onFocus={handleFocus}
                 placeholder="e.g. 2026-0001"
                 disabled={authState !== 'PENDING'}
-                className="para-input w-full px-5 py-4 text-lg outline-none"
+                className="para-input w-full px-4 py-2.5 text-sm outline-none"
                 style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                 autoComplete="username"
               />
@@ -666,7 +666,7 @@ export function LoginPage() {
             {/* Encryption Key */}
             <div>
               <label
-                className="block text-[13px] tracking-[0.18em] uppercase mb-2"
+                className="block text-[10px] tracking-[0.18em] uppercase mb-1"
                 style={{ color: `rgba(0,206,201,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}
               >
                 [ Encryption Key ]
@@ -679,7 +679,7 @@ export function LoginPage() {
                   onFocus={handleFocus}
                   placeholder="ENTER ENCRYPTION KEY"
                   disabled={authState !== 'PENDING'}
-                  className="para-input w-full px-5 py-4 pr-12 text-lg outline-none"
+                  className="para-input w-full px-4 py-2.5 pr-10 text-sm outline-none"
                   style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                   autoComplete="current-password"
                 />
@@ -691,7 +691,7 @@ export function LoginPage() {
                   aria-label={showPwd ? 'Hide password' : 'Show password'}
                   tabIndex={-1}
                 >
-                  {showPwd ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
+                  {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -700,7 +700,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={authState !== 'PENDING' || !uid.trim() || !pwd.trim()}
-              className="para-btn w-full py-5 mt-auto text-base tracking-[0.2em] uppercase cursor-pointer"
+              className="para-btn w-full py-3 mt-auto text-xs tracking-[0.2em] uppercase cursor-pointer"
               onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
               style={{
                 fontFamily: "var(--font-orbitron), sans-serif",
@@ -726,13 +726,13 @@ export function LoginPage() {
           </form>
 
           {/* Terminal status footer */}
-          <div className="w-full flex items-center gap-2 mt-3 shrink-0">
-            <span className="text-[12px] tracking-[0.12em] uppercase"
+          <div className="w-full flex items-center gap-2 mt-2 shrink-0">
+            <span className="text-[9px] tracking-[0.12em] uppercase"
               style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               TERMINAL READY
             </span>
             <span style={{ color: `rgba(0,206,201,0.15)` }}>:</span>
-            <span className="text-[12px] tracking-[0.12em] uppercase"
+            <span className="text-[9px] tracking-[0.12em] uppercase"
               style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               ENCRYPTION: AES-256-GCM
             </span>
