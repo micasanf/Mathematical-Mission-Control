@@ -374,29 +374,38 @@ function LandingRocketSVG({ missionColor }: { missionColor: MissionColorInfo }) 
   const finStroke = `${hex}B3`;
   const legStroke = `${hex}B3`;
 
+  // Derive body tint from the mission accent color
+  // We mix a dark base with the mission color to tint the hull
+  const bodyDark = `${hex}18`;   // very subtle tint at edges
+  const bodyMid = `${hex}30`;    // slightly more visible tint at center
+  const bodyLight = `${hex}25`;  // mid-tone
+  const noseDark = `${hex}10`;
+  const noseMid = `${hex}20`;
+  const finFill = `${hex}12`;
+
   return (
     <svg className="rocket" viewBox="-10 -5 72 230" fill="none" xmlns="http://www.w3.org/2000/svg"
       style={{ width: 54, position: 'relative', filter: `drop-shadow(0 0 14px ${missionColor.glow})` }}
     >
       <defs>
         <linearGradient id="bodyGradLand" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#1a0a30" />
-          <stop offset="30%" stopColor="#2d1060" />
-          <stop offset="60%" stopColor="#3a1880" />
-          <stop offset="100%" stopColor="#1a0a30" />
+          <stop offset="0%" stopColor={bodyDark} />
+          <stop offset="30%" stopColor={bodyMid} />
+          <stop offset="60%" stopColor={bodyLight} />
+          <stop offset="100%" stopColor={bodyDark} />
         </linearGradient>
         <linearGradient id="noseGradLand" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#0f0520" />
-          <stop offset="50%" stopColor="#1e0a40" />
-          <stop offset="100%" stopColor="#0f0520" />
+          <stop offset="0%" stopColor={noseDark} />
+          <stop offset="50%" stopColor={noseMid} />
+          <stop offset="100%" stopColor={noseDark} />
         </linearGradient>
         <linearGradient id="accentGradLand" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={accentColor} />
           <stop offset="100%" stopColor={`${accentColor}99`} />
         </linearGradient>
         <linearGradient id="tealAccent" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#00ffcc" />
-          <stop offset="100%" stopColor="#00aaff" />
+          <stop offset="0%" stopColor={accentColor} />
+          <stop offset="100%" stopColor={`${accentColor}AA`} />
         </linearGradient>
         <radialGradient id="flameOuterLand" cx="50%" cy="0%" r="100%" fx="50%" fy="0%">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
@@ -428,14 +437,14 @@ function LandingRocketSVG({ missionColor }: { missionColor: MissionColorInfo }) 
       <line x1="21" y1="68" x2="31" y2="68" stroke={strokeColor} strokeWidth="0.3" opacity="0.5" />
       <line x1="21" y1="72" x2="31" y2="72" stroke={strokeColor} strokeWidth="0.3" opacity="0.5" />
       {/* Status lights */}
-      <rect x="22" y="84" width="3" height="3" rx="0.5" fill="#00ffcc" opacity="0.5" />
+      <rect x="22" y="84" width="3" height="3" rx="0.5" fill={accentColor} opacity="0.5" />
       <rect x="27" y="84" width="3" height="3" rx="0.5" fill="#ff4400" opacity="0.5" />
       {/* Label */}
       <rect x="22" y="94" width="8" height="6" rx="1" fill="#050010" stroke={strokeColor} strokeWidth="0.4" />
       <text x="26" y="99.5" textAnchor="middle" fontSize="3.5" fill={accentColor} opacity="0.7" fontFamily="Share Tech Mono, monospace">ARC7</text>
       {/* Fins */}
-      <polygon points="14,108 4,138 14,136" fill="#0f0520" stroke={finStroke} strokeWidth="0.5" />
-      <polygon points="38,108 48,138 38,136" fill="#0f0520" stroke={finStroke} strokeWidth="0.5" />
+      <polygon points="14,108 4,138 14,136" fill={finFill} stroke={finStroke} strokeWidth="0.5" />
+      <polygon points="38,108 48,138 38,136" fill={finFill} stroke={finStroke} strokeWidth="0.5" />
       {/* Engine bell */}
       <rect x="12" y="120" width="28" height="22" rx="2" fill="#080015" stroke={strokeColor} strokeWidth="0.5" />
       <ellipse cx="26" cy="142" rx="10" ry="4" fill="#050010" stroke={strokeColor} strokeWidth="0.5" />
