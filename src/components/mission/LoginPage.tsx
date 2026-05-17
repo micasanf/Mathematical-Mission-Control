@@ -245,7 +245,7 @@ export function LoginPage() {
         .para-input::placeholder {
           color: rgba(122,140,165,0.5);
           letter-spacing: 0.12em;
-          font-size: 11px;
+          font-size: 13px;
           text-transform: uppercase;
         }
         .para-btn {
@@ -366,7 +366,7 @@ export function LoginPage() {
 
       {/* ── Top Bar ──────────────────────────────────────────────────── */}
       <div
-        className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-1.5 border-b shrink-0"
+        className="relative z-10 flex items-center justify-between px-6 sm:px-8 py-2.5 border-b shrink-0"
         style={{
           borderColor: `rgba(0,206,201,0.1)`,
           background: `rgba(5,11,24,0.65)`,
@@ -374,7 +374,7 @@ export function LoginPage() {
         }}
       >
         <div
-          className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase"
+          className="text-[11px] sm:text-[12px] tracking-[0.2em] uppercase"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
         >
           XLR8 AUTOMATA-IV // RECURSION NODE // FINALS
@@ -387,32 +387,32 @@ export function LoginPage() {
       </div>
 
       {/* ── Main Content: Two Column Layout ──────────────────────────── */}
-      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-12 px-4 sm:px-6 py-3 lg:py-2 overflow-auto">
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16 px-6 sm:px-8 py-4 overflow-auto">
 
-        {/* ── Left Column: Radar + Individual Status Cards ─────────────── */}
+        {/* ── Left Column: Radar + Telemetry Grid ─────────────── */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.7 }}
-          className="flex flex-col items-center gap-2 w-full max-w-[260px]"
+          className="flex flex-col items-center gap-3 w-full max-w-[340px]"
         >
           {/* Sector label */}
           <div className="text-center">
             <div
-              className="text-[8px] tracking-[0.3em] uppercase"
+              className="text-[10px] tracking-[0.3em] uppercase"
               style={{ color: `rgba(0,206,201,0.4)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               Orbit Sector
             </div>
             <div
-              className="text-[11px] tracking-[0.12em] uppercase"
+              className="text-[14px] tracking-[0.12em] uppercase"
               style={{ color: `rgba(0,206,201,0.75)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               ORBIT-IV &middot; LAB NODE
             </div>
           </div>
 
-          {/* Radar SVG — compact */}
+          {/* Radar SVG */}
           <div className="relative" style={{ width: 230, height: 230 }}>
             <div
               className="absolute inset-[-4px] rounded-full"
@@ -471,7 +471,7 @@ export function LoginPage() {
           </div>
 
           {/* Telemetry Grid — 2 columns */}
-          <div className="w-full grid grid-cols-2 gap-1.5 mt-8">
+          <div className="w-full grid grid-cols-2 gap-2.5 mt-8">
             <GridCell
               label="OXYGEN"
               value="98.2%"
@@ -546,11 +546,11 @@ export function LoginPage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.7 }}
-          className="flex flex-col items-center lg:items-start w-full max-w-[320px]"
+          className="flex flex-col items-center lg:items-start w-full max-w-[420px]"
         >
           {/* Subtitle */}
           <div
-            className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase mb-1.5 text-center lg:text-left"
+            className="text-[11px] sm:text-[12px] tracking-[0.2em] uppercase mb-2.5 text-center lg:text-left"
             style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
           >
             XLR8 VESSEL // FINALS MISSION IV
@@ -558,7 +558,7 @@ export function LoginPage() {
 
           {/* Title with glitch */}
           <div
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[0.1em] uppercase text-center lg:text-left mb-1"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[0.1em] uppercase text-center lg:text-left mb-2"
             style={{
               fontFamily: "var(--font-orbitron), sans-serif",
               animation: 'glitch-float 4s ease-in-out infinite',
@@ -595,14 +595,14 @@ export function LoginPage() {
           </div>
 
           {/* Restricted + Encryption row */}
-          <div className="w-full flex items-center justify-between mb-2">
-            <span className="text-[10px] tracking-[0.1em]" style={{ color: P.textMuted }}>
+          <div className="w-full flex items-center justify-between mb-3">
+            <span className="text-[12px] tracking-[0.1em]" style={{ color: P.textMuted }}>
               Restricted terminal — authorized personnel only
             </span>
-            <div className="flex items-center gap-1">
-              <div className="w-1 h-1 rounded-full"
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full"
                 style={{ backgroundColor: P.green, boxShadow: `0 0 4px ${P.green}` }} />
-              <span className="text-[8px] tracking-[0.15em] uppercase"
+              <span className="text-[10px] tracking-[0.15em] uppercase"
                 style={{ color: `rgba(125,249,192,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
                 AES-256
               </span>
@@ -610,15 +610,15 @@ export function LoginPage() {
           </div>
 
           {/* Divider */}
-          <div className="w-full flex items-center gap-2 mb-2">
+          <div className="w-full flex items-center gap-2 mb-4">
             <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
-            <div className="w-1 h-1 rotate-45" style={{ backgroundColor: P.primary, opacity: 0.3 }} />
+            <div className="w-1.5 h-1.5 rotate-45" style={{ backgroundColor: P.primary, opacity: 0.3 }} />
             <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
           </div>
 
-          {/* Mission Brief — compact */}
+          {/* Mission Brief */}
           <div
-            className="w-full border rounded p-2.5 mb-3"
+            className="w-full border rounded p-4 mb-5"
             style={{
               borderColor: `rgba(0,206,201,0.1)`,
               background: `linear-gradient(180deg, rgba(5,11,24,0.65), rgba(13,27,42,0.45))`,
@@ -626,12 +626,12 @@ export function LoginPage() {
             }}
           >
             <div
-              className="text-[8px] tracking-[0.18em] uppercase mb-1"
+              className="text-[10px] tracking-[0.18em] uppercase mb-1.5"
               style={{ color: `rgba(0,206,201,0.45)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               MISSION BRIEF
             </div>
-            <p className="text-[11px] leading-relaxed" style={{ color: P.textSec }}>
+            <p className="text-[13px] leading-relaxed" style={{ color: P.textSec }}>
               XLR8 Vessel inbound on Orbit-IV Lab Node. All crew must verify identity
               through biometric-encrypted clearance. AES-256-GCM secured. Unauthorized
               access will be logged.
@@ -639,11 +639,11 @@ export function LoginPage() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="w-full space-y-2.5">
+          <form onSubmit={handleSubmit} className="w-full space-y-4">
             {/* Crew Identifier */}
             <div>
               <label
-                className="block text-[9px] tracking-[0.18em] uppercase mb-1"
+                className="block text-[11px] tracking-[0.18em] uppercase mb-1.5"
                 style={{ color: `rgba(0,206,201,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}
               >
                 [ Crew Identifier ]
@@ -655,7 +655,7 @@ export function LoginPage() {
                 onFocus={handleFocus}
                 placeholder="e.g. 2026-0001"
                 disabled={authState !== 'PENDING'}
-                className="para-input w-full px-4 py-2 text-sm outline-none"
+                className="para-input w-full px-5 py-3 text-base outline-none"
                 style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                 autoComplete="username"
               />
@@ -664,7 +664,7 @@ export function LoginPage() {
             {/* Encryption Key */}
             <div>
               <label
-                className="block text-[9px] tracking-[0.18em] uppercase mb-1"
+                className="block text-[11px] tracking-[0.18em] uppercase mb-1.5"
                 style={{ color: `rgba(0,206,201,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}
               >
                 [ Encryption Key ]
@@ -677,19 +677,19 @@ export function LoginPage() {
                   onFocus={handleFocus}
                   placeholder="ENTER ENCRYPTION KEY"
                   disabled={authState !== 'PENDING'}
-                  className="para-input w-full px-4 py-2 pr-9 text-sm outline-none"
+                  className="para-input w-full px-5 py-3 pr-10 text-base outline-none"
                   style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => { setShowPwd(!showPwd); if (soundEnabled) soundEngine.playClick(); }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer bg-transparent border-0 p-0"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer bg-transparent border-0 p-0"
                   style={{ color: showPwd ? P.primary : P.textMuted, transition: 'color 0.2s' }}
                   aria-label={showPwd ? 'Hide password' : 'Show password'}
                   tabIndex={-1}
                 >
-                  {showPwd ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  {showPwd ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
@@ -698,7 +698,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={authState !== 'PENDING' || !uid.trim() || !pwd.trim()}
-              className="para-btn w-full py-2.5 mt-1 text-xs tracking-[0.2em] uppercase cursor-pointer"
+              className="para-btn w-full py-3.5 mt-2 text-sm tracking-[0.2em] uppercase cursor-pointer"
               onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
               style={{
                 fontFamily: "var(--font-orbitron), sans-serif",
@@ -724,13 +724,13 @@ export function LoginPage() {
           </form>
 
           {/* Terminal status footer */}
-          <div className="w-full flex items-center gap-1.5 mt-2">
-            <span className="text-[8px] tracking-[0.12em] uppercase"
+          <div className="w-full flex items-center gap-2 mt-3">
+            <span className="text-[10px] tracking-[0.12em] uppercase"
               style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               TERMINAL READY
             </span>
             <span style={{ color: `rgba(0,206,201,0.15)` }}>:</span>
-            <span className="text-[8px] tracking-[0.12em] uppercase"
+            <span className="text-[10px] tracking-[0.12em] uppercase"
               style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               ENCRYPTION: AES-256-GCM
             </span>
@@ -740,7 +740,7 @@ export function LoginPage() {
 
       {/* ── Bottom Bar ──────────────────────────────────────────────── */}
       <div
-        className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-1.5 border-t gap-1 shrink-0"
+        className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-6 sm:px-8 py-2.5 border-t gap-1.5 shrink-0"
         style={{
           borderColor: `rgba(0,206,201,0.08)`,
           background: `rgba(5,11,24,0.65)`,
@@ -748,12 +748,12 @@ export function LoginPage() {
         }}
       >
         <div
-          className="text-[8px] sm:text-[10px] tracking-[0.15em] uppercase"
+          className="text-[10px] sm:text-[12px] tracking-[0.15em] uppercase"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: P.textMuted }}
         >
           HERMOSO ● NUEVAS ● ORENSE ● SANTIAGO ● III - DCSAD
         </div>
-        <div className="flex items-center gap-3 sm:gap-5">
+        <div className="flex items-center gap-4 sm:gap-6">
           <BottomStatusItem label="ENCRYPTION" value="AES-256-GCM" />
           <BottomStatusItem label="NODE" value="RECURSION-04" />
           <BottomStatusItem label="STATUS" value="AWAITING CREW" />
@@ -767,17 +767,17 @@ export function LoginPage() {
 function StatusDot({ label, color, pulse }: { label: string; color: string; pulse?: boolean }) {
   const dotColor = color === 'cyan' ? P.primary : P.gold;
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1.5">
       <div
-        className="w-1 h-1 rounded-full"
+        className="w-1.5 h-1.5 rounded-full"
         style={{
           backgroundColor: dotColor,
           animation: pulse ? 'pulse 2s ease-in-out infinite' : 'none',
-          boxShadow: `0 0 3px ${dotColor}`,
+          boxShadow: `0 0 4px ${dotColor}`,
         }}
       />
       <span
-        className="text-[8px] tracking-[0.12em] uppercase"
+        className="text-[10px] tracking-[0.12em] uppercase"
         style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.4)` }}
       >
         {label}
@@ -828,30 +828,30 @@ function GridCell({
       />
 
       {/* Corner dots */}
-      <div className="absolute top-[3px] left-[3px] w-[3px] h-[3px] rounded-full"
+      <div className="absolute top-[4px] left-[4px] w-[4px] h-[4px] rounded-full"
         style={{ backgroundColor: accentColor, opacity: 0.5 }} />
-      <div className="absolute top-[3px] right-[3px] w-[3px] h-[3px] rounded-full"
+      <div className="absolute top-[4px] right-[4px] w-[4px] h-[4px] rounded-full"
         style={{ backgroundColor: accentColor, opacity: 0.5 }} />
-      <div className="absolute bottom-[3px] left-[3px] w-[3px] h-[3px] rounded-full"
+      <div className="absolute bottom-[4px] left-[4px] w-[4px] h-[4px] rounded-full"
         style={{ backgroundColor: accentColor, opacity: 0.3 }} />
-      <div className="absolute bottom-[3px] right-[3px] w-[3px] h-[3px] rounded-full"
+      <div className="absolute bottom-[4px] right-[4px] w-[4px] h-[4px] rounded-full"
         style={{ backgroundColor: accentColor, opacity: 0.3 }} />
 
       {/* Content */}
-      <div className={`px-2.5 ${fullWidth ? 'py-2' : 'py-1.5'}`}>
+      <div className={`px-3.5 ${fullWidth ? 'py-3' : 'py-2.5'}`}>
         {/* Label row */}
         <div
-          className="text-[7px] tracking-[0.18em] uppercase mb-0.5"
+          className="text-[9px] tracking-[0.18em] uppercase mb-1"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.4)' }}
         >
           {label}
         </div>
 
         {/* Value row */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {statusDot !== 'none' && (
             <div
-              className="w-1.5 h-1.5 rounded-full shrink-0"
+              className="w-2 h-2 rounded-full shrink-0"
               style={{
                 backgroundColor: valueColor,
                 boxShadow: `0 0 5px ${valueColor}`,
@@ -861,7 +861,7 @@ function GridCell({
             />
           )}
           <span
-            className={`font-bold tracking-[0.04em] uppercase ${fullWidth ? 'text-lg' : 'text-sm'}`}
+            className={`font-bold tracking-[0.04em] uppercase ${fullWidth ? 'text-xl' : 'text-base'}`}
             style={{
               fontFamily: "var(--font-rajdhani), sans-serif",
               color: valueColor,
@@ -872,10 +872,10 @@ function GridCell({
           </span>
         </div>
 
-        {/* Progress bar — 2px, glowing */}
+        {/* Progress bar — 3px, glowing */}
         {!noBar && (
           <div
-            className="w-full h-[2px] rounded-full mt-1 mb-0.5"
+            className="w-full h-[3px] rounded-full mt-1.5 mb-1"
             style={{ background: 'rgba(0,206,201,0.06)' }}
           >
             <motion.div
@@ -894,7 +894,7 @@ function GridCell({
         {/* Subtext */}
         {subtext && (
           <div
-            className="text-[6px] tracking-[0.14em] uppercase mt-0.5"
+            className="text-[8px] tracking-[0.14em] uppercase mt-1"
             style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.3)' }}
           >
             {subtext}
@@ -908,15 +908,15 @@ function GridCell({
 // ─── Bottom Status Item ──────────────────────────────────────────────────────
 function BottomStatusItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1.5">
       <span
-        className="text-[7px] sm:text-[8px] tracking-[0.12em] uppercase"
+        className="text-[9px] sm:text-[10px] tracking-[0.12em] uppercase"
         style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.25)` }}
       >
         {label}:
       </span>
       <span
-        className="text-[7px] sm:text-[8px] tracking-[0.1em] uppercase"
+        className="text-[9px] sm:text-[10px] tracking-[0.1em] uppercase"
         style={{ fontFamily: "var(--font-rajdhani), sans-serif", color: `rgba(0,206,201,0.5)` }}
       >
         {value}
