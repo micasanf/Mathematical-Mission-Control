@@ -829,6 +829,10 @@ export function Dashboard() {
           0% { opacity: 0.4; }
           100% { opacity: 0.7; }
         }
+        @keyframes title-breathe {
+          0%, 100% { text-shadow: 0 0 8px rgba(0,206,201,0.4), 0 0 16px rgba(0,206,201,0.15); }
+          50% { text-shadow: 0 0 14px rgba(0,206,201,0.8), 0 0 28px rgba(0,206,201,0.4), 0 0 50px rgba(0,206,201,0.2); }
+        }
         @keyframes ticker-scroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
