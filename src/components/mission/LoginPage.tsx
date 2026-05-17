@@ -542,9 +542,6 @@ export function LoginPage() {
           </div>
         </motion.div>
 
-        {/* ── Vertical Divider ──────────────────────────────────────── */}
-        <div className="hidden lg:block w-px shrink-0" style={{ background: `rgba(0,206,201,0.08)` }} />
-
         {/* ── Right Column: Login Form — fills full height ──────────── */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
