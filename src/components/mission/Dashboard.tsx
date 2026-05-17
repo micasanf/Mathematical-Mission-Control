@@ -956,44 +956,10 @@ export function Dashboard() {
           }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 overflow-visible">
-            {/* Left: Title with glitch */}
-            <div className="flex items-center gap-3 shrink-0 overflow-visible" style={{ padding: '4px 8px' }}>
+            {/* Left: Title with radar sweep */}
+            <div className="flex items-center gap-2 shrink-0 overflow-visible" style={{ padding: '4px 4px' }}>
               <Rocket className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" style={{ color: '#00CEC9' }} />
-              <h1
-                className="text-sm sm:text-lg lg:text-xl font-bold tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap"
-                style={{
-                  color: '#00CEC9',
-                  animation: 'title-breathe 3s ease-in-out infinite',
-                  position: 'relative',
-                  display: 'inline-block',
-                }}
-              >
-                MISSION CONTROL
-                {/* Glitch top layer */}
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    color: 'rgba(255,0,80,0.5)',
-                    clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
-                    animation: 'dash-glitch-top 4s infinite linear alternate-reverse',
-                  }}
-                >MISSION CONTROL</span>
-                {/* Glitch bottom layer */}
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    color: 'rgba(0,200,255,0.5)',
-                    clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
-                    animation: 'dash-glitch-bottom 3.5s infinite linear alternate-reverse',
-                  }}
-                >MISSION CONTROL</span>
-              </h1>
+              <MissionControlCanvas />
             </div>
 
             {/* Right: Controls */}
