@@ -320,70 +320,47 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
 
     if (selectedAnswer === null) {
       return {
-        background: `linear-gradient(135deg, rgba(0,0,0,0.6), rgba(10,15,30,0.8))`,
-        border: `1px solid ${missionColor}18`,
+        background: 'rgba(8, 12, 28, 0.7)',
+        border: `1px solid rgba(148, 163, 184, 0.08)`,
         cursor: 'pointer' as const,
       };
     }
 
     if (index === correctIndex) {
       return {
-        background: 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.15))',
-        border: '1px solid rgba(34,197,94,0.6)',
-        boxShadow: '0 0 20px rgba(34,197,94,0.25), inset 0 0 30px rgba(34,197,94,0.05), 0 0 60px rgba(34,197,94,0.1)',
+        background: 'rgba(34, 197, 94, 0.06)',
+        border: '1px solid rgba(34, 197, 94, 0.5)',
+        boxShadow: '0 0 15px rgba(34,197,94,0.15), inset 0 1px 0 rgba(34,197,94,0.1)',
         cursor: 'default' as const,
       };
     }
 
     if (index === selectedAnswer && !isCorrect) {
       return {
-        background: 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.15))',
-        border: '1px solid rgba(239,68,68,0.6)',
-        boxShadow: '0 0 20px rgba(239,68,68,0.25), inset 0 0 30px rgba(239,68,68,0.05), 0 0 60px rgba(239,68,68,0.1)',
+        background: 'rgba(239, 68, 68, 0.06)',
+        border: '1px solid rgba(239, 68, 68, 0.5)',
+        boxShadow: '0 0 15px rgba(239,68,68,0.15), inset 0 1px 0 rgba(239,68,68,0.1)',
         cursor: 'default' as const,
       };
     }
 
     return {
-      background: 'rgba(0,0,0,0.3)',
-      border: `1px solid ${missionColor}08`,
+      background: 'rgba(8, 12, 28, 0.3)',
+      border: '1px solid rgba(148, 163, 184, 0.04)',
       cursor: 'default' as const,
-      opacity: 0.4,
+      opacity: 0.35,
     };
   };
 
-  const getOptionLabel = (index: number) => {
-    if (selectedAnswer === null) return null;
+  // Get left accent color for each option
+  const getAccentColor = (index: number) => {
+    if (selectedAnswer === null) return missionColor;
     const correctIndex = questions[currentQuestion].correct;
-    if (index === correctIndex) {
-      return (
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="absolute top-2 right-2"
-        >
-          <CheckCircle2 className="w-5 h-5 text-green-400" />
-        </motion.div>
-      );
-    }
-    if (index === selectedAnswer && !isCorrect) {
-      return (
-        <motion.div
-          initial={{ scale: 0, rotate: 180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="absolute top-2 right-2"
-        >
-          <XCircle className="w-5 h-5 text-red-400" />
-        </motion.div>
-      );
-    }
-    return null;
+    if (index === correctIndex) return '#22c55e';
+    if (index === selectedAnswer && !isCorrect) return '#ef4444';
+    return 'rgba(100,116,139,0.2)';
   };
 
-  // Hex labels for options
-  const hexLabels = ['0x41', '0x42', '0x43', '0x44'];
   const alphaLabels = ['A', 'B', 'C', 'D'];
 
   // ─── Results Screen ───────────────────────────────────────────────────
@@ -913,111 +890,165 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
               </div>
 
               {/* ─── Options ─── */}
-              <div className="grid gap-3">
-                {currentQ.options.map((option, index) => (
-                  <motion.div
-                    key={`${currentQuestion}-${index}`}
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: questionRevealed ? 0.05 + index * 0.08 : 0.7 + index * 0.08, duration: 0.3 }}
-                    whileHover={
-                      selectedAnswer === null
-                        ? {
-                            scale: 1.03,
-                            boxShadow: `0 0 25px ${missionColor}20, 0 0 50px ${missionColor}10`,
-                          }
-                        : {}
-                    }
-                    whileTap={selectedAnswer === null ? { scale: 0.98 } : {}}
-                    onMouseEnter={() => {
-                      if (selectedAnswer === null && soundEnabled) soundEngine.playHover();
-                    }}
-                  >
-                    <div
-                      className="relative rounded-xl p-4 transition-all duration-300"
-                      style={getOptionStyle(index)}
-                      onClick={() => handleAnswer(index)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleAnswer(index);
-                        }
+              <div className="grid gap-2.5">
+                {currentQ.options.map((option, index) => {
+                  const accentColor = getAccentColor(index);
+                  const isSelected = selectedAnswer !== null;
+                  const isCorrectOption = index === questions[currentQuestion].correct;
+                  const isWrongOption = index === selectedAnswer && !isCorrect;
+                  const isDimmed = isSelected && index !== questions[currentQuestion].correct && index !== selectedAnswer;
+
+                  return (
+                    <motion.div
+                      key={`${currentQuestion}-${index}`}
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: questionRevealed ? 0.05 + index * 0.08 : 0.7 + index * 0.08, duration: 0.3 }}
+                      whileHover={
+                        selectedAnswer === null
+                          ? { scale: 1.02 }
+                          : {}
+                      }
+                      whileTap={selectedAnswer === null ? { scale: 0.98 } : {}}
+                      onMouseEnter={() => {
+                        if (selectedAnswer === null && soundEnabled) soundEngine.playHover();
                       }}
-                      aria-label={`Option ${alphaLabels[index]}: ${option}`}
                     >
-                      {/* Option label - hex + alpha */}
-                      <div className="flex items-start gap-3">
-                        <div className="flex flex-col items-center gap-0.5 shrink-0 mt-0.5">
-                          <span
-                            className="text-[9px] font-mono tracking-wider"
-                            style={{
-                              color: selectedAnswer === null
-                                ? `${missionColor}50`
-                                : index === questions[currentQuestion].correct
-                                  ? 'rgba(34,197,94,0.5)'
-                                  : index === selectedAnswer
-                                    ? 'rgba(239,68,68,0.5)'
-                                    : 'rgba(100,116,139,0.3)',
-                            }}
-                          >
-                            {hexLabels[index]}
-                          </span>
-                          <span
-                            className="w-7 h-7 rounded-md flex items-center justify-center text-xs font-black"
+                      <div
+                        className="relative rounded-lg overflow-hidden transition-all duration-300"
+                        style={getOptionStyle(index)}
+                        onClick={() => handleAnswer(index)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleAnswer(index);
+                          }
+                        }}
+                        aria-label={`Option ${alphaLabels[index]}: ${option}`}
+                      >
+                        {/* Left accent stripe */}
+                        <div
+                          className="absolute left-0 top-0 bottom-0 w-[3px] transition-colors duration-300"
+                          style={{
+                            background: accentColor,
+                            boxShadow: selectedAnswer === null
+                              ? `0 0 8px ${missionColor}40`
+                              : isCorrectOption
+                                ? '0 0 8px rgba(34,197,94,0.4)'
+                                : isWrongOption
+                                  ? '0 0 8px rgba(239,68,68,0.4)'
+                                  : 'none',
+                          }}
+                        />
+
+                        <div className="flex items-center gap-4 px-4 py-3.5 sm:py-4">
+                          {/* Letter badge */}
+                          <div
+                            className="shrink-0 w-9 h-9 rounded-md flex items-center justify-center text-sm font-black transition-all duration-300"
                             style={{
                               fontFamily: "var(--font-orbitron), sans-serif",
                               background: selectedAnswer === null
-                                ? `linear-gradient(135deg, ${missionColor}10, ${missionColor}18)`
-                                : index === questions[currentQuestion].correct
-                                  ? 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.18))'
-                                  : index === selectedAnswer
-                                    ? 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.18))'
+                                ? `${missionColor}12`
+                                : isCorrectOption
+                                  ? 'rgba(34,197,94,0.12)'
+                                  : isWrongOption
+                                    ? 'rgba(239,68,68,0.12)'
                                     : 'rgba(100,116,139,0.05)',
                               border: selectedAnswer === null
                                 ? `1px solid ${missionColor}25`
-                                : index === questions[currentQuestion].correct
-                                  ? '1px solid rgba(34,197,94,0.35)'
-                                  : index === selectedAnswer
-                                    ? '1px solid rgba(239,68,68,0.35)'
+                                : isCorrectOption
+                                  ? '1px solid rgba(34,197,94,0.4)'
+                                  : isWrongOption
+                                    ? '1px solid rgba(239,68,68,0.4)'
                                     : '1px solid transparent',
                               color: selectedAnswer === null
                                 ? missionColor
-                                : index === questions[currentQuestion].correct
+                                : isCorrectOption
                                   ? '#4ade80'
-                                  : index === selectedAnswer
+                                  : isWrongOption
                                     ? '#f87171'
                                     : '#475569',
                               textShadow: selectedAnswer === null
-                                ? `0 0 6px ${missionColor}50`
-                                : 'none',
+                                ? `0 0 8px ${missionColor}50`
+                                : isCorrectOption
+                                  ? '0 0 8px rgba(74,222,128,0.4)'
+                                  : isWrongOption
+                                    ? '0 0 8px rgba(248,113,113,0.4)'
+                                    : 'none',
                             }}
                           >
                             {alphaLabels[index]}
-                          </span>
-                        </div>
-                        <span
-                          className="text-sm sm:text-base font-medium leading-relaxed pt-1"
-                          style={{
-                            color: selectedAnswer === null
-                              ? '#cbd5e1'
-                              : index === questions[currentQuestion].correct
-                                ? '#4ade80'
-                                : index === selectedAnswer
-                                  ? '#f87171'
-                                  : '#334155',
-                          }}
-                        >
-                          {option}
-                        </span>
-                      </div>
+                          </div>
 
-                      {/* Correct/incorrect icon */}
-                      {getOptionLabel(index)}
-                    </div>
-                  </motion.div>
-                ))}
+                          {/* Option text */}
+                          <span
+                            className="text-sm sm:text-[15px] font-medium leading-relaxed flex-1"
+                            style={{
+                              color: selectedAnswer === null
+                                ? '#cbd5e1'
+                                : isCorrectOption
+                                  ? '#4ade80'
+                                  : isWrongOption
+                                    ? '#f87171'
+                                    : isDimmed
+                                      ? '#1e293b'
+                                      : '#475569',
+                            }}
+                          >
+                            {option}
+                          </span>
+
+                          {/* Right status icon */}
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ type: 'spring', stiffness: 250, damping: 15 }}
+                              className="shrink-0"
+                            >
+                              {isCorrectOption && (
+                                <div
+                                  className="w-7 h-7 rounded-full flex items-center justify-center"
+                                  style={{
+                                    background: 'rgba(34,197,94,0.15)',
+                                    border: '1px solid rgba(34,197,94,0.4)',
+                                    boxShadow: '0 0 10px rgba(34,197,94,0.2)',
+                                  }}
+                                >
+                                  <CheckCircle2 className="w-4 h-4 text-green-400" />
+                                </div>
+                              )}
+                              {isWrongOption && (
+                                <div
+                                  className="w-7 h-7 rounded-full flex items-center justify-center"
+                                  style={{
+                                    background: 'rgba(239,68,68,0.15)',
+                                    border: '1px solid rgba(239,68,68,0.4)',
+                                    boxShadow: '0 0 10px rgba(239,68,68,0.2)',
+                                  }}
+                                >
+                                  <XCircle className="w-4 h-4 text-red-400" />
+                                </div>
+                              )}
+                            </motion.div>
+                          )}
+                        </div>
+
+                        {/* Hover glow line at bottom */}
+                        {selectedAnswer === null && (
+                          <div
+                            className="absolute bottom-0 left-0 right-0 h-[1px] opacity-0 hover:opacity-100 transition-opacity duration-300"
+                            style={{
+                              background: `linear-gradient(90deg, transparent, ${missionColor}30, transparent)`,
+                            }}
+                          />
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* ─── Feedback Text ─── */}
