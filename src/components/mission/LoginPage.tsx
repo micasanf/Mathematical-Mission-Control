@@ -413,7 +413,7 @@ export function LoginPage() {
           </div>
 
           {/* Radar SVG — compact */}
-          <div className="relative w-36 h-36 sm:w-40 sm:h-40">
+          <div className="relative w-48 h-48 sm:w-56 sm:h-56">
             <div
               className="absolute inset-[-4px] rounded-full"
               style={{
