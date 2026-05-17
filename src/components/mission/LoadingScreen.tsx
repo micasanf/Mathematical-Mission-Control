@@ -533,10 +533,10 @@ export default function LoadingScreen() {
       setPhase('complete');
     }, 3700);
 
-    // Transition to dashboard shortly after flash starts
+    // Transition to dashboard right after flash peaks
     addTimer(() => {
       finishLoading();
-    }, 4200);
+    }, 3900);
   }, [soundEnabled, addTimer, finishLoading]);
 
   // ─── Countdown sequence on mount ────────────────────────────────────────
