@@ -245,7 +245,7 @@ export function LoginPage() {
         .para-input::placeholder {
           color: rgba(122,140,165,0.5);
           letter-spacing: 0.12em;
-          font-size: 13px;
+          font-size: 14px;
           text-transform: uppercase;
         }
         .para-btn {
@@ -366,7 +366,7 @@ export function LoginPage() {
 
       {/* ── Top Bar ──────────────────────────────────────────────────── */}
       <div
-        className="relative z-10 flex items-center justify-between px-6 sm:px-8 py-2.5 border-b shrink-0"
+        className="relative z-10 flex items-center justify-between px-5 sm:px-8 py-2 border-b shrink-0"
         style={{
           borderColor: `rgba(0,206,201,0.1)`,
           background: `rgba(5,11,24,0.65)`,
@@ -374,7 +374,7 @@ export function LoginPage() {
         }}
       >
         <div
-          className="text-[11px] sm:text-[12px] tracking-[0.2em] uppercase"
+          className="text-[10px] sm:text-[12px] tracking-[0.2em] uppercase"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
         >
           XLR8 AUTOMATA-IV // RECURSION NODE // FINALS
@@ -386,18 +386,18 @@ export function LoginPage() {
         </div>
       </div>
 
-      {/* ── Main Content: Two Column Layout ──────────────────────────── */}
-      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16 px-6 sm:px-8 py-4 overflow-auto">
+      {/* ── Main Content: Two Column Layout — fills viewport ──────────── */}
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-stretch gap-0 lg:gap-0 overflow-hidden">
 
-        {/* ── Left Column: Radar + Telemetry Grid ─────────────── */}
+        {/* ── Left Column: Radar + Telemetry Grid — fills full height ── */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.7 }}
-          className="flex flex-col items-center gap-3 w-full max-w-[340px]"
+          className="flex flex-col items-center w-full lg:w-[45%] xl:w-[42%] py-3 px-4 sm:px-6 lg:px-8 overflow-y-auto"
         >
-          {/* Sector label */}
-          <div className="text-center">
+          {/* Sector label — compact */}
+          <div className="text-center shrink-0 mb-1">
             <div
               className="text-[10px] tracking-[0.3em] uppercase"
               style={{ color: `rgba(0,206,201,0.4)`, fontFamily: "var(--font-orbitron), sans-serif" }}
@@ -405,15 +405,15 @@ export function LoginPage() {
               Orbit Sector
             </div>
             <div
-              className="text-[14px] tracking-[0.12em] uppercase"
+              className="text-[15px] tracking-[0.12em] uppercase"
               style={{ color: `rgba(0,206,201,0.75)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               ORBIT-IV &middot; LAB NODE
             </div>
           </div>
 
-          {/* Radar SVG */}
-          <div className="relative" style={{ width: 230, height: 230 }}>
+          {/* Radar SVG — fill column width */}
+          <div className="relative w-full shrink-0" style={{ maxWidth: 320, aspectRatio: '1 / 1' }}>
             <div
               className="absolute inset-[-4px] rounded-full"
               style={{
@@ -470,8 +470,8 @@ export function LoginPage() {
             </svg>
           </div>
 
-          {/* Telemetry Grid — 2 columns */}
-          <div className="w-full grid grid-cols-2 gap-2.5 mt-8">
+          {/* Telemetry Grid — 2 columns, fills remaining vertical space */}
+          <div className="w-full grid grid-cols-2 gap-2 mt-4 flex-1" style={{ maxWidth: 320 }}>
             <GridCell
               label="OXYGEN"
               value="98.2%"
@@ -541,24 +541,27 @@ export function LoginPage() {
           </div>
         </motion.div>
 
-        {/* ── Right Column: Login Form ───────────────────────────────── */}
+        {/* ── Vertical Divider ──────────────────────────────────────── */}
+        <div className="hidden lg:block w-px shrink-0" style={{ background: `rgba(0,206,201,0.08)` }} />
+
+        {/* ── Right Column: Login Form — fills full height ──────────── */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.7 }}
-          className="flex flex-col items-center lg:items-start w-full max-w-[420px]"
+          className="flex flex-col w-full lg:w-[55%] xl:w-[58%] py-3 px-4 sm:px-6 lg:px-10 overflow-y-auto"
         >
           {/* Subtitle */}
           <div
-            className="text-[11px] sm:text-[12px] tracking-[0.2em] uppercase mb-2.5 text-center lg:text-left"
+            className="text-[11px] sm:text-[13px] tracking-[0.2em] uppercase mb-2 text-center lg:text-left shrink-0"
             style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
           >
             XLR8 VESSEL // FINALS MISSION IV
           </div>
 
-          {/* Title with glitch */}
+          {/* Title with glitch — BIGGER */}
           <div
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[0.1em] uppercase text-center lg:text-left mb-2"
+            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-[0.08em] uppercase text-center lg:text-left mb-2 shrink-0"
             style={{
               fontFamily: "var(--font-orbitron), sans-serif",
               animation: 'glitch-float 4s ease-in-out infinite',
@@ -567,7 +570,7 @@ export function LoginPage() {
             <span
               style={{
                 color: P.primary,
-                textShadow: `0 0 18px rgba(0,206,201,0.5), 0 0 36px rgba(0,206,201,0.15)`,
+                textShadow: `0 0 20px rgba(0,206,201,0.5), 0 0 40px rgba(0,206,201,0.15)`,
                 position: 'relative',
                 display: 'inline-block',
               }}
@@ -595,7 +598,7 @@ export function LoginPage() {
           </div>
 
           {/* Restricted + Encryption row */}
-          <div className="w-full flex items-center justify-between mb-3">
+          <div className="w-full flex items-center justify-between mb-2 shrink-0">
             <span className="text-[12px] tracking-[0.1em]" style={{ color: P.textMuted }}>
               Restricted terminal — authorized personnel only
             </span>
@@ -610,15 +613,15 @@ export function LoginPage() {
           </div>
 
           {/* Divider */}
-          <div className="w-full flex items-center gap-2 mb-4">
+          <div className="w-full flex items-center gap-2 mb-3 shrink-0">
             <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
             <div className="w-1.5 h-1.5 rotate-45" style={{ backgroundColor: P.primary, opacity: 0.3 }} />
             <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
           </div>
 
-          {/* Mission Brief */}
+          {/* Mission Brief — expands to fill space */}
           <div
-            className="w-full border rounded p-4 mb-5"
+            className="w-full border rounded p-4 mb-3 shrink-0"
             style={{
               borderColor: `rgba(0,206,201,0.1)`,
               background: `linear-gradient(180deg, rgba(5,11,24,0.65), rgba(13,27,42,0.45))`,
@@ -631,15 +634,15 @@ export function LoginPage() {
             >
               MISSION BRIEF
             </div>
-            <p className="text-[13px] leading-relaxed" style={{ color: P.textSec }}>
+            <p className="text-[14px] leading-relaxed" style={{ color: P.textSec }}>
               XLR8 Vessel inbound on Orbit-IV Lab Node. All crew must verify identity
               through biometric-encrypted clearance. AES-256-GCM secured. Unauthorized
               access will be logged.
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="w-full space-y-4">
+          {/* Form — flex-1 to fill remaining space */}
+          <form onSubmit={handleSubmit} className="w-full flex flex-col flex-1 gap-3">
             {/* Crew Identifier */}
             <div>
               <label
@@ -655,7 +658,7 @@ export function LoginPage() {
                 onFocus={handleFocus}
                 placeholder="e.g. 2026-0001"
                 disabled={authState !== 'PENDING'}
-                className="para-input w-full px-5 py-3 text-base outline-none"
+                className="para-input w-full px-5 py-3.5 text-lg outline-none"
                 style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                 autoComplete="username"
               />
@@ -677,7 +680,7 @@ export function LoginPage() {
                   onFocus={handleFocus}
                   placeholder="ENTER ENCRYPTION KEY"
                   disabled={authState !== 'PENDING'}
-                  className="para-input w-full px-5 py-3 pr-10 text-base outline-none"
+                  className="para-input w-full px-5 py-3.5 pr-11 text-lg outline-none"
                   style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                   autoComplete="current-password"
                 />
@@ -694,11 +697,11 @@ export function LoginPage() {
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit Button — PROMINENT */}
             <button
               type="submit"
               disabled={authState !== 'PENDING' || !uid.trim() || !pwd.trim()}
-              className="para-btn w-full py-3.5 mt-2 text-sm tracking-[0.2em] uppercase cursor-pointer"
+              className="para-btn w-full py-4 mt-auto text-base tracking-[0.2em] uppercase cursor-pointer"
               onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
               style={{
                 fontFamily: "var(--font-orbitron), sans-serif",
@@ -724,7 +727,7 @@ export function LoginPage() {
           </form>
 
           {/* Terminal status footer */}
-          <div className="w-full flex items-center gap-2 mt-3">
+          <div className="w-full flex items-center gap-2 mt-2 shrink-0">
             <span className="text-[10px] tracking-[0.12em] uppercase"
               style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               TERMINAL READY
@@ -740,7 +743,7 @@ export function LoginPage() {
 
       {/* ── Bottom Bar ──────────────────────────────────────────────── */}
       <div
-        className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-6 sm:px-8 py-2.5 border-t gap-1.5 shrink-0"
+        className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-5 sm:px-8 py-2 border-t gap-1.5 shrink-0"
         style={{
           borderColor: `rgba(0,206,201,0.08)`,
           background: `rgba(5,11,24,0.65)`,
@@ -838,10 +841,10 @@ function GridCell({
         style={{ backgroundColor: accentColor, opacity: 0.3 }} />
 
       {/* Content */}
-      <div className={`px-3.5 ${fullWidth ? 'py-3' : 'py-2.5'}`}>
+      <div className={`px-4 ${fullWidth ? 'py-3.5' : 'py-3'}`}>
         {/* Label row */}
         <div
-          className="text-[9px] tracking-[0.18em] uppercase mb-1"
+          className="text-[10px] tracking-[0.18em] uppercase mb-1"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.4)' }}
         >
           {label}
@@ -851,17 +854,17 @@ function GridCell({
         <div className="flex items-center gap-2">
           {statusDot !== 'none' && (
             <div
-              className="w-2 h-2 rounded-full shrink-0"
+              className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{
                 backgroundColor: valueColor,
-                boxShadow: `0 0 5px ${valueColor}`,
+                boxShadow: `0 0 6px ${valueColor}`,
                 animation: statusDot === 'pulse' ? 'pulse 0.8s ease-in-out infinite'
                   : statusDot === 'fast' ? 'pulse 0.4s ease-in-out infinite' : 'none',
               }}
             />
           )}
           <span
-            className={`font-bold tracking-[0.04em] uppercase ${fullWidth ? 'text-xl' : 'text-base'}`}
+            className={`font-bold tracking-[0.04em] uppercase ${fullWidth ? 'text-2xl' : 'text-lg'}`}
             style={{
               fontFamily: "var(--font-rajdhani), sans-serif",
               color: valueColor,
@@ -875,7 +878,7 @@ function GridCell({
         {/* Progress bar — 3px, glowing */}
         {!noBar && (
           <div
-            className="w-full h-[3px] rounded-full mt-1.5 mb-1"
+            className="w-full h-[3px] rounded-full mt-2 mb-1"
             style={{ background: 'rgba(0,206,201,0.06)' }}
           >
             <motion.div
@@ -894,7 +897,7 @@ function GridCell({
         {/* Subtext */}
         {subtext && (
           <div
-            className="text-[8px] tracking-[0.14em] uppercase mt-1"
+            className="text-[9px] tracking-[0.14em] uppercase mt-1"
             style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.3)' }}
           >
             {subtext}
