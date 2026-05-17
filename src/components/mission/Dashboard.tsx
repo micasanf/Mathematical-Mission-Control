@@ -892,9 +892,9 @@ export function Dashboard() {
         }
         @keyframes title-sway {
           0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(8px); }
+          25% { transform: translateX(2px); }
           50% { transform: translateX(0); }
-          75% { transform: translateX(-8px); }
+          75% { transform: translateX(-2px); }
         }
       `}</style>
 
@@ -1114,7 +1114,7 @@ export function Dashboard() {
               style={{
                 color: 'rgba(255, 255, 255, 0.9)',
                 textShadow: '0 0 10px rgba(0,206,201,0.4), 0 0 20px rgba(0,206,201,0.15)',
-                animation: 'title-sway 5s ease-in-out infinite',
+                animation: 'title-sway 8s ease-in-out infinite',
               }}
             >
               <span style={{ position: 'relative', display: 'inline-block' }}>
