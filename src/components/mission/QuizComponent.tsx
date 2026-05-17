@@ -358,7 +358,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
               <div className="flex items-start gap-3 mb-5 pb-4" style={{ borderBottom: `1px solid ${missionColor}08` }}>
                 <HologramLetter letter={missionId[0].toUpperCase()} color={missionColor} size="md" />
                 <div className="flex-1 min-w-0 pt-1">
-                  <h3 className="text-sm sm:text-base font-bold leading-relaxed" style={{ color: '#c8d0de' }}>
+                  <h3 className="text-base sm:text-lg font-bold leading-relaxed" style={{ color: '#c8d0de' }}>
                     {typedQ}
                     {!typeDone && <span className="inline-block w-[2px] h-[14px] ml-0.5 align-middle" style={{ background: missionColor, boxShadow: `0 0 4px ${missionColor}`, animation: 'cursor-blink 0.5s steps(2) infinite' }} />}
                   </h3>
