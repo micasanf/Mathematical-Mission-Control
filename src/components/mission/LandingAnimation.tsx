@@ -355,13 +355,7 @@ function LandingPod({ surfaceColors }: { surfaceColors: MissionSurfaceColors }) 
           border: `1px solid ${surfaceColors.accent}60`, borderRadius: 1,
         }} />
       </div>
-      {/* Pod label */}
-      <div style={{
-        fontSize: 7, letterSpacing: 2, color: `${surfaceColors.accent}65`,
-        marginTop: 5, whiteSpace: 'nowrap', fontFamily: "var(--font-share-tech-mono), monospace",
-      }}>
-        POD-ALPHA · DEPLOYED
-      </div>
+
     </div>
   );
 }
