@@ -43,7 +43,7 @@ export default function MissionsTitleCanvas() {
     // Responsive sizing
     const dpr = window.devicePixelRatio || 1;
     const logicalW = 580;
-    const logicalH = 140;
+    const logicalH = 80;
     canvas.width = logicalW * dpr;
     canvas.height = logicalH * dpr;
     canvas.style.width = `${logicalW}px`;
@@ -58,8 +58,8 @@ export default function MissionsTitleCanvas() {
     // Measure letter positions
     ctx.font = FONT;
     const totalWidth = ctx.measureText(TEXT).width;
-    const startX = (CW - totalWidth) / 2;
-    const BASE_Y = 70;
+    const startX = 0;
+    const BASE_Y = 50;
 
     const letterDefs: LetterDef[] = [];
     let cx = startX;
@@ -266,14 +266,6 @@ export default function MissionsTitleCanvas() {
         ctx.restore();
       }
 
-      // Subtitle
-      ctx.save();
-      ctx.font = '11px "Share Tech Mono", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = `rgba(0,206,201,${0.35 + Math.sin(frame * 0.04) * 0.2})`;
-      ctx.fillText('▶ SELECT TARGET ◀', CW / 2, CH - 16);
-      ctx.restore();
-
       animRef.current = requestAnimationFrame(draw);
     }
 
@@ -282,7 +274,7 @@ export default function MissionsTitleCanvas() {
       // Re-measure with loaded font
       ctx.font = FONT;
       const totalW = ctx.measureText(TEXT).width;
-      const sx = (CW - totalW) / 2;
+      const sx = 0;
       let lx = sx;
       for (let i = 0; i < TEXT.length; i++) {
         const ch = TEXT[i];
@@ -300,7 +292,7 @@ export default function MissionsTitleCanvas() {
   }, []);
 
   return (
-    <div className="relative overflow-hidden" style={{ width: 580, height: 140 }}>
+    <div className="relative overflow-hidden" style={{ width: 580, height: 80 }}>
       {/* Scanlines */}
       <div
         className="absolute inset-0 pointer-events-none z-10"
