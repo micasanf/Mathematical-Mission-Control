@@ -3,11 +3,11 @@
 import { useEffect, useRef } from 'react';
 
 const TEXT = 'MISSION CONTROL';
-const FONT = 'bold 36px Orbitron, monospace';
-const PRIMARY = '#00CEC9';
-const CW = 420;
-const CH = 60;
-const BY = 42;
+const FONT = 'bold 28px Orbitron, monospace';
+const PRIMARY = '#FF4D00';
+const CW = 340;
+const CH = 44;
+const BY = 32;
 const CYCLE = 260;
 
 export default function MissionControlCanvas() {
@@ -59,7 +59,7 @@ export default function MissionControlCanvas() {
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(CW, y);
-        ctx.strokeStyle = 'rgba(0,206,201,0.04)';
+        ctx.strokeStyle = 'rgba(255,77,0,0.04)';
         ctx.lineWidth = 0.5;
         ctx.stroke();
       }
@@ -69,7 +69,7 @@ export default function MissionControlCanvas() {
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, CH);
-        ctx.strokeStyle = 'rgba(0,206,201,0.025)';
+        ctx.strokeStyle = 'rgba(255,77,0,0.025)';
         ctx.lineWidth = 0.5;
         ctx.stroke();
       }
@@ -77,8 +77,8 @@ export default function MissionControlCanvas() {
       // Sweep trail
       const trailW = 100;
       const grad = ctx.createLinearGradient(sweepX - trailW, 0, sweepX, 0);
-      grad.addColorStop(0, 'rgba(0,206,201,0)');
-      grad.addColorStop(1, 'rgba(0,206,201,0.07)');
+      grad.addColorStop(0, 'rgba(255,77,0,0)');
+      grad.addColorStop(1, 'rgba(255,77,0,0.07)');
       ctx.fillStyle = grad;
       ctx.fillRect(sweepX - trailW, 0, trailW, CH);
 
@@ -86,7 +86,7 @@ export default function MissionControlCanvas() {
       ctx.beginPath();
       ctx.moveTo(sweepX, 0);
       ctx.lineTo(sweepX, CH);
-      ctx.strokeStyle = 'rgba(0,206,201,0.65)';
+      ctx.strokeStyle = 'rgba(255,77,0,0.65)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
@@ -108,7 +108,7 @@ export default function MissionControlCanvas() {
           ctx.fillText(l.ch, l.x + 1, BY + 1);
         }
 
-        ctx.fillStyle = `rgba(0,206,201,${alpha})`;
+        ctx.fillStyle = `rgba(255,77,0,${alpha})`;
         ctx.shadowColor = PRIMARY;
         ctx.shadowBlur = alpha * 16;
         ctx.fillText(l.ch, l.x, BY);
@@ -117,7 +117,7 @@ export default function MissionControlCanvas() {
       }
 
       // Scanline pass over text area
-      ctx.fillStyle = 'rgba(0,206,201,0.02)';
+      ctx.fillStyle = 'rgba(255,77,0,0.02)';
       for (let y = BY - 36; y < BY + 8; y += 4) {
         ctx.fillRect(0, y, CW, 2);
       }
