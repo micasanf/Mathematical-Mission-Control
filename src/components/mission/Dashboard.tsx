@@ -880,6 +880,12 @@ export function Dashboard() {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-7px); }
         }
+        @keyframes glitch-float {
+          0%, 100% { transform: translateY(0); }
+          25% { transform: translateY(-4px); }
+          50% { transform: translateY(-2px); }
+          75% { transform: translateY(-5px); }
+        }
       `}</style>
 
       {/* ─── Layer 0: Deep dark background ─── */}
@@ -988,17 +994,46 @@ export function Dashboard() {
               className="hidden sm:block text-center"
             >
               <p
-                className="text-sm lg:text-base font-medium tracking-wider"
-                style={{ color: 'rgba(255, 255, 255, 0.8)' }}
+                className="text-sm lg:text-base font-medium tracking-wider relative inline-block"
+                style={{
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  animation: 'glitch-float 4s ease-in-out infinite',
+                }}
               >
-                Commander{' '}
-                <span
-                  style={{
-                    color: '#00CEC9',
-                    textShadow: '0 0 8px rgba(0,206,201,0.5)',
-                  }}
-                >
-                  {username}
+                <span style={{ position: 'relative', display: 'inline-block' }}>
+                  Commander{' '}
+                  <span
+                    style={{
+                      color: '#00CEC9',
+                      textShadow: '0 0 20px rgba(0,206,201,0.5), 0 0 40px rgba(0,206,201,0.15)',
+                    }}
+                  >
+                    {username}
+                  </span>
+                  {/* Glitch top layer */}
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute', top: 0, left: 0,
+                      color: 'rgba(255,77,0,0.6)',
+                      clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
+                      animation: 'dash-glitch-top 4s infinite linear alternate-reverse',
+                    }}
+                  >
+                    Commander {username}
+                  </span>
+                  {/* Glitch bottom layer */}
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute', top: 0, left: 0,
+                      color: 'rgba(123,111,255,0.6)',
+                      clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
+                      animation: 'dash-glitch-bottom 3.5s infinite linear alternate-reverse',
+                    }}
+                  >
+                    Commander {username}
+                  </span>
                 </span>
               </p>
             </motion.div>
