@@ -986,60 +986,60 @@ export function Dashboard() {
               </h1>
             </div>
 
-            {/* Center: Welcome message */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="hidden sm:block text-center"
-            >
-              <p
-                className="text-sm lg:text-base font-medium tracking-wider relative inline-block"
-                style={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  animation: 'glitch-float 4s ease-in-out infinite',
-                }}
-              >
-                <span style={{ position: 'relative', display: 'inline-block' }}>
-                  Commander{' '}
-                  <span
-                    style={{
-                      color: '#00CEC9',
-                      textShadow: '0 0 20px rgba(0,206,201,0.5), 0 0 40px rgba(0,206,201,0.15)',
-                    }}
-                  >
-                    {username}
-                  </span>
-                  {/* Glitch top layer */}
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      position: 'absolute', top: 0, left: 0,
-                      color: 'rgba(255,77,0,0.6)',
-                      clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
-                      animation: 'dash-glitch-top 4s infinite linear alternate-reverse',
-                    }}
-                  >
-                    Commander {username}
-                  </span>
-                  {/* Glitch bottom layer */}
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      position: 'absolute', top: 0, left: 0,
-                      color: 'rgba(123,111,255,0.6)',
-                      clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
-                      animation: 'dash-glitch-bottom 3.5s infinite linear alternate-reverse',
-                    }}
-                  >
-                    Commander {username}
-                  </span>
-                </span>
-              </p>
-            </motion.div>
-
             {/* Right: Controls */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              {/* Commander name with glitch */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="hidden sm:block"
+              >
+                <p
+                  className="text-sm lg:text-base font-medium tracking-wider relative inline-block"
+                  style={{
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    animation: 'glitch-float 4s ease-in-out infinite',
+                  }}
+                >
+                  <span style={{ position: 'relative', display: 'inline-block' }}>
+                    Commander{' '}
+                    <span
+                      style={{
+                        color: '#00CEC9',
+                        textShadow: '0 0 20px rgba(0,206,201,0.5), 0 0 40px rgba(0,206,201,0.15)',
+                      }}
+                    >
+                      {username}
+                    </span>
+                    {/* Glitch top layer */}
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute', top: 0, left: 0,
+                        color: 'rgba(255,77,0,0.6)',
+                        clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
+                        animation: 'dash-glitch-top 4s infinite linear alternate-reverse',
+                      }}
+                    >
+                      Commander {username}
+                    </span>
+                    {/* Glitch bottom layer */}
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute', top: 0, left: 0,
+                        color: 'rgba(123,111,255,0.6)',
+                        clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
+                        animation: 'dash-glitch-bottom 3.5s infinite linear alternate-reverse',
+                      }}
+                    >
+                      Commander {username}
+                    </span>
+                  </span>
+                </p>
+              </motion.div>
+
               {/* Mobile welcome */}
               <span
                 className="sm:hidden text-xs font-medium"
