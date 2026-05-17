@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useAppStore } from '@/store/appStore';
+import MissionsTitleCanvas from '@/components/mission/MissionsTitleCanvas';
 import { soundEngine } from '@/lib/soundEngine';
 import { missions } from '@/lib/missionData';
 import { Button } from '@/components/ui/button';
@@ -1109,40 +1110,9 @@ export function Dashboard() {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="mb-6 sm:mb-8"
           >
-            <h2
-              className="text-2xl sm:text-3xl font-bold tracking-wider uppercase relative inline-block"
-              style={{
-                color: 'rgba(255, 255, 255, 0.9)',
-                textShadow: '0 0 10px rgba(0,206,201,0.4), 0 0 20px rgba(0,206,201,0.15)',
-                animation: 'title-sway 8s ease-in-out infinite',
-              }}
-            >
-              <span style={{ position: 'relative', display: 'inline-block' }}>
-                Available Missions
-                {/* Glitch top layer */}
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute', top: 0, left: 0,
-                    color: 'rgba(255,77,0,0.5)',
-                    clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
-                    animation: 'dash-glitch-top 4s infinite linear alternate-reverse',
-                  }}
-                >Available Missions</span>
-                {/* Glitch bottom layer */}
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute', top: 0, left: 0,
-                    color: 'rgba(123,111,255,0.5)',
-                    clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
-                    animation: 'dash-glitch-bottom 3.5s infinite linear alternate-reverse',
-                  }}
-                >Available Missions</span>
-              </span>
-            </h2>
+            <MissionsTitleCanvas />
             <div
-              className="mt-2 h-px w-48"
+              className="mt-1 h-px w-48"
               style={{
                 background:
                   'linear-gradient(90deg, rgba(0,206,201,0.5), rgba(123,111,255,0.3), transparent)',
