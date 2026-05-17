@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, XCircle, Trophy, RotateCcw, Star } from 'lucide-react';
+import { HologramLetter } from '@/components/mission/HologramLetter';
 
 interface QuizProps {
   missionId: string;
@@ -396,7 +397,11 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                           textShadow: `0 0 10px ${badge.color}80`,
                         }}
                       >
-                        <span className="text-xs font-black" style={{ fontFamily: "var(--font-orbitron), sans-serif" }}>{badge.icon}</span>
+                        <HologramLetter
+                          letter={badge.icon.replace(/[\[\]]/g, '')}
+                          color={badge.color}
+                          size="sm"
+                        />
                         {badge.name}
                       </Badge>
                     </motion.div>
@@ -484,6 +489,15 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
 
   return (
     <div className="relative w-full max-w-2xl mx-auto px-4 py-6">
+      <style>{`
+        @keyframes hologram-flicker {
+          0% { opacity: 1; }
+          25% { opacity: 0.3; }
+          50% { opacity: 0.9; }
+          75% { opacity: 0.4; }
+          100% { opacity: 1; }
+        }
+      `}</style>
       {/* Progress bar */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}

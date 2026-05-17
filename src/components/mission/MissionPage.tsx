@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '@/store/appStore';
 import { soundEngine } from '@/lib/soundEngine';
 import { missions, type MissionData } from '@/lib/missionData';
+import { HologramLetter } from '@/components/mission/HologramLetter';
 import {
   collatzSequence,
   collatzSteps,
@@ -460,6 +461,13 @@ export default function MissionPage() {
           95% { transform: translate(2px, -1px); }
           97% { transform: translate(-1px, 1px); }
         }
+        @keyframes hologram-flicker {
+          0% { opacity: 1; }
+          25% { opacity: 0.3; }
+          50% { opacity: 0.9; }
+          75% { opacity: 0.4; }
+          100% { opacity: 1; }
+        }
       `}</style>
 
       {/* ---- Top Bar ---- */}
@@ -490,7 +498,11 @@ export default function MissionPage() {
 
           {/* Mission title with glitch effect */}
           <div className="flex items-center gap-3">
-            <span className="text-sm font-black w-8 h-8 flex items-center justify-center rounded-md" style={{ fontFamily: "var(--font-orbitron), sans-serif", color: colors.primary, background: colors.bg, border: `1px solid ${colors.border}`, textShadow: `0 0 6px ${colors.primary}80` }}>{mission.icon}</span>
+            <HologramLetter
+              letter={mission.icon.replace(/[\[\]]/g, '')}
+              color={colors.primary}
+              size="sm"
+            />
             <div className="relative">
               <h1 className="text-lg font-bold" style={{ color: colors.primary, textShadow: `0 0 10px ${colors.primary}80, 0 0 20px ${colors.primary}40`, position: 'relative', display: 'inline-block' }}>
                 {mission.title}
@@ -591,9 +603,11 @@ export default function MissionPage() {
               <GlassPanel>
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-black" style={{ backgroundColor: colors.bg, border: `1px solid ${colors.border}`, fontFamily: "var(--font-orbitron), sans-serif", color: colors.primary, textShadow: `0 0 6px ${colors.primary}80` }}>
-                      {mission.icon}
-                    </div>
+                    <HologramLetter
+                      letter={mission.icon.replace(/[\[\]]/g, '')}
+                      color={colors.primary}
+                      size="lg"
+                    />
                     <div>
                       <h2 className="text-xl font-bold text-white">{mission.title}</h2>
                       <p className="text-sm" style={{ color: colors.primary }}>{mission.subtitle}</p>
