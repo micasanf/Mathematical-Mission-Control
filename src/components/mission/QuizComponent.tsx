@@ -360,7 +360,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <Zap className="w-3 h-3 shrink-0" style={{ color: `${missionColor}50` }} />
-                    <span className="text-[9px] font-mono tracking-[0.3em] uppercase truncate" style={{ color: `${missionColor}40` }}>INCOMING TRANSMISSION</span>
+                    <span className="text-[9px] font-mono tracking-[0.3em] uppercase truncate" style={{ color: `${missionColor}40` }}>DECODE SEQUENCE</span>
                   </div>
                 </div>
                 <SoundWave color={`${missionColor}50`} active={answersLocked} />
@@ -424,7 +424,8 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                     indexBorder = 'transparent';
                   }
 
-                  const hexIndex = String(index + 1).padStart(2, '0');
+                  const alphaLabels = ['A', 'B', 'C', 'D'];
+                  const choiceLabel = alphaLabels[index];
 
                   return (
                     <motion.div
@@ -446,7 +447,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                         onClick={() => handleAnswer(index)}
                         role="button" tabIndex={0}
                         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleAnswer(index); } }}
-                        aria-label={`Option ${hexIndex}: ${option}`}
+                        aria-label={`Option ${choiceLabel}: ${option}`}
                       >
                         {/* Hover glow line on left */}
                         {!isAnswered && (
@@ -460,13 +461,14 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
 
                         <div className="flex items-center gap-3 px-3.5 py-2.5 sm:py-3">
                           {/* Index badge */}
-                          <div className="shrink-0 w-8 h-8 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all duration-150" style={{
+                          <div className="shrink-0 w-8 h-8 rounded flex items-center justify-center text-xs font-black transition-all duration-150" style={{
                             background: indexBg,
                             border: `1px solid ${indexBorder}`,
                             color: indexColor,
                             fontFamily: 'var(--font-orbitron), sans-serif',
+                            textShadow: isSelected || isCorrectOpt || isWrongOpt ? `0 0 6px ${indexColor}` : 'none',
                           }}>
-                            {hexIndex}
+                            {choiceLabel}
                           </div>
 
                           {/* Option text */}
