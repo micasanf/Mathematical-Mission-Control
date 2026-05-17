@@ -354,27 +354,16 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
 
             <div className="relative z-[5] p-4 sm:p-6">
 
-              {/* ─── HEADER ROW ─── */}
-              <div className="flex items-center gap-3 mb-4 pb-3" style={{ borderBottom: `1px solid ${missionColor}08` }}>
+              {/* ─── QUESTION HEADER ─── */}
+              <div className="flex items-start gap-3 mb-5 pb-4" style={{ borderBottom: `1px solid ${missionColor}08` }}>
                 <HologramLetter letter={missionId[0].toUpperCase()} color={missionColor} size="md" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-3 h-3 shrink-0" style={{ color: `${missionColor}50` }} />
-                    <span className="text-[9px] font-mono tracking-[0.3em] uppercase truncate" style={{ color: `${missionColor}40` }}>DECODE SEQUENCE</span>
-                  </div>
-                </div>
-                <SoundWave color={`${missionColor}50`} active={answersLocked} />
-              </div>
-
-              {/* ─── QUESTION (typewriter) ─── */}
-              <div className="mb-5 min-h-[48px]">
-                <div className="flex gap-2">
-                  <span className="shrink-0 text-sm font-mono" style={{ color: `${missionColor}30` }}>{'>'}_</span>
+                <div className="flex-1 min-w-0 pt-1">
                   <h3 className="text-sm sm:text-base font-bold leading-relaxed" style={{ color: '#c8d0de' }}>
                     {typedQ}
                     {!typeDone && <span className="inline-block w-[2px] h-[14px] ml-0.5 align-middle" style={{ background: missionColor, boxShadow: `0 0 4px ${missionColor}`, animation: 'cursor-blink 0.5s steps(2) infinite' }} />}
                   </h3>
                 </div>
+                <SoundWave color={`${missionColor}50`} active={answersLocked} />
               </div>
 
               {/* ─── OPTIONS — Clean Terminal Command Style ─── */}
