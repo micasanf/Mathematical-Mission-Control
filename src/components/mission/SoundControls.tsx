@@ -20,7 +20,7 @@ export default function SoundControls() {
   return (
     <motion.button
       onClick={handleToggle}
-      className="fixed bottom-10 right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300"
+      className="fixed bottom-[60px] right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300"
       style={{
         background: soundEnabled
           ? 'rgba(0, 206, 201, 0.12)'
