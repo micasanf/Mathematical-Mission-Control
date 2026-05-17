@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '@/store/appStore';
 import { soundEngine } from '@/lib/soundEngine';
@@ -16,6 +16,8 @@ import {
   lucasNth,
   euclideanAlgorithm,
   divisionAlgorithm,
+  palindromeCheck,
+  validatePalindromeInput,
 } from '@/lib/mathAlgorithms';
 import KaTeXFormula from './KaTeXFormula';
 import QuizComponent from './QuizComponent';
@@ -58,12 +60,13 @@ import {
 
 // ---- Color map for missions ----
 const missionColors: Record<string, { primary: string; glow: string; bg: string; border: string }> = {
-  cyan: { primary: '#22d3ee', glow: 'rgba(34,211,238,0.15)', bg: 'rgba(34,211,238,0.08)', border: 'rgba(34,211,238,0.3)' },
-  amber: { primary: '#fbbf24', glow: 'rgba(251,191,36,0.15)', bg: 'rgba(251,191,36,0.08)', border: 'rgba(251,191,36,0.3)' },
-  purple: { primary: '#a78bfa', glow: 'rgba(167,139,250,0.15)', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.3)' },
-  emerald: { primary: '#34d399', glow: 'rgba(52,211,153,0.15)', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.3)' },
-  rose: { primary: '#fb7185', glow: 'rgba(251,113,133,0.15)', bg: 'rgba(251,113,133,0.08)', border: 'rgba(251,113,133,0.3)' },
-  sky: { primary: '#38bdf8', glow: 'rgba(56,189,248,0.15)', bg: 'rgba(56,189,248,0.08)', border: 'rgba(56,189,248,0.3)' },
+  solar: { primary: '#00D2FF', glow: 'rgba(0,210,255,0.15)', bg: 'rgba(0,210,255,0.08)', border: 'rgba(0,210,255,0.3)' },
+  quantum: { primary: '#00FF9F', glow: 'rgba(0,255,159,0.15)', bg: 'rgba(0,255,159,0.08)', border: 'rgba(0,255,159,0.3)' },
+  nova: { primary: '#FF50B4', glow: 'rgba(255,80,180,0.15)', bg: 'rgba(255,80,180,0.08)', border: 'rgba(255,80,180,0.3)' },
+  pulsar: { primary: '#FF8C00', glow: 'rgba(255,140,0,0.15)', bg: 'rgba(255,140,0,0.08)', border: 'rgba(255,140,0,0.3)' },
+  crimson: { primary: '#FF5C2E', glow: 'rgba(255,92,46,0.15)', bg: 'rgba(255,92,46,0.08)', border: 'rgba(255,92,46,0.3)' },
+  warp: { primary: '#B44DFF', glow: 'rgba(180,77,255,0.15)', bg: 'rgba(180,77,255,0.08)', border: 'rgba(180,77,255,0.3)' },
+  amber: { primary: '#FFD700', glow: 'rgba(255,215,0,0.15)', bg: 'rgba(255,215,0,0.08)', border: 'rgba(255,215,0,0.3)' },
 };
 
 // ---- Tab definitions ----
@@ -84,8 +87,8 @@ function GlassPanel({ children, className }: { children: React.ReactNode; classN
     <div
       className={`relative rounded-xl border bg-white/5 backdrop-blur-md p-6 ${className ?? ''}`}
       style={{
-        borderColor: 'rgba(34,211,238,0.15)',
-        boxShadow: '0 4px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)',
+        borderColor: 'rgba(0,206,201,0.15)',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(0,206,201,0.05)',
       }}
     >
       {children}
@@ -122,13 +125,18 @@ export default function MissionPage() {
     [currentMissionId]
   );
 
-  const colors = missionColors[mission.color] ?? missionColors.cyan;
+  const colors = missionColors[mission.color] ?? missionColors.solar;
+
+  // Deploy sound on page mount
+  useEffect(() => {
+    if (soundEnabled) soundEngine.playDeploy();
+  }, [soundEnabled]);
 
   // Track section view
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     updateProgress(mission.id, { sectionViewed: tab });
-    if (soundEnabled) soundEngine.click();
+    if (soundEnabled) soundEngine.playClick();
   };
 
   // ---- Simulator logic ----
@@ -341,6 +349,45 @@ export default function MissionPage() {
             </div>
           </div>
         );
+      } else if (id === 'palindrome') {
+        // Validate input
+        const validation = validatePalindromeInput(simInput1);
+        if (!validation.valid) {
+          setSimResult(<span className="text-red-400">{validation.error}</span>);
+          return;
+        }
+        const result = palindromeCheck(simInput1);
+        setSimResult(
+          <div className="space-y-4">
+            <div className="text-lg font-semibold" style={{ color: colors.primary }}>
+              Palindrome Check: "{simInput1}"
+            </div>
+            <div className="text-slate-300 text-lg font-bold">
+              {result.isPalindrome ? '✅ IS a palindrome!' : '❌ NOT a palindrome'}
+            </div>
+            <div className="text-sm text-slate-400">
+              Normalized: <span className="text-white font-mono">"{result.normalized}"</span>
+            </div>
+            <div className="overflow-x-auto max-h-64 overflow-y-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-700">
+                    <th className="text-left py-2 px-3 text-slate-400">Step</th>
+                    <th className="text-left py-2 px-3 text-slate-400">Comparison</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {result.steps.map((s, i) => (
+                    <tr key={i} className="border-b border-slate-800/50">
+                      <td className="py-2 px-3 font-mono" style={{ color: colors.primary }}>{i + 1}</td>
+                      <td className="py-2 px-3 text-slate-300 text-xs">{s}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
       }
     } catch {
       setSimResult(<span className="text-red-400">Computation error. Please check your inputs.</span>);
@@ -378,6 +425,14 @@ export default function MissionPage() {
         const r = a % b;
         return { number: a, quotient: q, remainder: r };
       });
+    } else if (id === 'palindrome') {
+      // Visualize palindrome check for sample words
+      const samples = ['racecar', 'level', 'hello', 'madam', 'world', 'kayak', 'robot', 'civic', 'noon', 'python'];
+      return samples.map(word => {
+        const normalized = word.toLowerCase().replace(/\s/g, '');
+        const isPal = normalized === normalized.split('').reverse().join('');
+        return { word, isPalindrome: isPal ? 1 : 0 };
+      });
     }
     return [];
   }, [mission]);
@@ -388,7 +443,25 @@ export default function MissionPage() {
   const progressPercent = (sectionsViewed.length / tabDefs.length) * 100;
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #020617 0%, #0a0f1e 50%, #020617 100%)' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'radial-gradient(ellipse at 20% 0%, #0D1B2A 0%, #050B18 40%, #050B18 100%)' }}>
+      {/* Glitch keyframes for mission title */}
+      <style>{`
+        @keyframes mission-glitch-top {
+          0%, 90%, 100% { transform: translate(0); }
+          92% { transform: translate(-2px, -1px); }
+          94% { transform: translate(2px, 1px); }
+          96% { transform: translate(-1px, 0); }
+          98% { transform: translate(1px, -1px); }
+        }
+        @keyframes mission-glitch-bottom {
+          0%, 88%, 100% { transform: translate(0); }
+          90% { transform: translate(2px, 1px); }
+          93% { transform: translate(-2px, 0); }
+          95% { transform: translate(2px, -1px); }
+          97% { transform: translate(-1px, 1px); }
+        }
+      `}</style>
+
       {/* ---- Top Bar ---- */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
@@ -396,7 +469,7 @@ export default function MissionPage() {
         className="sticky top-0 z-50 border-b backdrop-blur-xl"
         style={{
           borderColor: colors.border,
-          background: 'rgba(2,6,23,0.85)',
+          background: 'rgba(5,11,24,0.85)',
           boxShadow: `0 4px 30px ${colors.glow}`,
         }}
       >
@@ -405,20 +478,47 @@ export default function MissionPage() {
           <Button
             variant="ghost"
             onClick={() => {
-              if (soundEnabled) soundEngine.click();
+              if (soundEnabled) soundEngine.playClick();
               setPage('dashboard');
             }}
+            onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
             className="text-slate-400 hover:text-white gap-2 text-xs tracking-wider"
           >
             <ArrowLeft className="size-4" />
             RETURN TO MISSION CONTROL
           </Button>
 
-          {/* Mission title */}
+          {/* Mission title with glitch effect */}
           <div className="flex items-center gap-3">
-            <span className="text-2xl">{mission.icon}</span>
-            <div>
-              <h1 className="text-lg font-bold text-white">{mission.title}</h1>
+            <span className="text-sm font-black w-8 h-8 flex items-center justify-center rounded-md" style={{ fontFamily: "var(--font-orbitron), sans-serif", color: colors.primary, background: colors.bg, border: `1px solid ${colors.border}`, textShadow: `0 0 6px ${colors.primary}80` }}>{mission.icon}</span>
+            <div className="relative">
+              <h1 className="text-lg font-bold" style={{ color: colors.primary, textShadow: `0 0 10px ${colors.primary}80, 0 0 20px ${colors.primary}40`, position: 'relative', display: 'inline-block' }}>
+                {mission.title}
+                {/* Glitch top layer — red/magenta offset */}
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    color: 'rgba(255,0,80,0.6)',
+                    clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
+                    animation: 'mission-glitch-top 3s infinite linear alternate-reverse',
+                  }}
+                >{mission.title}</span>
+                {/* Glitch bottom layer — solar offset */}
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    color: 'rgba(0,200,255,0.6)',
+                    clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
+                    animation: 'mission-glitch-bottom 2.5s infinite linear alternate-reverse',
+                  }}
+                >{mission.title}</span>
+              </h1>
               <p className="text-xs text-slate-500 tracking-wider">{mission.subtitle}</p>
             </div>
           </div>
@@ -428,9 +528,11 @@ export default function MissionPage() {
             variant="ghost"
             size="icon"
             onClick={() => {
-              setSoundEnabled(!soundEnabled);
-              soundEngine.setMuted(soundEnabled);
+              const newState = !soundEnabled;
+              setSoundEnabled(newState);
+              soundEngine.setMuted(!newState);
             }}
+            onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
             className="text-slate-400 hover:text-white"
           >
             {soundEnabled ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
@@ -457,7 +559,7 @@ export default function MissionPage() {
         <Tabs value={activeTab} onValueChange={handleTabChange} className="flex flex-col gap-6">
           {/* Tab navigation */}
           <div className="overflow-x-auto pb-2 -mx-4 px-4">
-            <TabsList className="bg-slate-900/80 border border-slate-700/50 p-1 gap-1 h-auto flex-wrap">
+            <TabsList className="bg-slate-900/80 border border-slate-700/50 p-1 gap-1 h-auto flex-wrap" onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}>
               {tabDefs.map(tab => {
                 const Icon = tab.icon;
                 const isViewed = sectionsViewed.includes(tab.value);
@@ -489,7 +591,7 @@ export default function MissionPage() {
               <GlassPanel>
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: colors.bg, border: `1px solid ${colors.border}` }}>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-black" style={{ backgroundColor: colors.bg, border: `1px solid ${colors.border}`, fontFamily: "var(--font-orbitron), sans-serif", color: colors.primary, textShadow: `0 0 6px ${colors.primary}80` }}>
                       {mission.icon}
                     </div>
                     <div>
@@ -552,6 +654,7 @@ export default function MissionPage() {
                           {mission.id === 'lucas' && 'L(n) = F(n-1) + F(n+1)'}
                           {mission.id === 'euclidean' && 'GCD(a,0) = a terminates algorithm'}
                           {mission.id === 'division' && 'Remainder is unique: 0 ≤ r < |b|'}
+                          {mission.id === 'palindrome' && 'Requires PDA — cannot be recognized by FA'}
                         </div>
                       </div>
                       <div
@@ -568,6 +671,7 @@ export default function MissionPage() {
                           {mission.id === 'lucas' && 'O(n) for sequence generation'}
                           {mission.id === 'euclidean' && 'O(log(min(a,b))) — very efficient'}
                           {mission.id === 'division' && 'O(1) — constant time operation'}
+                          {mission.id === 'palindrome' && 'O(n) — linear comparison'}
                         </div>
                       </div>
                     </div>
@@ -634,15 +738,16 @@ export default function MissionPage() {
 
                   {/* Input area */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-                    {(mission.id === 'collatz' || mission.id === 'fibonacci' || mission.id === 'tribonacci' || mission.id === 'lucas') && (
+                    {(mission.id === 'collatz' || mission.id === 'fibonacci' || mission.id === 'tribonacci' || mission.id === 'lucas' || mission.id === 'palindrome') && (
                       <div className="flex-1 w-full space-y-2">
                         <Label className="text-slate-400 text-xs">{mission.simulatorLabel}</Label>
                         <Input
                           value={simInput1}
                           onChange={e => setSimInput1(e.target.value)}
                           placeholder={mission.simulatorPlaceholder}
-                          className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600 focus-visible:border-cyan-500/50"
+                          className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600 focus-visible:border-[#00CEC9]/50"
                           onKeyDown={e => { if (e.key === 'Enter') handleCompute(); }}
+                          onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
                         />
                       </div>
                     )}
@@ -656,8 +761,9 @@ export default function MissionPage() {
                             value={simInput1}
                             onChange={e => setSimInput1(e.target.value)}
                             placeholder={mission.id === 'euclidean' ? 'e.g., 48' : 'e.g., 43'}
-                            className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600 focus-visible:border-cyan-500/50"
+                            className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600 focus-visible:border-[#00CEC9]/50"
                             onKeyDown={e => { if (e.key === 'Enter') handleCompute(); }}
+                            onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
                           />
                         </div>
                         <div className="flex-1 w-full space-y-2">
@@ -668,14 +774,16 @@ export default function MissionPage() {
                             value={simInput2}
                             onChange={e => setSimInput2(e.target.value)}
                             placeholder={mission.id === 'euclidean' ? 'e.g., 18' : 'e.g., 7'}
-                            className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600 focus-visible:border-cyan-500/50"
+                            className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600 focus-visible:border-[#00CEC9]/50"
                             onKeyDown={e => { if (e.key === 'Enter') handleCompute(); }}
+                            onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
                           />
                         </div>
                       </>
                     )}
                     <Button
                       onClick={handleCompute}
+                      onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
                       className="font-bold tracking-wider px-8 text-white"
                       style={{ backgroundColor: colors.primary, boxShadow: `0 0 20px ${colors.glow}` }}
                     >
@@ -782,8 +890,8 @@ export default function MissionPage() {
                             }}
                           />
                           <Bar dataKey="a" fill={colors.primary} radius={[4, 4, 0, 0]} name="a" opacity={0.8} />
-                          <Bar dataKey="b" fill="#6366f1" radius={[4, 4, 0, 0]} name="b" opacity={0.8} />
-                          <Bar dataKey="remainder" fill="#a78bfa" radius={[4, 4, 0, 0]} name="remainder" opacity={0.6} />
+                          <Bar dataKey="b" fill="#7B6FFF" radius={[4, 4, 0, 0]} name="b" opacity={0.8} />
+                          <Bar dataKey="remainder" fill="#B44DFF" radius={[4, 4, 0, 0]} name="remainder" opacity={0.6} />
                         </BarChart>
                       </ResponsiveContainer>
                     )}
@@ -813,7 +921,39 @@ export default function MissionPage() {
                             }}
                           />
                           <Bar dataKey="quotient" fill={colors.primary} radius={[4, 4, 0, 0]} name="Quotient" opacity={0.8} />
-                          <Bar dataKey="remainder" fill="#f97316" radius={[4, 4, 0, 0]} name="Remainder" opacity={0.8} />
+                          <Bar dataKey="remainder" fill="#FF8C00" radius={[4, 4, 0, 0]} name="Remainder" opacity={0.8} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    )}
+
+                    {/* Palindrome chart */}
+                    {mission.id === 'palindrome' && (
+                      <ResponsiveContainer width="100%" height={400}>
+                        <BarChart data={vizData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" />
+                          <XAxis
+                            dataKey="word"
+                            stroke="#64748b"
+                            tick={{ fill: '#94a3b8', fontSize: 12 }}
+                          />
+                          <YAxis
+                            stroke="#64748b"
+                            tick={{ fill: '#94a3b8', fontSize: 12 }}
+                            tickFormatter={(v) => v === 1 ? 'Palindrome' : 'Not'}
+                            domain={[0, 1]}
+                            ticks={[0, 1]}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: 'rgba(15,23,42,0.95)',
+                              border: `1px solid ${colors.border}`,
+                              borderRadius: '8px',
+                              color: '#e2e8f0',
+                              fontSize: 12,
+                            }}
+                            formatter={(value: number) => [value === 1 ? 'Palindrome' : 'Not a palindrome', 'Result']}
+                          />
+                          <Bar dataKey="isPalindrome" fill={colors.primary} radius={[4, 4, 0, 0]} name="Result" opacity={0.8} />
                         </BarChart>
                       </ResponsiveContainer>
                     )}
@@ -923,6 +1063,9 @@ export default function MissionPage() {
           MATHEMATICAL MISSION CONTROL • {mission.title.toUpperCase()}
         </p>
       </footer>
+
+      {/* Scanline overlay */}
+      <div className="scanline-overlay" />
     </div>
   );
 }

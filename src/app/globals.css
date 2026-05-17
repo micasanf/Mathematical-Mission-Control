@@ -45,71 +45,104 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.07 0.02 270);
-  --foreground: oklch(0.95 0.01 270);
-  --card: oklch(0.12 0.02 270);
-  --card-foreground: oklch(0.95 0.01 270);
-  --popover: oklch(0.12 0.02 270);
-  --popover-foreground: oklch(0.95 0.01 270);
-  --primary: oklch(0.75 0.15 195);
-  --primary-foreground: oklch(0.1 0.02 270);
-  --secondary: oklch(0.18 0.03 270);
-  --secondary-foreground: oklch(0.9 0.01 270);
-  --muted: oklch(0.18 0.03 270);
-  --muted-foreground: oklch(0.6 0.02 270);
-  --accent: oklch(0.18 0.04 270);
-  --accent-foreground: oklch(0.95 0.01 270);
-  --destructive: oklch(0.65 0.2 25);
-  --border: oklch(0.25 0.04 270);
-  --input: oklch(0.2 0.03 270);
-  --ring: oklch(0.6 0.15 195);
-  --chart-1: oklch(0.65 0.2 195);
-  --chart-2: oklch(0.7 0.15 45);
-  --chart-3: oklch(0.6 0.2 300);
-  --chart-4: oklch(0.65 0.18 160);
-  --chart-5: oklch(0.7 0.2 30);
-  --sidebar: oklch(0.1 0.02 270);
-  --sidebar-foreground: oklch(0.95 0.01 270);
-  --sidebar-primary: oklch(0.75 0.15 195);
-  --sidebar-primary-foreground: oklch(0.1 0.02 270);
-  --sidebar-accent: oklch(0.18 0.04 270);
-  --sidebar-accent-foreground: oklch(0.95 0.01 270);
-  --sidebar-border: oklch(0.25 0.04 270);
-  --sidebar-ring: oklch(0.6 0.15 195);
+
+  /* ─── Sci-Fi Rocket Palette v3 ─── */
+  --bg-main: #050B18;
+  --bg-secondary: #0D1B2A;
+  --bg-card: #132238;
+  --bg-panel: #1B2F4A;
+
+  --accent-primary: #00CEC9;
+  --accent-hover: #00F5FF;
+  --reactor-green: #7DF9C0;
+  --nebula-purple: #7B6FFF;
+  --ion-blue: #4DA8FF;
+
+  --status-success: #7DF9C0;
+  --status-warning: #FFC857;
+  --status-danger: #FF4D00;
+  --status-error: #FF3B30;
+  --status-info: #4DA8FF;
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #B8C4D6;
+  --text-muted: #7A8CA5;
+
+  --mission-collatz: #00D2FF;
+  --mission-division: #B44DFF;
+  --mission-fibonacci: #00FF9F;
+  --mission-lucas: #FF8C00;
+  --mission-tribonacci: #FF50B4;
+  --mission-euclidean: #FF5C2E;
+  --mission-palindrome: #FFD700;
+
+  /* ─── shadcn/ui theme tokens ─── */
+  --background: #050B18;
+  --foreground: #F8FAFC;
+  --card: #132238;
+  --card-foreground: #F8FAFC;
+  --popover: #132238;
+  --popover-foreground: #F8FAFC;
+  --primary: #00CEC9;
+  --primary-foreground: #050B18;
+  --secondary: #1B2F4A;
+  --secondary-foreground: #B8C4D6;
+  --muted: #1B2F4A;
+  --muted-foreground: #7A8CA5;
+  --accent: #1B2F4A;
+  --accent-foreground: #F8FAFC;
+  --destructive: #FF3B30;
+  --border: rgba(0,206,201,0.2);
+  --input: #0D1B2A;
+  --ring: #00CEC9;
+  --chart-1: #00D2FF;
+  --chart-2: #00FF9F;
+  --chart-3: #B44DFF;
+  --chart-4: #FF8C00;
+  --chart-5: #FF5C2E;
+  --sidebar: #0D1B2A;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #00CEC9;
+  --sidebar-primary-foreground: #050B18;
+  --sidebar-accent: #1B2F4A;
+  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-border: rgba(0,206,201,0.15);
+  --sidebar-ring: #00CEC9;
 }
 
 .dark {
-  --background: oklch(0.07 0.02 270);
-  --foreground: oklch(0.95 0.01 270);
-  --card: oklch(0.12 0.02 270);
-  --card-foreground: oklch(0.95 0.01 270);
-  --popover: oklch(0.12 0.02 270);
-  --popover-foreground: oklch(0.95 0.01 270);
-  --primary: oklch(0.75 0.15 195);
-  --primary-foreground: oklch(0.1 0.02 270);
-  --secondary: oklch(0.18 0.03 270);
-  --secondary-foreground: oklch(0.9 0.01 270);
-  --muted: oklch(0.18 0.03 270);
-  --muted-foreground: oklch(0.6 0.02 270);
-  --accent: oklch(0.18 0.04 270);
-  --accent-foreground: oklch(0.95 0.01 270);
-  --destructive: oklch(0.65 0.2 25);
-  --border: oklch(0.25 0.04 270);
-  --input: oklch(0.2 0.03 270);
-  --ring: oklch(0.6 0.15 195);
-  --chart-1: oklch(0.65 0.2 195);
-  --chart-2: oklch(0.7 0.15 45);
-  --chart-3: oklch(0.6 0.2 300);
-  --chart-4: oklch(0.65 0.18 160);
-  --chart-5: oklch(0.7 0.2 30);
-  --sidebar: oklch(0.1 0.02 270);
-  --sidebar-foreground: oklch(0.95 0.01 270);
-  --sidebar-primary: oklch(0.75 0.15 195);
-  --sidebar-primary-foreground: oklch(0.1 0.02 270);
-  --sidebar-accent: oklch(0.18 0.04 270);
-  --sidebar-accent-foreground: oklch(0.95 0.01 270);
-  --sidebar-border: oklch(0.25 0.04 270);
-  --sidebar-ring: oklch(0.6 0.15 195);
+  --background: #050B18;
+  --foreground: #F8FAFC;
+  --card: #132238;
+  --card-foreground: #F8FAFC;
+  --popover: #132238;
+  --popover-foreground: #F8FAFC;
+  --primary: #00CEC9;
+  --primary-foreground: #050B18;
+  --secondary: #1B2F4A;
+  --secondary-foreground: #B8C4D6;
+  --muted: #1B2F4A;
+  --muted-foreground: #7A8CA5;
+  --accent: #1B2F4A;
+  --accent-foreground: #F8FAFC;
+  --destructive: #FF3B30;
+  --border: rgba(0,206,201,0.2);
+  --input: #0D1B2A;
+  --ring: #00CEC9;
+  --chart-1: #00D2FF;
+  --chart-2: #00FF9F;
+  --chart-3: #B44DFF;
+  --chart-4: #FF8C00;
+  --chart-5: #FF5C2E;
+  --sidebar: #0D1B2A;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #00CEC9;
+  --sidebar-primary-foreground: #050B18;
+  --sidebar-accent: #1B2F4A;
+  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-border: rgba(0,206,201,0.15);
+  --sidebar-ring: #00CEC9;
+  --mission-palindrome: #FFD700;
 }
 
 @layer base {
@@ -129,10 +162,10 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3), 0 0 10px rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 5px rgba(0, 206, 201, 0.3), 0 0 10px rgba(0, 206, 201, 0.1);
   }
   50% {
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), 0 0 30px rgba(0, 255, 255, 0.2), 0 0 45px rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 206, 201, 0.5), 0 0 30px rgba(0, 206, 201, 0.2), 0 0 45px rgba(0, 206, 201, 0.1);
   }
 }
 
@@ -153,22 +186,22 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(13, 27, 42, 0.5);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(34, 211, 238, 0.3);
+  background: rgba(0, 206, 201, 0.3);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(34, 211, 238, 0.5);
+  background: rgba(0, 206, 201, 0.5);
 }
 
 /* KaTeX formula dark theme overrides */
 .katex {
-  color: #e2e8f0 !important;
+  color: #F8FAFC !important;
 }
 
 .katex .mord,
@@ -178,15 +211,47 @@
 .katex .mclose,
 .katex .mpunct,
 .katex .minner {
-  color: #e2e8f0 !important;
+  color: #F8FAFC !important;
 }
 
 .katex .mord.text {
-  color: #94a3b8 !important;
+  color: #B8C4D6 !important;
 }
 
 /* Selection color */
 ::selection {
-  background: rgba(34, 211, 238, 0.3);
+  background: rgba(0, 206, 201, 0.3);
   color: #ffffff;
+}
+
+/* ─── Uniform Scanline & Background Utilities ──────────────────────── */
+
+@keyframes scanline-move {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.scanline-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 206, 201, 0.015) 2px,
+    rgba(0, 206, 201, 0.015) 4px
+  );
+  z-index: 40;
+}
+
+.cosmic-bg {
+  background: linear-gradient(180deg, #050B18 0%, #0D1B2A 100%);
+}
+
+.hover-glow {
+  transition: all 250ms ease-out;
+}
+.hover-glow:hover {
+  text-shadow: 0 0 5px rgba(0, 206, 201, 0.5);
 }

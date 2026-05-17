@@ -130,3 +130,59 @@ export function divisionAlgorithm(dividend: number, divisor: number): { quotient
 
   return { quotient, remainder, steps };
 }
+
+// Palindrome checking algorithm
+export function palindromeCheck(input: string): { isPalindrome: boolean; normalized: string; steps: string[] } {
+  const steps: string[] = [];
+  
+  // Step 1: Remove spaces and convert to lowercase
+  const normalized = input.replace(/\s/g, '').toLowerCase();
+  steps.push(`Original input: "${input}"`);
+  steps.push(`Remove spaces and convert to lowercase: "${normalized}"`);
+  
+  // Step 2: Check each character pair
+  let isPalindrome = true;
+  const len = normalized.length;
+  steps.push(`String length: ${len} characters`);
+  
+  for (let i = 0; i < Math.floor(len / 2); i++) {
+    const left = normalized[i];
+    const right = normalized[len - 1 - i];
+    if (left !== right) {
+      steps.push(`Position ${i}: '${left}' ≠ '${right}' (position ${len - 1 - i}) → MISMATCH`);
+      isPalindrome = false;
+      break;
+    } else {
+      steps.push(`Position ${i}: '${left}' = '${right}' (position ${len - 1 - i}) ✓`);
+    }
+  }
+  
+  if (isPalindrome) {
+    steps.push(`All character pairs match → "${normalized}" IS a palindrome!`);
+  } else {
+    steps.push(`Mismatch found → "${normalized}" is NOT a palindrome.`);
+  }
+  
+  return { isPalindrome, normalized, steps };
+}
+
+// Validate that input contains only letters and spaces
+export function validatePalindromeInput(input: string): { valid: boolean; error: string | null } {
+  if (!input || input.trim().length === 0) {
+    return { valid: false, error: 'Please enter a word or phrase. Empty input is not accepted.' };
+  }
+  
+  // Check for special characters and numbers
+  const invalidChars = /[^a-zA-Z\s]/;
+  if (invalidChars.test(input)) {
+    const found = input.match(/[^a-zA-Z\s]/g);
+    return { valid: false, error: `Special character${found && found.length > 1 ? 's' : ''} not allowed: "${[...new Set(found)].join('", "')}". Only letters and spaces are accepted.` };
+  }
+  
+  // Check that there's at least one letter
+  if (!/[a-zA-Z]/.test(input)) {
+    return { valid: false, error: 'Please enter at least one letter. Spaces alone are not valid input.' };
+  }
+  
+  return { valid: true, error: null };
+}

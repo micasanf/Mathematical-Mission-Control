@@ -5,42 +5,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/soundEngine';
 import { useAppStore } from '@/store/appStore';
 
-// --- Mission color mapping ---
-const MISSION_COLORS: Record<string, { glow: string; hex: string }> = {
-  collatz: { glow: 'rgba(34,211,238,0.6)', hex: '#22d3ee' },     // cyan
-  fibonacci: { glow: 'rgba(245,158,11,0.6)', hex: '#f59e0b' },   // amber
-  tribonacci: { glow: 'rgba(168,85,247,0.6)', hex: '#a855f7' },  // purple
-  lucas: { glow: 'rgba(16,185,129,0.6)', hex: '#10b981' },       // emerald
-  euclidean: { glow: 'rgba(244,63,94,0.6)', hex: '#f43f5e' },    // rose
-  division: { glow: 'rgba(14,165,233,0.6)', hex: '#0ea5e9' },    // sky
-};
+// ─── Phase type ────────────────────────────────────────────────────────────────
+type LoadingPhase = 'countdown' | 'liftoff' | 'complete';
 
-const DEFAULT_COLOR = { glow: 'rgba(34,211,238,0.6)', hex: '#22d3ee' };
-
-function getMissionColor(missionId: string | null) {
-  if (!missionId) return DEFAULT_COLOR;
-  return MISSION_COLORS[missionId] ?? DEFAULT_COLOR;
-}
-
-type LoadingPhase = 'countdown' | 'ignition' | 'launch' | 'approach' | 'landing' | 'complete';
-
-// --- Star field background ---
+// ─── Star field (twinkling) ────────────────────────────────────────────────────
 function StarField() {
   const stars = useMemo(() => {
-    return Array.from({ length: 120 }, (_, i) => ({
+    return Array.from({ length: 180 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 2.5 + 0.5,
-      opacity: Math.random() * 0.7 + 0.3,
-      twinkleDelay: Math.random() * 3,
+      y: Math.random() * 75,
+      size: Math.random() < 0.12 ? 2.5 : Math.random() < 0.3 ? 1.5 : 1,
+      duration: 1.5 + Math.random() * 3,
+      delay: Math.random() * 3,
     }));
   }, []);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
       {stars.map((star) => (
-        <motion.div
+        <div
           key={star.id}
           className="absolute rounded-full bg-white"
           style={{
@@ -48,14 +32,7 @@ function StarField() {
             top: `${star.y}%`,
             width: star.size,
             height: star.size,
-          }}
-          animate={{
-            opacity: [star.opacity * 0.4, star.opacity, star.opacity * 0.4],
-          }}
-          transition={{
-            duration: 2 + star.twinkleDelay,
-            repeat: Infinity,
-            ease: 'easeInOut',
+            animation: `ls-star-twinkle ${star.duration}s linear ${star.delay}s infinite`,
           }}
         />
       ))}
@@ -63,542 +40,677 @@ function StarField() {
   );
 }
 
-// --- Rocket SVG ---
-function Rocket({ scale = 1 }: { scale?: number }) {
+// ─── Sci-fi Rocket SVG (upright, nose pointing up, cyan/teal color) ──────────
+function SciFiRocketSVG() {
   return (
-    <div style={{ transform: `scale(${scale})`, transformOrigin: 'center bottom' }}>
-      <svg width="80" height="140" viewBox="0 0 80 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Nose cone */}
-        <path d="M40 0 L55 40 L25 40 Z" fill="url(#rocketNose)" />
-        {/* Body */}
-        <rect x="25" y="40" width="30" height="60" rx="3" fill="url(#rocketBody)" />
-        {/* Window */}
-        <circle cx="40" cy="60" r="8" fill="#0c1a2e" stroke="#22d3ee" strokeWidth="2" />
-        <circle cx="40" cy="60" r="4" fill="#22d3ee" opacity="0.4" />
-        {/* Left fin */}
-        <path d="M25 80 L8 110 L25 100 Z" fill="#f97316" />
-        {/* Right fin */}
-        <path d="M55 80 L72 110 L55 100 Z" fill="#f97316" />
-        {/* Nozzle */}
-        <path d="M30 100 L28 115 L52 115 L50 100 Z" fill="#64748b" />
-        <path d="M32 115 L28 125 L52 125 L48 115 Z" fill="#475569" />
-        <defs>
-          <linearGradient id="rocketNose" x1="40" y1="0" x2="40" y2="40">
-            <stop offset="0%" stopColor="#ef4444" />
-            <stop offset="100%" stopColor="#dc2626" />
-          </linearGradient>
-          <linearGradient id="rocketBody" x1="25" y1="40" x2="55" y2="100">
-            <stop offset="0%" stopColor="#e2e8f0" />
-            <stop offset="50%" stopColor="#cbd5e1" />
-            <stop offset="100%" stopColor="#94a3b8" />
-          </linearGradient>
-        </defs>
-      </svg>
+    <svg width="52" height="160" viewBox="0 0 52 160" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 12px rgba(0,220,255,0.6))' }}>
+      <defs>
+        <linearGradient id="ls-bodyGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#0a2a3a" />
+          <stop offset="30%" stopColor="#0d3d52" />
+          <stop offset="60%" stopColor="#1a5a70" />
+          <stop offset="100%" stopColor="#0a2a3a" />
+        </linearGradient>
+        <linearGradient id="ls-noseGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#062030" />
+          <stop offset="50%" stopColor="#0a3a50" />
+          <stop offset="100%" stopColor="#062030" />
+        </linearGradient>
+        <linearGradient id="ls-accentGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#00ffcc" />
+          <stop offset="100%" stopColor="#0088ff" />
+        </linearGradient>
+      </defs>
+      {/* Nose cone */}
+      <polygon points="26,4 34,32 18,32" fill="url(#ls-noseGrad)" stroke="#00ccff" strokeWidth="0.5" />
+      {/* Antenna tip */}
+      <path d="M26,4 L26,0" stroke="#00ffcc" strokeWidth="0.8" opacity="0.8" />
+      <circle cx="26" cy="0" r="1.5" fill="#00ffcc" opacity="0.9" />
+      {/* Main body */}
+      <rect x="14" y="30" width="24" height="90" rx="2" fill="url(#ls-bodyGrad)" stroke="#00aacc" strokeWidth="0.5" />
+      {/* Accent stripes */}
+      <rect x="14" y="38" width="24" height="2" fill="url(#ls-accentGrad)" opacity="0.7" />
+      <rect x="14" y="90" width="24" height="2" fill="url(#ls-accentGrad)" opacity="0.7" />
+      <rect x="14" y="108" width="24" height="2" fill="url(#ls-accentGrad)" opacity="0.5" />
+      {/* Viewport / window area */}
+      <rect x="21" y="50" width="10" height="28" rx="1" fill="#020e18" stroke="#00aacc" strokeWidth="0.4" opacity="0.9" />
+      <circle cx="26" cy="58" r="3" fill="#000" stroke="#00ffcc" strokeWidth="0.5" />
+      <circle cx="26" cy="58" r="1.5" fill="#00ffcc" opacity="0.6" />
+      <line x1="21" y1="64" x2="31" y2="64" stroke="#00aacc" strokeWidth="0.3" opacity="0.5" />
+      <line x1="21" y1="68" x2="31" y2="68" stroke="#00aacc" strokeWidth="0.3" opacity="0.5" />
+      <line x1="21" y1="72" x2="31" y2="72" stroke="#00aacc" strokeWidth="0.3" opacity="0.5" />
+      {/* Status lights */}
+      <rect x="22" y="84" width="3" height="3" rx="0.5" fill="#00ffcc" opacity="0.5" />
+      <rect x="27" y="84" width="3" height="3" rx="0.5" fill="#ff4400" opacity="0.5" />
+      {/* Fins */}
+      <polygon points="14,110 4,140 14,138" fill="#0a1e28" stroke="#007a99" strokeWidth="0.5" />
+      <polygon points="38,110 48,140 38,138" fill="#0a1e28" stroke="#007a99" strokeWidth="0.5" />
+      {/* Engine section */}
+      <rect x="12" y="118" width="28" height="22" rx="2" fill="#030f18" stroke="#00aacc" strokeWidth="0.5" />
+      <ellipse cx="26" cy="140" rx="10" ry="4" fill="#020a10" stroke="#007799" strokeWidth="0.5" />
+      <ellipse cx="26" cy="140" rx="6" ry="2.5" fill="#000" stroke="#00ccff" strokeWidth="0.6" />
+      <ellipse cx="26" cy="140" rx="3" ry="1.5" fill="#001122" />
+      {/* Label */}
+      <rect x="22" y="94" width="8" height="6" rx="1" fill="#010a10" stroke="#00aacc" strokeWidth="0.4" />
+      <text x="26" y="99.5" textAnchor="middle" fontSize="3.5" fill="#00ffcc" opacity="0.7" fontFamily="Share Tech Mono, monospace">ARC7</text>
+    </svg>
+  );
+}
+
+// ─── Rocket Flames (3-layer: outer, inner, core) ─────────────────────────────
+function RocketFlames({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+  return (
+    <div className="flex flex-col items-center relative" style={{ marginTop: '-1px' }}>
+      {/* Outer flame */}
+      <div
+        className="w-12 h-[90px] blur-[1px]"
+        style={{
+          background: 'linear-gradient(to bottom, #ff4400, #ff8800, #ffcc00, transparent)',
+          clipPath: 'polygon(20% 0%, 80% 0%, 95% 50%, 100% 100%, 50% 80%, 0% 100%, 5% 50%)',
+          animation: 'ls-flame-pulse 0.12s linear infinite',
+        }}
+      />
+      {/* Inner flame */}
+      <div
+        className="absolute top-0 w-[26px] h-[60px]"
+        style={{
+          background: 'linear-gradient(to bottom, #fff, #ffffaa, #ffee00, transparent)',
+          clipPath: 'polygon(20% 0%, 80% 0%, 90% 60%, 50% 100%, 10% 60%)',
+          animation: 'ls-flame-pulse 0.09s linear infinite',
+        }}
+      />
+      {/* Core flame */}
+      <div
+        className="absolute top-0 w-[12px] h-[32px]"
+        style={{
+          background: 'linear-gradient(to bottom, #ffffff, #aaffff, transparent)',
+          clipPath: 'polygon(20% 0%, 80% 0%, 90% 70%, 50% 100%, 10% 70%)',
+          animation: 'ls-flame-pulse 0.07s linear infinite',
+        }}
+      />
     </div>
   );
 }
 
-// --- Fire particles ---
-function FireParticles({ visible }: { visible: boolean }) {
-  const particles = useMemo(() => {
-    return Array.from({ length: 20 }, (_, i) => ({
-      id: i,
-      x: (Math.random() - 0.5) * 40,
-      y: Math.random() * 30,
-      size: Math.random() * 10 + 4,
-      delay: Math.random() * 0.3,
-      color: ['#f97316', '#fbbf24', '#ef4444', '#fcd34d', '#fb923c'][Math.floor(Math.random() * 5)],
-    }));
-  }, []);
+// ─── Smoke Cloud Puffs ────────────────────────────────────────────────────────
+function SmokeCloud({ visible }: { visible: boolean }) {
+  const puffs = useMemo(() => [
+    { left: -45, size: 60, delay: 0, dur: 1.1 },
+    { left: 45, size: 50, delay: 0.2, dur: 1.0 },
+    { left: -20, size: 70, delay: 0.4, dur: 1.3 },
+    { left: 20, size: 55, delay: 0.15, dur: 1.2 },
+    { left: -60, size: 40, delay: 0.35, dur: 0.9 },
+    { left: 60, size: 45, delay: 0.5, dur: 1.15 },
+  ], []);
 
+  if (!visible) return null;
   return (
-    <AnimatePresence>
-      {visible && (
-        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
-          {particles.map((p) => (
-            <motion.div
-              key={p.id}
-              className="absolute rounded-full"
-              style={{
-                width: p.size,
-                height: p.size,
-                backgroundColor: p.color,
-                left: p.x,
-                filter: 'blur(1px)',
-                boxShadow: `0 0 8px ${p.color}`,
-              }}
-              initial={{ y: 0, opacity: 0.9, scale: 1 }}
-              animate={{
-                y: [0, 40 + Math.random() * 40],
-                opacity: [0.9, 0.6, 0],
-                scale: [1, 1.4, 0.3],
-                x: [p.x, p.x + (Math.random() - 0.5) * 20],
-              }}
-              exit={{ opacity: 0 }}
-              transition={{
-                duration: 0.5 + Math.random() * 0.5,
-                repeat: Infinity,
-                repeatType: 'loop',
-                delay: p.delay,
-                ease: 'easeOut',
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </AnimatePresence>
+    <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-20" style={{ bottom: 48 }}>
+      {puffs.map((p, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: p.left,
+            bottom: 0,
+            marginLeft: -p.size / 2,
+            background: 'rgba(150,200,180,0.18)',
+            animation: `ls-smoke-rise ${p.dur}s ease-out ${p.delay}s infinite`,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
-// --- Smoke trail ---
-function SmokeTrail({ visible }: { visible: boolean }) {
-  const smokeParticles = useMemo(() => {
-    return Array.from({ length: 12 }, (_, i) => ({
-      id: i,
-      x: (Math.random() - 0.5) * 50,
-      size: Math.random() * 20 + 10,
-      delay: Math.random() * 0.5,
-    }));
+// ─── Launch Sparks ────────────────────────────────────────────────────────────
+function LaunchSparks({ visible }: { visible: boolean }) {
+  const sparks = useMemo(() => {
+    const colors = ['#ffcc00', '#ff8800', '#ff4400', '#00ffcc', '#ffffff'];
+    return Array.from({ length: 22 }, (_, i) => {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 30 + Math.random() * 60;
+      return {
+        id: i,
+        sx: Math.cos(angle) * dist,
+        sy: Math.sin(angle) * dist * 0.5 + 20,
+        left: (Math.random() - 0.5) * 20,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        duration: 0.4 + Math.random() * 0.5,
+        delay: Math.random(),
+      };
+    });
   }, []);
 
+  if (!visible) return null;
   return (
-    <AnimatePresence>
-      {visible && (
-        <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
-          {smokeParticles.map((s) => (
-            <motion.div
-              key={s.id}
-              className="absolute rounded-full bg-gray-400/30"
-              style={{
-                width: s.size,
-                height: s.size,
-                left: s.x,
-                filter: 'blur(4px)',
-              }}
-              initial={{ y: 0, opacity: 0.5, scale: 0.5 }}
-              animate={{
-                y: [0, 60 + Math.random() * 40],
-                opacity: [0.5, 0.2, 0],
-                scale: [0.5, 2, 3],
-                x: [s.x, s.x + (Math.random() - 0.5) * 60],
-              }}
-              exit={{ opacity: 0 }}
-              transition={{
-                duration: 1 + Math.random() * 0.8,
-                repeat: Infinity,
-                repeatType: 'loop',
-                delay: s.delay,
-                ease: 'easeOut',
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </AnimatePresence>
+    <div className="absolute left-1/2 pointer-events-none z-20" style={{ bottom: 88 }}>
+      {sparks.map((sp) => (
+        <div
+          key={sp.id}
+          className="absolute w-[3px] h-[3px] rounded-full"
+          style={{
+            background: sp.color,
+            left: sp.left,
+            top: 0,
+            animation: `ls-spark ${sp.duration}s ease-out ${sp.delay}s infinite`,
+            '--ls-sx': `${sp.sx}px`,
+            '--ls-sy': `${sp.sy}px`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </div>
   );
 }
 
-// --- Countdown number ---
-function CountdownNumber({ number }: { number: number }) {
+// ─── Shockwave Ring ───────────────────────────────────────────────────────────
+function ShockwaveRing({ visible }: { visible: boolean }) {
+  if (!visible) return null;
   return (
-    <motion.div
-      key={number}
-      className="absolute inset-0 flex items-center justify-center"
-      initial={{ scale: 2, opacity: 0 }}
-      animate={{
-        scale: [2, 1, 0.8],
-        opacity: [0, 1, 1],
-      }}
-      exit={{ scale: 0.5, opacity: 0 }}
-      transition={{ duration: 0.8, ease: 'easeOut' }}
-    >
-      <span
-        className="text-9xl font-black select-none"
+    <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-20" style={{ bottom: 80 }}>
+      <div
+        className="w-[60px] h-[20px] rounded-[50%]"
         style={{
-          color: '#22d3ee',
-          textShadow: '0 0 40px rgba(34,211,238,0.8), 0 0 80px rgba(34,211,238,0.4), 0 0 120px rgba(34,211,238,0.2)',
+          border: '1px solid rgba(0,220,255,0.8)',
+          animation: 'ls-shockwave 0.9s ease-out infinite',
+        }}
+      />
+    </div>
+  );
+}
+
+// ─── Expanding Rings (on ignition) ────────────────────────────────────────────
+function ExpandingRings({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+  return (
+    <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-20" style={{ bottom: 72 }}>
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="absolute w-[80px] h-[26px] rounded-[50%]"
+          style={{
+            border: '1px solid rgba(0,220,255,0.5)',
+            left: -40,
+            top: -13,
+            animation: `ls-ring-expand 1.2s ease-out ${i * 0.3}s infinite`,
+            opacity: 0,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── HUD Left Panel ──────────────────────────────────────────────────────────
+function HUDLeft({ thrust, fuel, status }: { thrust: number; fuel: number; status: string }) {
+  const statusColor = status === 'LIFTOFF'
+    ? 'rgba(0,255,130,0.95)'
+    : status === 'ASCENDING'
+      ? 'rgba(0,255,130,0.95)'
+      : status.startsWith('T-MINUS')
+        ? 'rgba(255,180,0,0.9)'
+        : 'rgba(0,255,200,0.95)';
+
+  return (
+    <div className="absolute top-5 left-5 z-30" style={{ color: 'rgba(0,220,255,0.85)', fontSize: '11px', lineHeight: 1.8, fontFamily: "var(--font-share-tech-mono), monospace", textShadow: '0 0 6px rgba(0,220,255,0.8)' }}>
+      <div style={{ color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>VEHICLE ID</div>
+      <div style={{ color: 'rgba(0,255,200,0.95)', fontWeight: 'bold' }}>ARC-7 NOVA</div>
+      <div style={{ marginTop: 6, color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>THRUST</div>
+      <div style={{ color: 'rgba(0,255,200,0.95)', fontWeight: 'bold' }}>{thrust}%</div>
+      <div style={{ marginTop: 6, color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>STATUS</div>
+      <div style={{ color: statusColor, fontWeight: 'bold' }}>{status}</div>
+      <div style={{ marginTop: 6, color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>FUEL</div>
+      <div style={{ color: fuel < 20 ? 'rgba(255,180,0,0.9)' : 'rgba(0,255,200,0.95)', fontWeight: 'bold' }}>{fuel}%</div>
+      <div style={{ marginTop: 6, color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>STAGE</div>
+      <div style={{ color: 'rgba(0,255,200,0.95)', fontWeight: 'bold' }}>01 / 02</div>
+    </div>
+  );
+}
+
+// ─── HUD Right Panel ─────────────────────────────────────────────────────────
+function HUDRight({ altitude, velocity, accel, temp }: { altitude: number; velocity: number; accel: number; temp: number }) {
+  return (
+    <div className="absolute top-5 right-5 z-30 text-right" style={{ color: 'rgba(0,220,255,0.85)', fontSize: '11px', lineHeight: 1.8, fontFamily: "var(--font-share-tech-mono), monospace", textShadow: '0 0 6px rgba(0,220,255,0.8)' }}>
+      <div style={{ color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>ALTITUDE</div>
+      <div style={{ color: 'rgba(0,255,200,0.95)', fontWeight: 'bold' }}>{altitude} m</div>
+      <div style={{ marginTop: 6, color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>VELOCITY</div>
+      <div style={{ color: 'rgba(0,255,200,0.95)', fontWeight: 'bold' }}>{velocity} m/s</div>
+      <div style={{ marginTop: 6, color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>ACCEL</div>
+      <div style={{ color: 'rgba(0,255,200,0.95)', fontWeight: 'bold' }}>{accel.toFixed(1)} g</div>
+      <div style={{ marginTop: 6, color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>TEMP</div>
+      <div style={{ color: 'rgba(255,180,0,0.9)', fontWeight: 'bold' }}>{temp} K</div>
+      <div style={{ marginTop: 6, color: 'rgba(0,220,255,0.45)', fontSize: '10px', letterSpacing: '1px' }}>COMMS</div>
+      <div style={{ color: 'rgba(0,255,130,0.9)', fontWeight: 'bold' }}>NOMINAL</div>
+    </div>
+  );
+}
+
+// ─── Data Stream ─────────────────────────────────────────────────────────────
+function DataStream() {
+  return (
+    <div
+      className="absolute top-5 left-1/2 -translate-x-1/2 z-30 overflow-hidden text-center rounded-[3px] py-[2px]"
+      style={{ border: '1px solid rgba(0,220,255,0.2)', width: 180, height: 30 }}
+    >
+      <div
+        style={{
+          fontFamily: "var(--font-share-tech-mono), monospace",
+          fontSize: '10px',
+          color: 'rgba(0,220,255,0.7)',
+          lineHeight: 1.7,
+          animation: 'ls-data-scroll 4s linear infinite',
+          whiteSpace: 'nowrap',
         }}
       >
-        {number}
-      </span>
-    </motion.div>
+        SYS_INIT OK&nbsp;&nbsp;NAV_LOCK OK<br />
+        FUEL_PRES 98.4%&nbsp;&nbsp;LOX OK<br />
+        MAIN_ENG: ARMED&nbsp;&nbsp;RCS: STBY<br />
+        TRAJECTORY: NOMINAL<br />
+        RANGE_SAFETY: CLEAR<br />
+        SYS_INIT OK&nbsp;&nbsp;NAV_LOCK OK
+      </div>
+    </div>
   );
 }
 
-// --- Planet image component ---
-function PlanetImage({
-  missionId,
-  visible,
-  landed,
-}: {
-  missionId: string;
-  visible: boolean;
-  landed: boolean;
-}) {
-  const color = getMissionColor(missionId);
+// ─── Altitude Bar (grows from 4px to 140px during launch) ───────────────────
+function AltitudeBar({ launched }: { launched: boolean }) {
+  return (
+    <div className="absolute right-[22px] z-30 w-2 rounded-[2px] flex items-end overflow-hidden" style={{ border: '1px solid rgba(0,220,255,0.25)', bottom: 58, height: 140 }}>
+      <div
+        className="w-full"
+        style={{
+          background: 'linear-gradient(to top, #00ffcc, #00aaff)',
+          height: 4,
+          animation: launched ? 'ls-altitude-bar 4s cubic-bezier(0.2,0,0.8,1) forwards' : 'none',
+        }}
+      />
+    </div>
+  );
+}
 
+// ─── Power Bar (grows from 20% to 100% during launch) ────────────────────────
+function PowerBar({ launched }: { launched: boolean }) {
+  return (
+    <div className="absolute left-5 z-30" style={{ bottom: 32, width: 120 }}>
+      <div style={{ fontSize: '9px', color: 'rgba(0,220,255,0.45)', letterSpacing: '1px', marginBottom: 3 }}>ENGINE POWER</div>
+      <div className="h-[5px] rounded-[2px] overflow-hidden" style={{ background: 'rgba(0,220,255,0.1)', border: '1px solid rgba(0,220,255,0.2)' }}>
+        <div
+          className="h-full"
+          style={{
+            background: 'linear-gradient(90deg, #00ffcc, #00aaff, #ff4400)',
+            width: '20%',
+            animation: launched ? 'ls-power-bar 3.5s cubic-bezier(0.2,0,0.8,1) forwards' : 'none',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Corner Brackets ─────────────────────────────────────────────────────────
+function CornerBrackets() {
+  const corners = [
+    { cls: 'top-[10px] left-[10px] border-t border-l' },
+    { cls: 'top-[10px] right-[10px] border-t border-r' },
+    { cls: 'bottom-[10px] left-[10px] border-b border-l' },
+    { cls: 'bottom-[10px] right-[10px] border-b border-r' },
+  ];
+  return (
+    <>
+      {corners.map((c, i) => (
+        <div
+          key={i}
+          className={`absolute w-3 h-3 z-30 ${c.cls}`}
+          style={{ borderColor: 'rgba(0,220,255,0.4)' }}
+        />
+      ))}
+    </>
+  );
+}
+
+// ─── Countdown Number ────────────────────────────────────────────────────────
+function CountdownNumber({ number }: { number: number | null }) {
   return (
     <AnimatePresence>
-      {visible && (
+      {number !== null && (
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center"
-          initial={{ opacity: 0, y: 60, scale: 0.6 }}
-          animate={{
-            opacity: 1,
-            y: 0,
-            scale: landed ? [1, 1.05, 1] : 1,
-          }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={
-            landed
-              ? { duration: 0.6, repeat: 2, repeatType: 'reverse' }
-              : { duration: 1.2, ease: 'easeOut' }
-          }
+          key={number}
+          className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
+          initial={{ scale: 0.4, opacity: 0 }}
+          animate={{ scale: [0.4, 1.3, 1], opacity: [0, 1, 1] }}
+          exit={{ scale: 1.6, opacity: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          {/* Atmospheric glow */}
-          <motion.div
-            className="absolute rounded-full"
+          <span
             style={{
-              width: landed ? '340px' : '280px',
-              height: landed ? '340px' : '280px',
-              background: `radial-gradient(circle, ${color.glow} 0%, transparent 70%)`,
-              filter: 'blur(20px)',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
+              fontFamily: "var(--font-share-tech-mono), monospace",
+              fontSize: '220px',
+              fontWeight: 'bold',
+              color: '#ff5500',
+              textShadow: '0 0 40px rgba(255,80,0,1), 0 0 80px rgba(255,50,0,0.7), 0 0 120px rgba(255,30,0,0.4)',
+              lineHeight: 1,
             }}
-            animate={
-              landed
-                ? {
-                    opacity: [0.6, 1, 0.6],
-                    scale: [1, 1.2, 1],
-                  }
-                : { opacity: 0.4 }
-            }
-            transition={
-              landed
-                ? { duration: 0.8, repeat: 3, repeatType: 'reverse' }
-                : { duration: 1 }
-            }
-          />
-          {/* Planet image */}
-          <img
-            src={`/planets/planet-${missionId}.png`}
-            alt={`Planet ${missionId}`}
-            className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 object-contain drop-shadow-2xl"
-            style={{
-              filter: landed ? `drop-shadow(0 0 30px ${color.hex})` : `drop-shadow(0 0 15px ${color.hex}40)`,
-            }}
-          />
+          >
+            {number}
+          </span>
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
 
-// --- Screen flash overlay ---
-function ScreenFlash({ visible }: { visible: boolean }) {
+// ─── LIFTOFF Text ────────────────────────────────────────────────────────────
+function LiftoffText({ visible }: { visible: boolean }) {
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="absolute inset-0 z-50 pointer-events-none"
-          style={{ backgroundColor: 'white' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 0.8, 0] }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        />
+          className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
+          initial={{ scale: 0.4, opacity: 0 }}
+          animate={{ scale: [0.4, 1.3, 1], opacity: [0, 1, 1] }}
+          exit={{ scale: 1.6, opacity: 0 }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-share-tech-mono), monospace",
+              fontSize: '100px',
+              fontWeight: 'bold',
+              color: '#00ffcc',
+              textShadow: '0 0 30px rgba(0,255,200,1), 0 0 60px rgba(0,200,255,0.8)',
+              letterSpacing: '8px',
+              lineHeight: 1,
+            }}
+          >
+            LIFTOFF
+          </span>
+        </motion.div>
       )}
     </AnimatePresence>
   );
 }
 
-// --- Main component ---
+// ─── Liftoff Flash ───────────────────────────────────────────────────────────
+function LiftoffFlash({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+  return (
+    <div
+      className="absolute inset-0 z-[100] pointer-events-none"
+      style={{
+        backgroundColor: '#ffffff',
+        animation: 'ls-liftoff-flash 1.8s ease-out forwards',
+      }}
+    />
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 export default function LoadingScreen() {
-  const { finishLoading, loadingMissionId, soundEnabled } = useAppStore();
+  const { finishLoading, soundEnabled } = useAppStore();
+
   const [phase, setPhase] = useState<LoadingPhase>('countdown');
-  const [countdownNum, setCountdownNum] = useState(3);
-  const [shaking, setShaking] = useState(false);
-  const [landed, setLanded] = useState(false);
-  const [flash, setFlash] = useState(false);
-  const rocketLaunchPlayed = useRef(false);
 
-  const missionColor = getMissionColor(loadingMissionId);
-  const missionText = loadingMissionId ?? 'MISSION CONTROL';
-  const hasMission = loadingMissionId !== null;
+  // Countdown state
+  const [countdownNum, setCountdownNum] = useState<number | null>(null);
+  const [showLiftoffText, setShowLiftoffText] = useState(false);
 
-  // Determine rocket Y position and scale based on phase
-  const getRocketAnimation = () => {
-    switch (phase) {
-      case 'countdown':
-        return { y: '40vh', opacity: 1, scale: 1 };
-      case 'ignition':
-        return { y: '40vh', opacity: 1, scale: 1 };
-      case 'launch':
-        return { y: hasMission ? '-30vh' : '-120vh', opacity: 1, scale: 1 };
-      case 'approach':
-        return { y: '-25vh', opacity: 1, scale: 0.8 };
-      case 'landing':
-        return { y: '10vh', opacity: 1, scale: 0.35 };
-      case 'complete':
-        return { y: '10vh', opacity: 0, scale: 0.3 };
-      default:
-        return { y: '40vh', opacity: 1, scale: 1 };
-    }
-  };
+  // Launch effects state
+  const [showFlames, setShowFlames] = useState(false);
+  const [showSmoke, setShowSmoke] = useState(false);
+  const [showSparks, setShowSparks] = useState(false);
+  const [showShockwave, setShowShockwave] = useState(false);
+  const [showRings, setShowRings] = useState(false);
+  const [showFlash, setShowFlash] = useState(false);
+  const [launched, setLaunched] = useState(false);
 
-  const getRocketTransition = () => {
-    switch (phase) {
-      case 'launch':
-        return { duration: hasMission ? 1.8 : 2, ease: 'easeIn' };
-      case 'approach':
-        return { duration: 0.8, ease: 'easeOut' };
-      case 'landing':
-        return { duration: 2, ease: [0.25, 0.1, 0.25, 1] };
-      case 'complete':
-        return { duration: 0.5, ease: 'easeOut' };
-      default:
-        return { duration: 0.5 };
-    }
-  };
+  // HUD telemetry state
+  const [thrust, setThrust] = useState(0);
+  const [fuel, setFuel] = useState(100);
+  const [status, setStatus] = useState('STANDBY');
+  const [altitude, setAltitude] = useState(0);
+  const [velocity, setVelocity] = useState(0);
+  const [accel, setAccel] = useState(0);
+  const [temp, setTemp] = useState(1200);
+  const [phaseLabel, setPhaseLabel] = useState('AWAITING IGNITION');
 
-  // Countdown sequence
-  useEffect(() => {
-    if (phase !== 'countdown') return;
+  const hudIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-    if (countdownNum > 0) {
-      const timer = setTimeout(() => {
-        if (soundEnabled) soundEngine.countdown();
-        setCountdownNum((prev) => prev - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else {
-      const timer = setTimeout(() => setPhase('ignition'), 0);
-      return () => clearTimeout(timer);
-    }
-  }, [phase, countdownNum, soundEnabled]);
+  // Helper to track timers for cleanup
+  const addTimer = useCallback((fn: () => void, ms: number) => {
+    const id = setTimeout(fn, ms);
+    timersRef.current.push(id);
+    return id;
+  }, []);
 
-  // Ignition phase - shake + fire + rocket launch sound
-  useEffect(() => {
-    if (phase !== 'ignition') return;
+  // ─── Ignition / Launch logic ────────────────────────────────────────────
+  const ignite = useCallback(() => {
+    setPhase('liftoff');
+    setShowFlames(true);
+    setShowSmoke(true);
+    setShowSparks(true);
+    setShowShockwave(true);
+    setShowRings(true);
+    setLaunched(true);
 
-    if (soundEnabled) {
-      // Play the actual rocket launch sound file
-      if (!rocketLaunchPlayed.current) {
-        soundEngine.playRocketLaunch();
-        rocketLaunchPlayed.current = true;
+    setPhaseLabel('LIFTOFF CONFIRMED');
+    setStatus('LIFTOFF');
+
+    if (soundEnabled) soundEngine.playRocketLaunch();
+
+    // HUD telemetry update during launch
+    const missionStart = Date.now();
+    hudIntervalRef.current = setInterval(() => {
+      const t = (Date.now() - missionStart) / 1000;
+
+      setThrust(Math.min(100, Math.round(t * 40)));
+      setAltitude(Math.round(Math.pow(t, 2.2) * 120));
+      setVelocity(Math.round(t * 85));
+      setAccel(Math.min(3.2, t * 1.2));
+      setFuel(Math.max(0, Math.round(100 - t * 18)));
+      setTemp(Math.round(1200 + t * 600));
+
+      if (t > 2) {
+        setPhaseLabel('MAX-Q ASCENT');
+        setStatus('ASCENDING');
       }
-      // Also play the synthetic launch sound for richer audio
-      soundEngine.launch();
-    }
+      if (t > 4) {
+        setPhaseLabel('STAGE 1 BURN');
+      }
+    }, 50);
 
-    const shakeTimer = setTimeout(() => setShaking(true), 0);
-    const phaseTimer = setTimeout(() => setPhase('launch'), 1000);
+    // Flash after rocket has left the screen (~3.6s after launch)
+    addTimer(() => {
+      if (hudIntervalRef.current) {
+        clearInterval(hudIntervalRef.current);
+        hudIntervalRef.current = null;
+      }
+      setShowFlash(true);
+      setPhase('complete');
+    }, 3700);
+
+    // Transition to dashboard shortly after flash starts
+    addTimer(() => {
+      finishLoading();
+    }, 4200);
+  }, [soundEnabled, addTimer, finishLoading]);
+
+  // ─── Countdown sequence on mount ────────────────────────────────────────
+  useEffect(() => {
+    // Play deploy sound
+    if (soundEnabled) soundEngine.playDeploy();
+
+    // Start countdown after short delay
+    addTimer(() => {
+      setPhaseLabel('COUNTDOWN ACTIVE');
+      setStatus('T-MINUS 3');
+      setCountdownNum(3);
+
+      // Show 3 → 2
+      addTimer(() => {
+        setStatus('T-MINUS 2');
+        setCountdownNum(2);
+        if (soundEnabled) soundEngine.playClick();
+      }, 900);
+
+      // Show 2 → 1
+      addTimer(() => {
+        setStatus('T-MINUS 1');
+        setCountdownNum(1);
+        if (soundEnabled) soundEngine.playClick();
+      }, 1800);
+
+      // Show LIFTOFF text
+      addTimer(() => {
+        setCountdownNum(null);
+        setShowLiftoffText(true);
+        if (soundEnabled) soundEngine.playStart();
+      }, 2700);
+
+      // Ignite at ~3.1s
+      addTimer(() => {
+        setShowLiftoffText(false);
+        ignite();
+      }, 3100);
+    }, 400);
 
     return () => {
-      clearTimeout(shakeTimer);
-      clearTimeout(phaseTimer);
-    };
-  }, [phase, soundEnabled]);
-
-  // Launch phase - rocket flies upward
-  useEffect(() => {
-    if (phase !== 'launch') return;
-
-    const timer = setTimeout(() => {
-      setShaking(false);
-      if (hasMission) {
-        setPhase('approach');
-      } else {
-        setPhase('complete');
+      if (hudIntervalRef.current) {
+        clearInterval(hudIntervalRef.current);
+        hudIntervalRef.current = null;
       }
-    }, hasMission ? 1800 : 2000);
-
-    return () => clearTimeout(timer);
-  }, [phase, hasMission]);
-
-  // Approach phase - planet appears, rocket approaches from top
-  useEffect(() => {
-    if (phase !== 'approach') return;
-
-    const timer = setTimeout(() => {
-      setPhase('landing');
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [phase]);
-
-  // Landing phase - rocket descends to planet with landing effect
-  useEffect(() => {
-    if (phase !== 'landing') return;
-
-    // After rocket reaches planet (2s descent), trigger landing effects
-    const landTimer = setTimeout(() => {
-      setLanded(true);
-      setFlash(true);
-      if (soundEnabled) soundEngine.click();
-
-      // Clear flash after a short burst
-      const flashTimer = setTimeout(() => setFlash(false), 400);
-
-      // Then transition to complete
-      const completeTimer = setTimeout(() => setPhase('complete'), 1500);
-
-      return () => {
-        clearTimeout(flashTimer);
-        clearTimeout(completeTimer);
-      };
-    }, 2000);
-
-    return () => clearTimeout(landTimer);
-  }, [phase, soundEnabled]);
-
-  // Complete phase - finish loading
-  const handleFinish = useCallback(() => {
-    finishLoading();
-  }, [finishLoading]);
-
-  useEffect(() => {
-    if (phase !== 'complete') return;
-    const timer = setTimeout(handleFinish, 500);
-    return () => clearTimeout(timer);
-  }, [phase, handleFinish]);
-
-  const showFire = phase === 'ignition' || phase === 'launch' || phase === 'approach' || phase === 'landing';
-  const showPlanet = (phase === 'approach' || phase === 'landing' || phase === 'complete') && hasMission && loadingMissionId;
+      timersRef.current.forEach((id) => clearTimeout(id));
+      timersRef.current = [];
+    };
+  }, [addTimer, soundEnabled, ignite]);
 
   return (
     <div
-      className="relative flex flex-col items-center justify-center w-full h-screen overflow-hidden"
+      className="relative w-full h-screen overflow-hidden"
       style={{
-        background: 'radial-gradient(ellipse at 50% 0%, #0c1a2e 0%, #020617 50%, #000000 100%)',
+        background: '#000814',
+        fontFamily: "var(--font-share-tech-mono), monospace",
       }}
     >
-      {/* Star field */}
+      {/* ── All keyframe styles ── */}
+      <style>{`
+        @keyframes ls-star-twinkle { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.2;transform:scale(0.5)} }
+        @keyframes ls-flame-pulse { 0%,100%{transform:scaleX(1) scaleY(1);opacity:1} 50%{transform:scaleX(1.15) scaleY(1.3);opacity:0.85} }
+        @keyframes ls-smoke-rise { 0%{transform:translateY(0) scale(0.2);opacity:0.9} 100%{transform:translateY(-180px) scale(4);opacity:0} }
+        @keyframes ls-shockwave { 0%{transform:scale(0.5);opacity:0.9} 100%{transform:scale(3.5);opacity:0} }
+        @keyframes ls-spark { 0%{transform:translate(0,0) scale(1);opacity:1} 100%{transform:translate(var(--ls-sx),var(--ls-sy)) scale(0);opacity:0} }
+        @keyframes ls-ring-expand { 0%{transform:scale(1);opacity:0.9} 100%{transform:scale(2.5);opacity:0} }
+        @keyframes ls-altitude-bar { 0%{height:4px} 100%{height:140px} }
+        @keyframes ls-power-bar { 0%{width:20%} 100%{width:100%} }
+        @keyframes ls-data-scroll { 0%{transform:translateY(0)} 100%{transform:translateY(-50%)} }
+        @keyframes ls-hud-blink { 0%,80%,100%{opacity:1} 90%{opacity:0.2} }
+        @keyframes ls-liftoff-flash { 0%{opacity:0} 5%{opacity:1} 40%{opacity:0.85} 100%{opacity:0} }
+        @keyframes ls-grid-scroll { 0%{transform:translateY(0)} 100%{transform:translateY(80px)} }
+        @keyframes ls-scan-line { 0%{top:0%;opacity:0.6} 100%{top:100%;opacity:0} }
+        @keyframes ls-launch { 0%{transform:translateX(-50%) translateY(0) rotate(0deg)} 2%{transform:translateX(calc(-50% - 2px)) translateY(-4px) rotate(0deg)} 4%{transform:translateX(calc(-50% + 2px)) translateY(-8px) rotate(0deg)} 6%{transform:translateX(calc(-50% - 1px)) translateY(-14px) rotate(0deg)} 8%{transform:translateX(calc(-50% + 1px)) translateY(-20px) rotate(0deg)} 10%{transform:translateX(-50%) translateY(-28px) rotate(0deg)} 30%{transform:translateX(-50%) translateY(-280px) rotate(0deg)} 55%{transform:translateX(20%) translateY(-580px) rotate(18deg)} 100%{transform:translateX(80%) translateY(-980px) rotate(22deg)} }
+      `}</style>
+
+      {/* ── Star field ── */}
       <StarField />
 
-      {/* Nebula glow - adapts to mission color */}
+      {/* ── Grid overlay ── */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none z-[5]"
         style={{
-          background: `radial-gradient(circle at 30% 70%, ${missionColor.glow.replace('0.6', '0.04')} 0%, transparent 50%), radial-gradient(circle at 70% 30%, rgba(139,92,246,0.04) 0%, transparent 50%)`,
+          backgroundImage: 'linear-gradient(rgba(0,220,255,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(0,220,255,0.07) 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+          animation: 'ls-grid-scroll 2s linear infinite',
         }}
       />
 
-      {/* Screen flash */}
-      <ScreenFlash visible={flash} />
+      {/* ── Scan line ── */}
+      <div
+        className="absolute left-0 right-0 h-[2px] z-[6] pointer-events-none"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(0,220,255,0.3), transparent)',
+          animation: 'ls-scan-line 4s linear infinite',
+        }}
+      />
 
-      {/* Screen shake wrapper */}
-      <motion.div
-        className="relative flex flex-col items-center justify-center w-full h-full"
-        animate={
-          shaking
-            ? {
-                x: [0, -3, 4, -2, 3, -1, 2, 0],
-                y: [0, 2, -3, 1, -2, 3, -1, 0],
-              }
-            : { x: 0, y: 0 }
-        }
-        transition={
-          shaking
-            ? {
-                duration: 0.15,
-                repeat: Infinity,
-                repeatType: 'loop',
-              }
-            : { duration: 0.3 }
-        }
+      {/* ── Corner brackets ── */}
+      <CornerBrackets />
+
+      {/* ── HUD Left ── */}
+      <HUDLeft thrust={thrust} fuel={fuel} status={status} />
+
+      {/* ── HUD Right ── */}
+      <HUDRight altitude={altitude} velocity={velocity} accel={accel} temp={temp} />
+
+      {/* ── Data stream ── */}
+      <DataStream />
+
+      {/* ── Altitude bar ── */}
+      <AltitudeBar launched={launched} />
+
+      {/* ── Power bar ── */}
+      <PowerBar launched={launched} />
+
+      {/* ── Horizon ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-[120px] pointer-events-none z-[1]" style={{ background: 'linear-gradient(to top, #001a1a, transparent)' }} />
+
+      {/* ── Ground ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-[48px] z-[6]" style={{ background: '#000d0d', borderTop: '1px solid rgba(0,220,255,0.3)' }}>
+        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'rgba(0,220,255,0.5)', boxShadow: '0 0 8px rgba(0,220,255,0.6)' }} />
+      </div>
+
+      {/* ── Launch pad ── */}
+      <div className="absolute z-[7]" style={{ bottom: 48, left: '50%', transform: 'translateX(-50%)', width: 130, height: 14, background: '#0a1a1a', border: '1px solid rgba(0,220,255,0.4)', borderRadius: 2 }}>
+        <div className="absolute top-[2px] left-2 right-2 h-[2px]" style={{ background: 'rgba(0,220,255,0.3)' }} />
+      </div>
+
+      {/* ── Launch effects (smoke, sparks, shockwave, rings) ── */}
+      <SmokeCloud visible={showSmoke} />
+      <LaunchSparks visible={showSparks} />
+      <ShockwaveRing visible={showShockwave} />
+      <ExpandingRings visible={showRings} />
+
+      {/* ── Rocket wrapper (with launch animation) ── */}
+      <div
+        className="absolute z-[10] flex flex-col items-center"
+        style={{
+          bottom: 62,
+          left: '50%',
+          transform: launched ? undefined : 'translateX(-50%)',
+          animation: launched ? 'ls-launch 3.5s cubic-bezier(0.2,0,0.8,1) forwards' : 'none',
+        }}
       >
-        {/* Countdown */}
-        <AnimatePresence mode="wait">
-          {phase === 'countdown' && countdownNum > 0 && (
-            <CountdownNumber number={countdownNum} />
-          )}
-        </AnimatePresence>
+        <SciFiRocketSVG />
+        <RocketFlames visible={showFlames} />
+      </div>
 
-        {/* "LAUNCH!" text */}
-        <AnimatePresence>
-          {phase === 'countdown' && countdownNum === 0 && (
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: [0.5, 1.5, 1], opacity: [0, 1, 1] }}
-              exit={{ scale: 2, opacity: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <span
-                className="text-7xl font-black tracking-widest select-none"
-                style={{
-                  color: '#f97316',
-                  textShadow: '0 0 40px rgba(249,115,22,0.8), 0 0 80px rgba(249,115,22,0.4)',
-                }}
-              >
-                LAUNCH!
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* ── Countdown number ── */}
+      <CountdownNumber number={countdownNum} />
 
-        {/* Planet image - visible during approach/landing/complete if mission is selected */}
-        {showPlanet && loadingMissionId && (
-          <PlanetImage
-            missionId={loadingMissionId}
-            visible={showPlanet}
-            landed={landed}
-          />
-        )}
+      {/* ── LIFTOFF text ── */}
+      <LiftoffText visible={showLiftoffText} />
 
-        {/* Rocket assembly */}
-        <motion.div
-          className="relative z-10"
-          initial={{ y: '40vh', opacity: 0 }}
-          animate={getRocketAnimation()}
-          transition={getRocketTransition()}
-        >
-          <Rocket scale={1} />
-          <FireParticles visible={showFire} />
-          <SmokeTrail visible={phase === 'ignition' || phase === 'launch'} />
-        </motion.div>
+      {/* ── Liftoff flash ── */}
+      <LiftoffFlash visible={showFlash} />
 
-        {/* Mission text at bottom */}
-        <motion.div
-          className="absolute bottom-12 flex flex-col items-center gap-2 z-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{
-            opacity: phase === 'landing' || phase === 'complete' ? 0 : 1,
-            y: 0,
-          }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-        >
-          <div className="flex items-center gap-2">
-            <div className="h-px w-8 bg-cyan-400/50" />
-            <span
-              className="text-sm font-mono tracking-[0.3em] uppercase"
-              style={{ color: '#22d3ee', textShadow: '0 0 10px rgba(34,211,238,0.5)' }}
-            >
-              {missionText}
-            </span>
-            <div className="h-px w-8 bg-cyan-400/50" />
-          </div>
-          <motion.div
-            className="h-1 bg-cyan-400/60 rounded-full"
-            style={{ boxShadow: '0 0 8px rgba(34,211,238,0.4)' }}
-            initial={{ width: 0 }}
-            animate={{ width: phase === 'complete' ? 200 : 120 }}
-            transition={{ duration: 1.5, ease: 'easeInOut' }}
-          />
-        </motion.div>
-
-        {/* Scanline overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.03]"
-          style={{
-            backgroundImage:
-              'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)',
-          }}
-        />
-      </motion.div>
+      {/* ── Phase label at bottom ── */}
+      <div
+        className="absolute z-30 text-center"
+        style={{
+          bottom: 18,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: '9px',
+          letterSpacing: '2px',
+          color: phaseLabel === 'LIFTOFF CONFIRMED' ? 'rgba(0,255,180,0.8)' : 'rgba(255,100,0,0.7)',
+          animation: phaseLabel === 'LIFTOFF CONFIRMED' ? 'ls-hud-blink 0.8s linear infinite' : 'none',
+        }}
+      >
+        {phaseLabel}
+      </div>
     </div>
   );
 }

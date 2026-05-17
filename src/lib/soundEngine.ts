@@ -1,8 +1,9 @@
 // Web Audio API Sound Engine
+// Aligned with soulextract.com design system volumes
 
 class SoundEngine {
   private audioContext: AudioContext | null = null;
-  private volume = 0.5;
+  private volume = 0.3; // soulextract global volume
   private muted = false;
   private bgAudioRef: HTMLAudioElement | null = null;
 
@@ -56,6 +57,7 @@ class SoundEngine {
   /**
    * Plays an audio file from the public folder.
    * Falls back to the provided synthetic callback if the file fails to load.
+   * Respects the muted state — no sound plays when muted.
    */
   private playAudioFile(src: string, volume: number, fallback: () => void) {
     if (this.muted) return;
@@ -74,6 +76,7 @@ class SoundEngine {
   // ─── Background Music ────────────────────────────────────────────────
 
   playBGM() {
+    if (this.muted) return;
     if (this.bgAudioRef) {
       // Already playing or paused — just resume
       if (!this.muted) {
@@ -84,7 +87,7 @@ class SoundEngine {
 
     const audio = new Audio('/audio/bg.mp4');
     audio.loop = true;
-    audio.volume = 0.4 * this.volume;
+    audio.volume = 0.3 * this.volume; // soulextract BGM volume
     this.bgAudioRef = audio;
 
     audio.play().catch(() => {
@@ -110,6 +113,12 @@ class SoundEngine {
     this.playAudioFile('/audio/rocketcrash.mp4', 0.6, () => this.crash());
   }
 
+  // ─── Hatch / Landing Sound ─────────────────────────────────────────
+
+  playHatch() {
+    this.playAudioFile('/audio/hatch.mp3', 0.7, () => this.success());
+  }
+
   // ─── V1 Sound Effects (file-based) ───────────────────────────────────
 
   playDeploy() {
@@ -129,7 +138,7 @@ class SoundEngine {
   }
 
   playStart() {
-    this.playAudioFile('/audio/start.mp3', 0.6, () => this.success());
+    this.playAudioFile('/audio/start.mp3', 0.15, () => this.success()); // soulextract start volume override
   }
 
   playTransmission() {
@@ -144,6 +153,38 @@ class SoundEngine {
     this.playAudioFile('/audio/click.mp3', 0.5, () => this.click());
   }
 
+  playLogo() {
+    this.playAudioFile('/audio/logo.mp3', 0.3, () => this.success()); // soulextract logo volume
+  }
+
+  // ─── Canonical Public Methods ────────────────────────────────────────
+  // These are the methods all components should call for hover/click sounds.
+
+  /** Canonical hover sound — all components should call this for hover effects */
+  playHover() {
+    this.playHoverFile();
+  }
+
+  /** Canonical click sound — all components should call this for click effects */
+  playClick() {
+    this.playClickFile();
+  }
+
+  /** Transition sound — used when transitioning between pages */
+  playTransitionSound() {
+    this.playDeploy();
+  }
+
+  // ─── Convenience aliases (file-based with synthetic fallback) ────────
+
+  playClick() {
+    this.playClickFile();
+  }
+
+  playHover() {
+    this.playHoverFile();
+  }
+
   // ─── Synthetic Sound Effects (original) ──────────────────────────────
 
   click() {
@@ -156,6 +197,64 @@ class SoundEngine {
 
   type() {
     this.playTone(600 + Math.random() * 400, 0.05, 'square', 0.08);
+  }
+
+  /**
+   * Sci-fi per-letter typing click — digital terminal / holographic interface sound
+   * Used by TypingText for each character reveal and by input fields on each keystroke
+   * Produces a brief electronic chirp that sounds like a spaceship terminal
+   */
+  playTypeClick() {
+    if (this.muted) return;
+    const ctx = this.getContext();
+
+    // Layer 1: Short digital chirp — a quick sine sweep from high to mid frequency
+    // This gives the "data transmission" feel
+    const chirp = ctx.createOscillator();
+    const chirpGain = ctx.createGain();
+    chirp.type = 'sine';
+    const baseFreq = 1800 + Math.random() * 1200; // randomize between 1800-3000Hz
+    chirp.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+    chirp.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, ctx.currentTime + 0.03);
+    chirpGain.gain.setValueAtTime(this.volume * 0.12, ctx.currentTime);
+    chirpGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
+    chirp.connect(chirpGain);
+    chirpGain.connect(ctx.destination);
+    chirp.start(ctx.currentTime);
+    chirp.stop(ctx.currentTime + 0.035);
+
+    // Layer 2: Tiny noise burst — the "digital artifact" texture
+    const noiseSize = Math.floor(ctx.sampleRate * 0.015); // 15ms
+    const noiseBuffer = ctx.createBuffer(1, noiseSize, ctx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseSize; i++) {
+      noiseData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (noiseSize * 0.12));
+    }
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'highpass';
+    noiseFilter.frequency.setValueAtTime(3000 + Math.random() * 2000, ctx.currentTime);
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(this.volume * 0.08, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.015);
+    noiseSource.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noiseSource.start(ctx.currentTime);
+    noiseSource.stop(ctx.currentTime + 0.015);
+
+    // Layer 3: Subtle sub-bass "thump" — gives weight, like a relay closing
+    const sub = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(80 + Math.random() * 40, ctx.currentTime);
+    subGain.gain.setValueAtTime(this.volume * 0.07, ctx.currentTime);
+    subGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025);
+    sub.connect(subGain);
+    subGain.connect(ctx.destination);
+    sub.start(ctx.currentTime);
+    sub.stop(ctx.currentTime + 0.025);
   }
 
   success() {

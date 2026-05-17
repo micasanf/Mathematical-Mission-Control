@@ -7,6 +7,7 @@ import LoadingScreen from '@/components/mission/LoadingScreen';
 import { Dashboard } from '@/components/mission/Dashboard';
 import MissionPage from '@/components/mission/MissionPage';
 import LogoutAnimation from '@/components/mission/LogoutAnimation';
+import LandingAnimation from '@/components/mission/LandingAnimation';
 import SoundControls from '@/components/mission/SoundControls';
 
 export default function Home() {
@@ -25,6 +26,7 @@ export default function Home() {
         >
           {currentPage === 'login' && <LoginPage />}
           {currentPage === 'loading' && <LoadingScreen />}
+          {currentPage === 'landing' && <LandingAnimation />}
           {currentPage === 'dashboard' && <Dashboard />}
           {currentPage === 'mission' && <MissionPage />}
           {currentPage === 'logout' && <LogoutAnimation />}
@@ -32,7 +34,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Floating sound controls - visible on all pages except loading/logout */}
-      {currentPage !== 'loading' && currentPage !== 'logout' && (
+      {currentPage !== 'loading' && currentPage !== 'logout' && currentPage !== 'landing' && (
         <SoundControls />
       )}
     </div>

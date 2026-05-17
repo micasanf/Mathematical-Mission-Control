@@ -17,12 +17,13 @@ interface QuizProps {
 }
 
 const badgeMap: Record<string, { name: string; icon: string; color: string }> = {
-  collatz: { name: 'Sequence Specialist', icon: '🌀', color: '#00ffff' },
-  fibonacci: { name: 'Recursive Navigator', icon: '🐚', color: '#fbbf24' },
-  tribonacci: { name: 'Tribonacci Trailblazer', icon: '🔺', color: '#a855f7' },
-  lucas: { name: 'Lucas Commander', icon: '⭐', color: '#34d399' },
-  euclidean: { name: 'Euclid Explorer', icon: '📐', color: '#fb7185' },
-  division: { name: 'Division Commander', icon: '➗', color: '#38bdf8' },
+  collatz: { name: 'Sequence Specialist', icon: 'C', color: '#00ffff' },
+  fibonacci: { name: 'Recursive Navigator', icon: 'F', color: '#fbbf24' },
+  tribonacci: { name: 'Tribonacci Trailblazer', icon: 'T', color: '#a855f7' },
+  lucas: { name: 'Lucas Commander', icon: 'L', color: '#34d399' },
+  euclidean: { name: 'Euclid Explorer', icon: 'E', color: '#fb7185' },
+  division: { name: 'Division Commander', icon: 'D', color: '#38bdf8' },
+  palindrome: { name: 'Symmetry Specialist', icon: 'P', color: '#FFD700' },
 };
 
 // Celebration particles for mission complete
@@ -162,7 +163,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
   );
 
   const handleRetry = useCallback(() => {
-    if (soundEnabled) soundEngine.click();
+    if (soundEnabled) soundEngine.playClick();
     setCurrentQuestion(0);
     setSelectedAnswer(null);
     setIsCorrect(null);
@@ -173,7 +174,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
   }, [soundEnabled]);
 
   const handleReturnToDashboard = useCallback(() => {
-    if (soundEnabled) soundEngine.click();
+    if (soundEnabled) soundEngine.playClick();
     setPage('dashboard');
   }, [soundEnabled, setPage]);
 
@@ -395,7 +396,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                           textShadow: `0 0 10px ${badge.color}80`,
                         }}
                       >
-                        <span className="text-xl">{badge.icon}</span>
+                        <span className="text-xs font-black" style={{ fontFamily: "var(--font-orbitron), sans-serif" }}>{badge.icon}</span>
                         {badge.name}
                       </Badge>
                     </motion.div>
@@ -435,6 +436,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                     color: '#94a3b8',
                   }}
                   onMouseEnter={(e) => {
+                    if (soundEnabled) soundEngine.playHover();
                     e.currentTarget.style.borderColor = '#22d3ee';
                     e.currentTarget.style.color = '#22d3ee';
                     e.currentTarget.style.boxShadow = '0 0 15px rgba(34,211,238,0.2)';
@@ -457,6 +459,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                     color: missionColor,
                   }}
                   onMouseEnter={(e) => {
+                    if (soundEnabled) soundEngine.playHover();
                     e.currentTarget.style.borderColor = missionColor;
                     e.currentTarget.style.boxShadow = `0 0 15px ${missionColor}40`;
                   }}
@@ -558,12 +561,15 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                     whileHover={
                       selectedAnswer === null
                         ? {
-                            scale: 1.02,
+                            scale: 1.05,
                             boxShadow: `0 0 25px ${missionColor}30`,
                           }
                         : {}
                     }
                     whileTap={selectedAnswer === null ? { scale: 0.98 } : {}}
+                    onMouseEnter={() => {
+                      if (selectedAnswer === null && soundEnabled) soundEngine.playHover();
+                    }}
                   >
                     <div
                       className="relative rounded-xl p-4 transition-all duration-300"

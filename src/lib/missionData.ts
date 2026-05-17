@@ -24,8 +24,8 @@ export const missions: MissionData[] = [
     title: 'Mission Collatz',
     subtitle: 'The Unstoppable Sequence',
     description: 'Explore the mysterious Collatz conjecture — will every starting number eventually reach 1?',
-    icon: '🌀',
-    color: 'cyan',
+    icon: 'C',
+    color: 'solar',
     overview: `The Collatz conjecture is one of mathematics' most famous unsolved problems. Proposed by Lothar Collatz in 1937, it states that if you start with any positive integer and repeatedly apply two simple rules, you will always eventually reach 1.\n\nThe rules are:\n• If the number is even, divide it by 2\n• If the number is odd, multiply it by 3 and add 1\n\nDespite its simplicity, no one has been able to prove that this always works for every starting number. The conjecture has been verified for all starting values up to at least 2⁶⁸ (approximately 2.95 × 10²⁰), but a formal proof remains elusive.`,
     formula: 'f(n) = \\begin{cases} n/2 & \\text{if } n \\text{ is even} \\\\ 3n+1 & \\text{if } n \\text{ is odd} \\end{cases}',
     formulaDescription: 'The Collatz function applies one of two operations depending on whether the input is even or odd. The conjecture states that repeated application always reaches the cycle 4 → 2 → 1.',
@@ -39,7 +39,7 @@ export const missions: MissionData[] = [
         'n = 16 (even) → 16 ÷ 2 = 8',
         'n = 8 (even) → 8 ÷ 2 = 4',
         'n = 4 (even) → 4 ÷ 2 = 2',
-        'n = 2 (even) → 2 ÷ 2 = 1 ✓',
+        'n = 2 (even) → 2 ÷ 2 = 1 [OK]',
         'Sequence: 6 → 3 → 10 → 5 → 16 → 8 → 4 → 2 → 1',
         'Total steps: 8'
       ]
@@ -69,8 +69,8 @@ export const missions: MissionData[] = [
     title: 'Mission Fibonacci',
     subtitle: 'Nature\'s Golden Code',
     description: 'Discover the Fibonacci sequence — the mathematical pattern found throughout nature.',
-    icon: '🐚',
-    color: 'amber',
+    icon: 'F',
+    color: 'quantum',
     overview: `The Fibonacci sequence is one of the most famous and beautiful sequences in mathematics. Each number is the sum of the two preceding ones, starting from 0 and 1.\n\nThe sequence begins: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ...\n\nThis sequence appears throughout nature — in the arrangement of leaves on stems, the spirals of shells, the branching of trees, and the flowering of artichokes. The ratio of consecutive Fibonacci numbers approaches the golden ratio (φ ≈ 1.6180339887...), a proportion that has fascinated artists and architects for millennia.`,
     formula: 'F_n = F_{n-1} + F_{n-2}, \\quad F_0 = 0, \\quad F_1 = 1',
     formulaDescription: 'Each Fibonacci number is the sum of the two preceding numbers, with seed values F₀ = 0 and F₁ = 1. The closed-form expression (Binet\'s formula) involves the golden ratio: F_n = (φⁿ - ψⁿ) / √5, where φ = (1+√5)/2 and ψ = (1-√5)/2.',
@@ -114,8 +114,8 @@ export const missions: MissionData[] = [
     title: 'Mission Tribonacci',
     subtitle: 'The Triple Helix',
     description: 'Explore the Tribonacci sequence — where each term depends on three predecessors.',
-    icon: '🔺',
-    color: 'purple',
+    icon: 'T',
+    color: 'nova',
     overview: `The Tribonacci sequence is a generalization of the Fibonacci sequence. Instead of each number being the sum of the two preceding numbers, each Tribonacci number is the sum of the three preceding numbers.\n\nThe sequence begins: 0, 0, 1, 1, 2, 4, 7, 13, 24, 44, 81, 149, 274, 504, 927, ...\n\nJust as the Fibonacci sequence is connected to the golden ratio, the Tribonacci sequence is connected to the tribonacci constant — the real root of x³ = x² + x + 1, approximately 1.839286755....`,
     formula: 'T_n = T_{n-1} + T_{n-2} + T_{n-3}, \\quad T_0 = 0, \\quad T_1 = 0, \\quad T_2 = 1',
     formulaDescription: 'Each Tribonacci number is the sum of the three preceding numbers, with seed values T₀ = 0, T₁ = 0, and T₂ = 1. The ratio of consecutive terms converges to the tribonacci constant ≈ 1.8392867552.',
@@ -159,8 +159,8 @@ export const missions: MissionData[] = [
     title: 'Mission Lucas',
     subtitle: 'The Parallel Universe',
     description: 'Discover the Lucas sequence — Fibonacci\'s lesser-known twin with surprising properties.',
-    icon: '⭐',
-    color: 'emerald',
+    icon: 'L',
+    color: 'pulsar',
     overview: `The Lucas sequence is closely related to the Fibonacci sequence but starts with different seed values: L₀ = 2 and L₁ = 1 instead of 0 and 1.\n\nThe sequence begins: 2, 1, 3, 4, 7, 11, 18, 29, 47, 76, 123, 199, 322, 521, 843, ...\n\nLike the Fibonacci sequence, the ratio of consecutive Lucas numbers approaches the golden ratio φ. The Lucas numbers have an intimate relationship with Fibonacci numbers — for example, L(n) = F(n-1) + F(n+1), and L(n) = F(n) + 2F(n-1).`,
     formula: 'L_n = L_{n-1} + L_{n-2}, \\quad L_0 = 2, \\quad L_1 = 1',
     formulaDescription: 'Each Lucas number is the sum of the two preceding numbers, with seed values L₀ = 2 and L₁ = 1. The relationship to Fibonacci: L(n) = F(n-1) + F(n+1). Like Fibonacci, the ratio converges to the golden ratio φ.',
@@ -204,8 +204,8 @@ export const missions: MissionData[] = [
     title: 'Mission Euclid',
     subtitle: 'The Ancient Algorithm',
     description: 'Master the Euclidean Algorithm — the oldest and most elegant method for finding GCD.',
-    icon: '📐',
-    color: 'rose',
+    icon: 'E',
+    color: 'crimson',
     overview: `The Euclidean Algorithm is one of the oldest algorithms still in common use. It efficiently computes the Greatest Common Divisor (GCD) of two numbers — the largest number that divides both without a remainder.\n\nThe algorithm is based on the principle that the GCD of two numbers also divides their difference. More practically, if we divide the larger number by the smaller and take the remainder, the GCD of the original pair equals the GCD of the smaller number and the remainder.\n\nThis process is repeated until the remainder is zero, at which point the last non-zero remainder is the GCD.`,
     formula: '\\gcd(a, b) = \\gcd(b, a \\bmod b), \\quad \\gcd(a, 0) = a',
     formulaDescription: 'The Euclidean algorithm replaces the larger number with the remainder of dividing the larger by the smaller. This continues until the remainder is 0. The Extended Euclidean Algorithm also finds integers x, y such that ax + by = gcd(a,b).',
@@ -216,7 +216,7 @@ export const missions: MissionData[] = [
         'GCD(18, 12): 18 ÷ 12 = 1 remainder 6',
         'GCD(12, 6): 12 ÷ 6 = 2 remainder 0',
         'GCD = 6 (last non-zero remainder)',
-        'Verification: 48 = 6 × 8 ✓ and 18 = 6 × 3 ✓',
+        'Verification: 48 = 6 × 8 [OK] and 18 = 6 × 3 [OK]',
         'Extended: 6 = 18 × 1 - 48 × (−(2)) → 6 = (-1)(48) + (3)(18)'
       ]
     },
@@ -245,8 +245,8 @@ export const missions: MissionData[] = [
     title: 'Mission Division',
     subtitle: 'The Foundation of Arithmetic',
     description: 'Understand the Division Algorithm — the fundamental theorem that underlies all of arithmetic.',
-    icon: '➗',
-    color: 'sky',
+    icon: 'D',
+    color: 'warp',
     overview: `The Division Algorithm (also called the Division Theorem) states that for any integers a and b (where b > 0), there exist unique integers q (quotient) and r (remainder) such that:\n\na = bq + r, where 0 ≤ r < b\n\nThis seemingly simple statement is actually a profound result that forms the basis for much of number theory, including the Euclidean Algorithm, modular arithmetic, and the fundamental theorem of arithmetic.\n\nIt guarantees that division always "works out" with a unique quotient and remainder, even when we restrict ourselves to integers.`,
     formula: 'a = bq + r, \\quad \\text{where } 0 \\leq r < |b|',
     formulaDescription: 'For integers a (dividend) and b (divisor, b ≠ 0), there exist unique integers q (quotient) and r (remainder) such that a = bq + r with 0 ≤ r < |b|. The quotient q = ⌊a/b⌋ and remainder r = a - bq.',
@@ -257,8 +257,8 @@ export const missions: MissionData[] = [
         '43 ÷ 7 = 6 remainder 1',
         'Quotient q = 6',
         'Remainder r = 1',
-        'Verification: a = bq + r → 43 = 7 × 6 + 1 = 42 + 1 = 43 ✓',
-        'Check: 0 ≤ r < |b| → 0 ≤ 1 < 7 ✓'
+        'Verification: a = bq + r -> 43 = 7 x 6 + 1 = 42 + 1 = 43 [OK]',
+        'Check: 0 <= r < |b| -> 0 <= 1 < 7 [OK]'
       ]
     },
     simulatorLabel: 'Dividend and Divisor (comma-separated)',
@@ -279,6 +279,50 @@ export const missions: MissionData[] = [
       { question: 'Who formalized modular arithmetic using the Division Algorithm?', options: ['Euclid', 'Carl Friedrich Gauss', 'Leonhard Euler', 'Pierre de Fermat'], correct: 1 },
       { question: 'When the remainder r = 0, what does it mean?', options: ['a is prime', 'b divides a evenly', 'a equals b', 'q equals 0'], correct: 1 },
       { question: 'What is the remainder when 256 is divided by 17?', options: ['1', '15', '16', '0'], correct: 0 },
+    ]
+  },
+  {
+    id: 'palindrome',
+    title: 'Mission Palindrome',
+    subtitle: 'The Symmetry Directive',
+    description: 'Explore palindromes — words and phrases that read the same forwards and backwards, and their deep connection to Pushdown Automata.',
+    icon: 'P',
+    color: 'amber',
+    overview: `A palindrome is a string that reads the same forwards and backwards — a perfect mirror of characters. From "racecar" to "A man a plan a canal Panama," palindromes have fascinated linguists, mathematicians, and computer scientists for centuries.\n\nIn formal language theory, palindromes hold a special place. The language of palindromes over an alphabet is a classic example of a language that can be recognized by a Pushdown Automaton (PDA) but NOT by any Finite Automaton (FA). This is because checking whether a string is a palindrome requires comparing the first half of the string with the reverse of the second half — a task that demands unbounded memory to store the first half for later comparison.\n\nA Pushdown Automaton solves this by using a stack: it pushes symbols from the first half of the input onto the stack, then non-deterministically guesses the midpoint and pops symbols to compare with the second half. If every popped symbol matches the corresponding input symbol, the string is accepted. This demonstrates the greater expressive power of PDAs over FAs — they can handle context-free languages that are beyond the reach of regular languages.\n\nThe palindrome language is context-free but not regular, making it a fundamental example in the Chomsky hierarchy of formal languages.`,
+    formula: 'w = w^R',
+    formulaDescription: 'A string w is a palindrome if and only if it equals its reverse w^R. This seemingly simple condition defines a language that is context-free but not regular — it requires a Pushdown Automaton (PDA) for recognition, as the stack provides the unbounded memory needed to compare the first and second halves of the string.',
+    workedExample: {
+      title: 'Checking if "racecar" is a palindrome',
+      steps: [
+        'Input: "racecar" (7 characters)',
+        'Normalize: "racecar" (already lowercase, no spaces)',
+        'Compare positions from outside in:',
+        'Position 1 vs 7: r vs r ✓',
+        'Position 2 vs 6: a vs a ✓',
+        'Position 3 vs 5: c vs c ✓',
+        'Position 4 (middle): e — single center character, no pair needed ✓',
+        'All character pairs match → "racecar" IS a palindrome!',
+        'PDA perspective: Push r,a,c,e onto stack; guess midpoint; pop e (skip center), pop c vs c ✓, pop a vs a ✓, pop r vs r ✓ → Accept'
+      ]
+    },
+    simulatorLabel: 'Word or Phrase',
+    simulatorPlaceholder: 'Enter a word or phrase (e.g., racecar, A man a plan a canal Panama)',
+    applications: [
+      'DNA sequence analysis — palindromic sequences play a crucial role in gene regulation and restriction enzyme recognition sites',
+      'Error detection in data transmission — palindromic parity checks and cyclic redundancy codes',
+      'Cryptography — palindromic structures appear in certain encryption algorithms and hash functions',
+      'Natural language processing — identifying symmetric linguistic patterns and stylistic analysis',
+      'Compiler design — context-free grammar parsing uses stack-based mechanisms similar to PDA palindrome recognition'
+    ],
+    history: 'Palindromes have a rich history spanning millennia. The earliest known palindrome is the Sator Square, a Latin word square found in Pompeii (before 79 AD), which reads the same forwards, backwards, top-to-bottom, and bottom-to-top: SATOR AREPO TENET OPERA ROTAS. In English, palindromes appeared as early as the 17th century. The formal study of palindrome languages in computer science began with the development of automata theory in the 1950s and 1960s. Noam Chomsky\'s hierarchy of formal languages classified palindrome languages as context-free, and the proof that palindromes cannot be recognized by finite automata (using the pumping lemma for regular languages) became a standard result in theoretical computer science. The connection to Pushdown Automata was established as part of the foundational work on context-free languages by Chomsky and Schützenberger.',
+    quiz: [
+      { question: 'What is a palindrome?', options: ['A string that reads the same forwards and backwards', 'A string with all identical characters', 'A string sorted in alphabetical order', 'A string with an even number of characters'], correct: 0 },
+      { question: 'Which of the following is a palindrome?', options: ['"hello"', '"racecar"', '"python"', '"algorithm"'], correct: 1 },
+      { question: 'What type of automaton can recognize the language of palindromes?', options: ['Finite Automaton (FA)', 'Pushdown Automaton (PDA)', 'Turing Machine only', 'Linear Bounded Automaton'], correct: 1 },
+      { question: 'Why can\'t a Finite Automaton recognize all palindromes?', options: ['It runs too slowly', 'It cannot store unbounded memory to compare the first and second halves', 'It can only process even-length strings', 'It requires a special alphabet'], correct: 1 },
+      { question: 'In a PDA that recognizes palindromes, what is the purpose of the stack?', options: ['To count the total number of characters', 'To store the first half of the input for comparison with the second half', 'To reverse the entire input string', 'To track the current state of the automaton'], correct: 1 },
+      { question: 'Is "A man a plan a canal Panama" a palindrome when spaces are removed?', options: ['Yes', 'No', 'Only with capitalization preserved', 'It depends on the alphabet'], correct: 0 },
+      { question: 'What is the palindrome language over {a, b} formally?', options: ['{w | w = w^R, w ∈ {a,b}*}', '{w | w has equal a\'s and b\'s}', '{w | w = ww}', '{a^n b^n | n ≥ 0}'], correct: 0 },
     ]
   }
 ];

@@ -27,17 +27,18 @@ export interface UserProgress {
 const STORAGE_KEY = 'math-mission-control-progress';
 
 export const ACHIEVEMENTS: Achievement[] = [
-  { id: 'collatz-specialist', name: 'Sequence Specialist', description: 'Complete the Collatz Mission', icon: '🌀', unlockedAt: null },
-  { id: 'fibonacci-navigator', name: 'Recursive Navigator', description: 'Complete the Fibonacci Mission', icon: '🐚', unlockedAt: null },
-  { id: 'tribonacci-explorer', name: 'Tribonacci Trailblazer', description: 'Complete the Tribonacci Mission', icon: '🔺', unlockedAt: null },
-  { id: 'lucas-commander', name: 'Lucas Commander', description: 'Complete the Lucas Mission', icon: '⭐', unlockedAt: null },
-  { id: 'euclid-explorer', name: 'Euclid Explorer', description: 'Complete the Euclidean Mission', icon: '📐', unlockedAt: null },
-  { id: 'division-commander', name: 'Division Commander', description: 'Complete the Division Mission', icon: '➗', unlockedAt: null },
-  { id: 'math-astronaut', name: 'Math Astronaut', description: 'Complete all missions', icon: '🚀', unlockedAt: null },
-  { id: 'quiz-master', name: 'Quiz Master', description: 'Pass all quizzes with perfect score', icon: '🏆', unlockedAt: null },
+  { id: 'collatz-specialist', name: 'Sequence Specialist', description: 'Complete the Collatz Mission', icon: 'C', unlockedAt: null },
+  { id: 'fibonacci-navigator', name: 'Recursive Navigator', description: 'Complete the Fibonacci Mission', icon: 'F', unlockedAt: null },
+  { id: 'tribonacci-explorer', name: 'Tribonacci Trailblazer', description: 'Complete the Tribonacci Mission', icon: 'T', unlockedAt: null },
+  { id: 'lucas-commander', name: 'Lucas Commander', description: 'Complete the Lucas Mission', icon: 'L', unlockedAt: null },
+  { id: 'euclid-explorer', name: 'Euclid Explorer', description: 'Complete the Euclidean Mission', icon: 'E', unlockedAt: null },
+  { id: 'division-commander', name: 'Division Commander', description: 'Complete the Division Mission', icon: 'D', unlockedAt: null },
+  { id: 'palindrome-specialist', name: 'Symmetry Specialist', description: 'Complete the Palindrome Mission', icon: 'P', unlockedAt: null },
+  { id: 'math-astronaut', name: 'Math Astronaut', description: 'Complete all missions', icon: '!', unlockedAt: null },
+  { id: 'quiz-master', name: 'Quiz Master', description: 'Pass all quizzes with perfect score', icon: '*', unlockedAt: null },
 ];
 
-export const MISSION_IDS = ['collatz', 'fibonacci', 'tribonacci', 'lucas', 'euclidean', 'division'];
+export const MISSION_IDS = ['collatz', 'fibonacci', 'tribonacci', 'lucas', 'euclidean', 'division', 'palindrome'];
 
 function getDefaultProgress(username: string): UserProgress {
   return {
@@ -108,6 +109,7 @@ export function updateMissionProgress(
       lucas: 'lucas-commander',
       euclidean: 'euclid-explorer',
       division: 'division-commander',
+      palindrome: 'palindrome-specialist',
     };
     const achId = achievementMap[missionId];
     if (achId) {

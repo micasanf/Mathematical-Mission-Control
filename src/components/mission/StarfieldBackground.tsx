@@ -67,7 +67,7 @@ export function StarfieldBackground({ speed = 0.5, density = 200 }: StarfieldBac
         x: width * 0.2,
         y: height * 0.3,
         radius: Math.max(200, width * 0.2),
-        color: '138, 43, 226', // purple
+        color: '123, 111, 255', // nebula purple
         opacity: 0.03,
         drift: 0.02,
       },
@@ -75,7 +75,7 @@ export function StarfieldBackground({ speed = 0.5, density = 200 }: StarfieldBac
         x: width * 0.75,
         y: height * 0.6,
         radius: Math.max(250, width * 0.25),
-        color: '0, 255, 255', // cyan
+        color: '0, 206, 201', // primary turquoise
         opacity: 0.025,
         drift: -0.015,
       },
@@ -83,7 +83,7 @@ export function StarfieldBackground({ speed = 0.5, density = 200 }: StarfieldBac
         x: width * 0.5,
         y: height * 0.15,
         radius: Math.max(180, width * 0.15),
-        color: '75, 0, 130', // indigo
+        color: '77, 168, 255', // ion blue
         opacity: 0.02,
         drift: 0.01,
       },
@@ -91,7 +91,7 @@ export function StarfieldBackground({ speed = 0.5, density = 200 }: StarfieldBac
         x: width * 0.85,
         y: height * 0.2,
         radius: Math.max(150, width * 0.12),
-        color: '0, 200, 200', // teal
+        color: '125, 249, 192', // reactor green
         opacity: 0.02,
         drift: -0.008,
       },

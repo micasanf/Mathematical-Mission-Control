@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { type UserProgress, loadProgress, saveProgress, updateMissionProgress, unlockAchievement } from '@/lib/progressTracker';
 
-export type AppPage = 'login' | 'loading' | 'dashboard' | 'mission' | 'logout' | 'achievements';
+export type AppPage = 'login' | 'loading' | 'dashboard' | 'mission' | 'logout' | 'achievements' | 'landing';
 
 interface AppState {
   currentPage: AppPage;
@@ -17,6 +17,7 @@ interface AppState {
   logout: () => void;
   selectMission: (missionId: string) => void;
   setLoading: (target: AppPage, missionId?: string | null) => void;
+  goToLanding: (missionId: string) => void;
   finishLoading: () => void;
   updateProgress: (missionId: string, update: { quizScore?: number | null; quizPassed?: boolean; completed?: boolean; sectionViewed?: string }) => void;
   setSoundEnabled: (enabled: boolean) => void;
@@ -49,6 +50,10 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setLoading: (target, missionId = null) => {
     set({ currentPage: 'loading', loadingTarget: target, loadingMissionId: missionId });
+  },
+
+  goToLanding: (missionId) => {
+    set({ currentPage: 'landing', loadingMissionId: missionId });
   },
 
   finishLoading: () => {
