@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '@/store/appStore';
 import { soundEngine } from '@/lib/soundEngine';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, XCircle, Trophy, RotateCcw, Star } from 'lucide-react';
+import { CheckCircle2, XCircle, Trophy, RotateCcw, Star, Zap, Shield, Crosshair } from 'lucide-react';
 import { HologramLetter } from '@/components/mission/HologramLetter';
 
 interface QuizProps {
@@ -27,15 +27,112 @@ const badgeMap: Record<string, { name: string; icon: string; color: string }> = 
   palindrome: { name: 'Symmetry Specialist', icon: 'P', color: '#FFD700' },
 };
 
-// Celebration particles for mission complete
+// ─── Scanning Beam ────────────────────────────────────────────────────────
+function ScanningBeam({ color }: { color: string }) {
+  return (
+    <div className="absolute top-0 left-0 right-0 h-full overflow-hidden pointer-events-none z-[1]">
+      <motion.div
+        className="absolute left-0 right-0 h-[2px]"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${color}60, ${color}, ${color}60, transparent)`,
+          boxShadow: `0 0 12px ${color}80, 0 0 30px ${color}40, 0 0 60px ${color}20`,
+        }}
+        animate={{ top: ['0%', '100%'] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+      />
+      {/* Trailing glow */}
+      <motion.div
+        className="absolute left-0 right-0"
+        style={{
+          height: '40px',
+          background: `linear-gradient(180deg, transparent, ${color}08, transparent)`,
+        }}
+        animate={{ top: ['0%', '100%'] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+      />
+    </div>
+  );
+}
+
+// ─── Hologram Grid Lines ─────────────────────────────────────────────────
+function HologramGrid({ color }: { color: string }) {
+  return (
+    <div className="absolute inset-0 pointer-events-none z-[1] overflow-hidden">
+      {/* Horizontal lines */}
+      {Array.from({ length: 8 }, (_, i) => (
+        <div
+          key={`h-${i}`}
+          className="absolute left-0 right-0"
+          style={{
+            top: `${(i + 1) * 12.5}%`,
+            height: '1px',
+            background: `linear-gradient(90deg, transparent 5%, ${color}06 20%, ${color}10 50%, ${color}06 80%, transparent 95%)`,
+          }}
+        />
+      ))}
+      {/* Vertical lines */}
+      {Array.from({ length: 6 }, (_, i) => (
+        <div
+          key={`v-${i}`}
+          className="absolute top-0 bottom-0"
+          style={{
+            left: `${(i + 1) * 16.66}%`,
+            width: '1px',
+            background: `linear-gradient(180deg, transparent 5%, ${color}06 20%, ${color}10 50%, ${color}06 80%, transparent 95%)`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── Data Stream Particles ────────────────────────────────────────────────
+function DataStream({ color }: { color: string }) {
+  const particles = useMemo(() =>
+    Array.from({ length: 15 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      speed: 2 + Math.random() * 4,
+      delay: Math.random() * 5,
+      char: String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)),
+      opacity: 0.08 + Math.random() * 0.12,
+    })),
+    []
+  );
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute"
+          style={{
+            left: `${p.x}%`,
+            fontFamily: "var(--font-share-tech-mono), monospace",
+            fontSize: '10px',
+            color: `${color}`,
+            opacity: p.opacity,
+            textShadow: `0 0 4px ${color}40`,
+          }}
+          animate={{ y: ['-20px', 'calc(100vh + 20px)'] }}
+          transition={{ duration: p.speed, delay: p.delay, repeat: Infinity, ease: 'linear' }}
+        >
+          {p.char}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Celebration particles for mission complete ───────────────────────────
 function CelebrationParticles({ color }: { color: string }) {
-  const particles = Array.from({ length: 30 }, (_, i) => ({
+  const particles = Array.from({ length: 40 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     delay: Math.random() * 0.8,
     size: Math.random() * 6 + 3,
     angle: Math.random() * 360,
-    distance: 60 + Math.random() * 140,
+    distance: 80 + Math.random() * 160,
   }));
 
   return (
@@ -50,7 +147,7 @@ function CelebrationParticles({ color }: { color: string }) {
             backgroundColor: color,
             left: `${p.x}%`,
             top: '50%',
-            boxShadow: `0 0 ${p.size * 2}px ${color}`,
+            boxShadow: `0 0 ${p.size * 2}px ${color}, 0 0 ${p.size * 4}px ${color}60`,
           }}
           initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
           animate={{
@@ -70,7 +167,7 @@ function CelebrationParticles({ color }: { color: string }) {
   );
 }
 
-// Animated counter for score reveal
+// ─── Animated counter for score reveal ────────────────────────────────────
 function AnimatedCounter({ target, duration = 1500 }: { target: number; duration?: number }) {
   const [count, setCount] = useState(0);
   const frameRef = useRef<number>(0);
@@ -80,7 +177,6 @@ function AnimatedCounter({ target, duration = 1500 }: { target: number; duration
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(eased * target));
       if (progress < 1) {
@@ -94,6 +190,33 @@ function AnimatedCounter({ target, duration = 1500 }: { target: number; duration
   return <span>{count}</span>;
 }
 
+// ─── Glitch Text Effect ──────────────────────────────────────────────────
+function GlitchText({ children, color, className = '' }: { children: React.ReactNode; color: string; className?: string }) {
+  return (
+    <span className={`relative inline-block ${className}`}>
+      <span style={{ color, position: 'relative' }}>{children}</span>
+      <span
+        aria-hidden="true"
+        className="absolute top-0 left-0"
+        style={{
+          color: 'rgba(255,0,80,0.5)',
+          clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
+          animation: 'quiz-glitch-top 3s infinite linear alternate-reverse',
+        }}
+      >{children}</span>
+      <span
+        aria-hidden="true"
+        className="absolute top-0 left-0"
+        style={{
+          color: 'rgba(0,200,255,0.5)',
+          clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
+          animation: 'quiz-glitch-bottom 2.5s infinite linear alternate-reverse',
+        }}
+      >{children}</span>
+    </span>
+  );
+}
+
 export default function QuizComponent({ missionId, questions, missionColor }: QuizProps) {
   const { updateProgress, setPage, soundEnabled } = useAppStore();
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -103,12 +226,27 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
   const [showResults, setShowResults] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [answersLocked, setAnswersLocked] = useState(false);
+  const [questionRevealed, setQuestionRevealed] = useState(true);
+  const [decodingText, setDecodingText] = useState(false);
+  const prevQuestionRef = useRef(currentQuestion);
 
   const totalQuestions = questions.length;
   const progressValue = ((currentQuestion) / totalQuestions) * 100;
   const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
   const passed = percentage >= 70;
   const badge = badgeMap[missionId];
+
+  // Decode animation when question changes
+  useEffect(() => {
+    if (prevQuestionRef.current !== currentQuestion) {
+      prevQuestionRef.current = currentQuestion;
+    }
+    const timer = setTimeout(() => {
+      setDecodingText(false);
+      setQuestionRevealed(true);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [currentQuestion]);
 
   const handleAnswer = useCallback(
     (optionIndex: number) => {
@@ -128,7 +266,6 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
         if (soundEnabled) soundEngine.failure();
       }
 
-      // Auto-advance after 1.5s
       setTimeout(() => {
         if (currentQuestion + 1 < totalQuestions) {
           setCurrentQuestion((prev) => prev + 1);
@@ -136,13 +273,11 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
           setIsCorrect(null);
           setAnswersLocked(false);
         } else {
-          // Calculate final score and show results
           const finalScore = correctAnswer ? score + 1 : score;
           const finalPercentage = Math.round((finalScore / totalQuestions) * 100);
           const finalPassed = finalPercentage >= 70;
 
           if (finalPassed && soundEnabled) {
-            // Delay achievement sound slightly for dramatic effect
             setTimeout(() => soundEngine.achievement(), 300);
           }
 
@@ -151,7 +286,6 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
             setTimeout(() => setShowCelebration(true), 400);
           }
 
-          // Update progress
           updateProgress(missionId, {
             quizScore: finalPercentage,
             quizPassed: finalPassed,
@@ -172,6 +306,8 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
     setShowResults(false);
     setShowCelebration(false);
     setAnswersLocked(false);
+    setQuestionRevealed(false);
+    setDecodingText(true);
   }, [soundEnabled]);
 
   const handleReturnToDashboard = useCallback(() => {
@@ -183,40 +319,36 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
     const correctIndex = questions[currentQuestion].correct;
 
     if (selectedAnswer === null) {
-      // No answer selected yet - hover ready state
       return {
-        background: 'rgba(15, 23, 42, 0.6)',
-        border: `1px solid rgba(148, 163, 184, 0.2)`,
+        background: `linear-gradient(135deg, rgba(0,0,0,0.6), rgba(10,15,30,0.8))`,
+        border: `1px solid ${missionColor}18`,
         cursor: 'pointer' as const,
       };
     }
 
     if (index === correctIndex) {
-      // Correct answer - always highlight green when answer is shown
       return {
-        background: 'rgba(34, 197, 94, 0.15)',
-        border: '1px solid rgba(34, 197, 94, 0.7)',
-        boxShadow: '0 0 20px rgba(34, 197, 94, 0.3), inset 0 0 20px rgba(34, 197, 94, 0.1)',
+        background: 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.15))',
+        border: '1px solid rgba(34,197,94,0.6)',
+        boxShadow: '0 0 20px rgba(34,197,94,0.25), inset 0 0 30px rgba(34,197,94,0.05), 0 0 60px rgba(34,197,94,0.1)',
         cursor: 'default' as const,
       };
     }
 
     if (index === selectedAnswer && !isCorrect) {
-      // Wrong answer selected - highlight red
       return {
-        background: 'rgba(239, 68, 68, 0.15)',
-        border: '1px solid rgba(239, 68, 68, 0.7)',
-        boxShadow: '0 0 20px rgba(239, 68, 68, 0.3), inset 0 0 20px rgba(239, 68, 68, 0.1)',
+        background: 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.15))',
+        border: '1px solid rgba(239,68,68,0.6)',
+        boxShadow: '0 0 20px rgba(239,68,68,0.25), inset 0 0 30px rgba(239,68,68,0.05), 0 0 60px rgba(239,68,68,0.1)',
         cursor: 'default' as const,
       };
     }
 
-    // Other unselected options - dimmed
     return {
-      background: 'rgba(15, 23, 42, 0.3)',
-      border: '1px solid rgba(148, 163, 184, 0.1)',
+      background: 'rgba(0,0,0,0.3)',
+      border: `1px solid ${missionColor}08`,
       cursor: 'default' as const,
-      opacity: 0.5,
+      opacity: 0.4,
     };
   };
 
@@ -250,10 +382,35 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
     return null;
   };
 
-  // Results screen
+  // Hex labels for options
+  const hexLabels = ['0x41', '0x42', '0x43', '0x44'];
+  const alphaLabels = ['A', 'B', 'C', 'D'];
+
+  // ─── Results Screen ───────────────────────────────────────────────────
   if (showResults) {
     return (
       <div className="relative w-full max-w-2xl mx-auto px-4 py-8">
+        <style>{`
+          @keyframes quiz-glitch-top {
+            0%, 92%, 100% { transform: translate(0); }
+            93% { transform: translate(-2px, -1px); }
+            95% { transform: translate(2px, 1px); }
+            97% { transform: translate(-1px, 0); }
+            99% { transform: translate(1px, -1px); }
+          }
+          @keyframes quiz-glitch-bottom {
+            0%, 90%, 100% { transform: translate(0); }
+            91% { transform: translate(1px, 1px); }
+            94% { transform: translate(-2px, 0); }
+            96% { transform: translate(2px, -1px); }
+            98% { transform: translate(-1px, 1px); }
+          }
+          @keyframes result-pulse {
+            0%, 100% { box-shadow: 0 0 20px ${passed ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}, 0 0 60px ${passed ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)'}; }
+            50% { box-shadow: 0 0 30px ${passed ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}, 0 0 80px ${passed ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}; }
+          }
+        `}</style>
+
         {showCelebration && badge && <CelebrationParticles color={badge.color} />}
 
         <motion.div
@@ -261,46 +418,85 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <Card
-            className="relative overflow-hidden"
+          <div
+            className="relative overflow-hidden rounded-2xl"
             style={{
-              background: 'rgba(15, 23, 42, 0.8)',
-              border: `1px solid ${passed ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)'}`,
+              background: 'linear-gradient(135deg, rgba(5,11,24,0.95), rgba(10,15,30,0.9))',
+              border: `1px solid ${passed ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}`,
               boxShadow: passed
-                ? '0 0 40px rgba(34, 197, 94, 0.15), 0 0 80px rgba(34, 197, 94, 0.05)'
-                : '0 0 40px rgba(239, 68, 68, 0.15), 0 0 80px rgba(239, 68, 68, 0.05)',
+                ? '0 0 40px rgba(34,197,94,0.15), 0 0 80px rgba(34,197,94,0.05)'
+                : '0 0 40px rgba(239,68,68,0.15), 0 0 80px rgba(239,68,68,0.05)',
               backdropFilter: 'blur(20px)',
+              animation: 'result-pulse 3s ease-in-out infinite',
             }}
           >
-            <CardContent className="p-8 flex flex-col items-center gap-6">
-              {/* Result icon */}
+            {/* Scan lines overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none z-10"
+              style={{
+                backgroundImage: `repeating-linear-gradient(
+                  0deg,
+                  transparent,
+                  transparent 2px,
+                  rgba(255,255,255,0.01) 2px,
+                  rgba(255,255,255,0.01) 4px
+                )`,
+              }}
+            />
+
+            {/* Top accent line */}
+            <div
+              className="h-[2px] w-full"
+              style={{
+                background: `linear-gradient(90deg, transparent, ${passed ? '#22c55e' : '#ef4444'}, transparent)`,
+                boxShadow: `0 0 10px ${passed ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)'}`,
+              }}
+            />
+
+            <div className="p-8 flex flex-col items-center gap-6">
+              {/* Result icon with HologramLetter */}
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: 'spring', stiffness: 150, damping: 12, delay: 0.2 }}
+                className="flex items-center gap-4"
               >
                 {passed ? (
-                  <div
-                    className="w-20 h-20 rounded-full flex items-center justify-center"
-                    style={{
-                      background: 'rgba(34, 197, 94, 0.15)',
-                      border: '2px solid rgba(34, 197, 94, 0.5)',
-                      boxShadow: '0 0 30px rgba(34, 197, 94, 0.3)',
-                    }}
-                  >
-                    <Trophy className="w-10 h-10 text-green-400" />
-                  </div>
+                  <>
+                    <HologramLetter
+                      letter={missionId[0].toUpperCase()}
+                      color={badge?.color ?? '#22c55e'}
+                      size="lg"
+                    />
+                    <div
+                      className="w-16 h-16 rounded-full flex items-center justify-center"
+                      style={{
+                        background: 'rgba(34, 197, 94, 0.1)',
+                        border: '2px solid rgba(34, 197, 94, 0.4)',
+                        boxShadow: '0 0 30px rgba(34, 197, 94, 0.3), 0 0 60px rgba(34, 197, 94, 0.1)',
+                      }}
+                    >
+                      <Trophy className="w-8 h-8 text-green-400" />
+                    </div>
+                  </>
                 ) : (
-                  <div
-                    className="w-20 h-20 rounded-full flex items-center justify-center"
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.15)',
-                      border: '2px solid rgba(239, 68, 68, 0.5)',
-                      boxShadow: '0 0 30px rgba(239, 68, 68, 0.3)',
-                    }}
-                  >
-                    <XCircle className="w-10 h-10 text-red-400" />
-                  </div>
+                  <>
+                    <HologramLetter
+                      letter={missionId[0].toUpperCase()}
+                      color="#ef4444"
+                      size="lg"
+                    />
+                    <div
+                      className="w-16 h-16 rounded-full flex items-center justify-center"
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '2px solid rgba(239, 68, 68, 0.4)',
+                        boxShadow: '0 0 30px rgba(239, 68, 68, 0.3), 0 0 60px rgba(239, 68, 68, 0.1)',
+                      }}
+                    >
+                      <XCircle className="w-8 h-8 text-red-400" />
+                    </div>
+                  </>
                 )}
               </motion.div>
 
@@ -312,61 +508,78 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                 className="text-center"
               >
                 {passed ? (
-                  <h2
-                    className="text-3xl sm:text-4xl font-black tracking-wider"
-                    style={{
-                      color: '#22c55e',
-                      textShadow: '0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3)',
-                    }}
+                  <GlitchText
+                    color="#22c55e"
+                    className="text-3xl sm:text-4xl font-black tracking-[0.2em]"
                   >
                     MISSION COMPLETE!
-                  </h2>
+                  </GlitchText>
                 ) : (
-                  <h2
-                    className="text-3xl sm:text-4xl font-black tracking-wider"
-                    style={{
-                      color: '#ef4444',
-                      textShadow: '0 0 20px rgba(239, 68, 68, 0.6), 0 0 40px rgba(239, 68, 68, 0.3)',
-                    }}
+                  <GlitchText
+                    color="#ef4444"
+                    className="text-3xl sm:text-4xl font-black tracking-[0.2em]"
                   >
                     MISSION FAILED
-                  </h2>
+                  </GlitchText>
                 )}
+                <p
+                  className="mt-2 text-xs font-mono tracking-widest uppercase"
+                  style={{ color: `${passed ? '#22c55e' : '#ef4444'}80` }}
+                >
+                  {passed ? '// TRANSMISSION VERIFIED — CLEARANCE GRANTED' : '// TRANSMISSION CORRUPTED — RETRY REQUIRED'}
+                </p>
               </motion.div>
 
-              {/* Score display */}
+              {/* Score display - terminal style */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="text-center"
+                className="w-full max-w-xs"
               >
-                <div className="flex items-baseline justify-center gap-2">
-                  <span
-                    className="text-5xl sm:text-6xl font-black"
-                    style={{
-                      color: passed ? '#22c55e' : '#ef4444',
-                      textShadow: `0 0 15px ${passed ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)'}`,
-                    }}
-                  >
-                    <AnimatedCounter target={score} duration={1200} />
-                  </span>
-                  <span className="text-2xl text-slate-400 font-bold">/</span>
-                  <span className="text-2xl text-slate-400 font-bold">{totalQuestions}</span>
-                </div>
-                <p className="text-slate-400 mt-2 text-sm font-mono tracking-wider uppercase">CORRECT</p>
                 <div
-                  className="mt-3 text-3xl font-black"
+                  className="rounded-xl p-5 text-center"
                   style={{
-                    color: passed ? '#22c55e' : '#ef4444',
-                    textShadow: `0 0 10px ${passed ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}`,
+                    background: 'rgba(0,0,0,0.4)',
+                    border: `1px solid ${passed ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                    boxShadow: `inset 0 0 30px rgba(0,0,0,0.3)`,
                   }}
                 >
-                  <AnimatedCounter target={percentage} duration={1500} />%
+                  <p
+                    className="text-[10px] font-mono tracking-widest mb-3 uppercase"
+                    style={{ color: `${passed ? '#22c55e' : '#ef4444'}60` }}
+                  >
+                    ▸ Signal Integrity Report ◂
+                  </p>
+                  <div className="flex items-baseline justify-center gap-2">
+                    <span
+                      className="text-5xl sm:text-6xl font-black"
+                      style={{
+                        fontFamily: "var(--font-orbitron), sans-serif",
+                        color: passed ? '#22c55e' : '#ef4444',
+                        textShadow: `0 0 15px ${passed ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)'}, 0 0 30px ${passed ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                      }}
+                    >
+                      <AnimatedCounter target={score} duration={1200} />
+                    </span>
+                    <span className="text-xl text-slate-500 font-bold">/</span>
+                    <span className="text-xl text-slate-500 font-bold">{totalQuestions}</span>
+                  </div>
+                  <p className="text-slate-500 mt-1 text-xs font-mono tracking-widest uppercase">Packets Received</p>
+                  <div
+                    className="mt-3 text-3xl font-black"
+                    style={{
+                      fontFamily: "var(--font-orbitron), sans-serif",
+                      color: passed ? '#22c55e' : '#ef4444',
+                      textShadow: `0 0 10px ${passed ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}`,
+                    }}
+                  >
+                    <AnimatedCounter target={percentage} duration={1500} />%
+                  </div>
                 </div>
               </motion.div>
 
-              {/* Badge / Achievement (only when passed) */}
+              {/* Badge / Achievement */}
               <AnimatePresence>
                 {passed && badge && (
                   <motion.div
@@ -375,24 +588,28 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                     transition={{ type: 'spring', stiffness: 150, damping: 12, delay: 1 }}
                     className="flex flex-col items-center gap-3"
                   >
-                    <p className="text-xs font-mono tracking-widest uppercase text-cyan-400/70">
-                      Achievement Unlocked
+                    <p
+                      className="text-[10px] font-mono tracking-[0.3em] uppercase"
+                      style={{ color: `${badge.color}90` }}
+                    >
+                      ▸ Achievement Decoded ◂
                     </p>
                     <motion.div
                       animate={{
                         boxShadow: [
-                          `0 0 20px ${badge.color}40`,
-                          `0 0 40px ${badge.color}60`,
-                          `0 0 20px ${badge.color}40`,
+                          `0 0 20px ${badge.color}30`,
+                          `0 0 40px ${badge.color}50`,
+                          `0 0 20px ${badge.color}30`,
                         ],
                       }}
                       transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                     >
                       <Badge
-                        className="text-lg px-5 py-2.5 gap-2 font-bold"
+                        className="text-lg px-5 py-2.5 gap-3 font-bold tracking-wider"
                         style={{
-                          background: `${badge.color}15`,
-                          border: `1px solid ${badge.color}80`,
+                          fontFamily: "var(--font-orbitron), sans-serif",
+                          background: `linear-gradient(135deg, ${badge.color}08, ${badge.color}15)`,
+                          border: `1px solid ${badge.color}60`,
                           color: badge.color,
                           textShadow: `0 0 10px ${badge.color}80`,
                         }}
@@ -417,6 +634,9 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                             className="w-5 h-5"
                             fill={percentage === 100 ? '#fbbf24' : i < Math.ceil(percentage / 20) ? '#fbbf24' : 'transparent'}
                             stroke="#fbbf24"
+                            style={{
+                              filter: i < Math.ceil(percentage / 20) ? 'drop-shadow(0 0 4px rgba(251,191,36,0.6))' : 'none',
+                            }}
                           />
                         </motion.div>
                       ))}
@@ -434,94 +654,154 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
               >
                 <Button
                   onClick={handleRetry}
-                  className="flex-1 gap-2 font-bold tracking-wider"
+                  className="flex-1 gap-2 font-bold tracking-[0.15em] text-sm"
                   style={{
-                    background: 'rgba(15, 23, 42, 0.6)',
-                    border: '1px solid rgba(148, 163, 184, 0.3)',
+                    fontFamily: "var(--font-orbitron), sans-serif",
+                    background: 'linear-gradient(135deg, rgba(0,0,0,0.5), rgba(10,15,30,0.8))',
+                    border: '1px solid rgba(148, 163, 184, 0.2)',
                     color: '#94a3b8',
                   }}
                   onMouseEnter={(e) => {
                     if (soundEnabled) soundEngine.playHover();
                     e.currentTarget.style.borderColor = '#22d3ee';
                     e.currentTarget.style.color = '#22d3ee';
-                    e.currentTarget.style.boxShadow = '0 0 15px rgba(34,211,238,0.2)';
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(34,211,238,0.15)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.3)';
+                    e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.2)';
                     e.currentTarget.style.color = '#94a3b8';
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
                   <RotateCcw className="w-4 h-4" />
-                  RETRY
+                  REINITIALIZE
                 </Button>
                 <Button
                   onClick={handleReturnToDashboard}
-                  className="flex-1 gap-2 font-bold tracking-wider"
+                  className="flex-1 gap-2 font-bold tracking-[0.15em] text-sm"
                   style={{
-                    background: `${missionColor}20`,
-                    border: `1px solid ${missionColor}50`,
+                    fontFamily: "var(--font-orbitron), sans-serif",
+                    background: `linear-gradient(135deg, ${missionColor}10, ${missionColor}20)`,
+                    border: `1px solid ${missionColor}40`,
                     color: missionColor,
+                    boxShadow: `0 0 15px ${missionColor}15`,
                   }}
                   onMouseEnter={(e) => {
                     if (soundEnabled) soundEngine.playHover();
                     e.currentTarget.style.borderColor = missionColor;
-                    e.currentTarget.style.boxShadow = `0 0 15px ${missionColor}40`;
+                    e.currentTarget.style.boxShadow = `0 0 25px ${missionColor}30`;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = `${missionColor}50`;
-                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.borderColor = `${missionColor}40`;
+                    e.currentTarget.style.boxShadow = `0 0 15px ${missionColor}15`;
                   }}
                 >
-                  RETURN TO DASHBOARD
+                  RETURN TO BRIDGE
                 </Button>
               </motion.div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       </div>
     );
   }
 
-  // Quiz question screen
+  // ─── Quiz Question Screen ────────────────────────────────────────────
   const currentQ = questions[currentQuestion];
-  const optionLabels = ['A', 'B', 'C', 'D'];
 
   return (
     <div className="relative w-full max-w-2xl mx-auto px-4 py-6">
       <style>{`
-        @keyframes hologram-flicker {
-          0% { opacity: 1; }
-          25% { opacity: 0.3; }
-          50% { opacity: 0.9; }
-          75% { opacity: 0.4; }
-          100% { opacity: 1; }
+        @keyframes quiz-glitch-top {
+          0%, 92%, 100% { transform: translate(0); }
+          93% { transform: translate(-2px, -1px); }
+          95% { transform: translate(2px, 1px); }
+          97% { transform: translate(-1px, 0); }
+          99% { transform: translate(1px, -1px); }
+        }
+        @keyframes quiz-glitch-bottom {
+          0%, 90%, 100% { transform: translate(0); }
+          91% { transform: translate(1px, 1px); }
+          94% { transform: translate(-2px, 0); }
+          96% { transform: translate(2px, -1px); }
+          98% { transform: translate(-1px, 1px); }
+        }
+        @keyframes decoding-cursor {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+        @keyframes energy-pulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
+        }
+        @keyframes hex-glow {
+          0%, 100% { text-shadow: 0 0 4px ${missionColor}40; }
+          50% { text-shadow: 0 0 8px ${missionColor}80, 0 0 12px ${missionColor}40; }
+        }
+        @keyframes scan-line-move {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100vh); }
         }
       `}</style>
-      {/* Progress bar */}
+
+      {/* ─── Progress Bar - Sci-fi Energy Cell ─── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-mono tracking-widest uppercase text-cyan-400/70">
-            Question {currentQuestion + 1} of {totalQuestions}
-          </span>
-          <span className="text-xs font-mono tracking-widest uppercase text-cyan-400/70">
-            Score: {score}/{currentQuestion}
-          </span>
+          <div className="flex items-center gap-2">
+            <Crosshair className="w-3 h-3" style={{ color: `${missionColor}80` }} />
+            <span
+              className="text-[10px] font-mono tracking-[0.2em] uppercase"
+              style={{ color: `${missionColor}70` }}
+            >
+              Signal {currentQuestion + 1} of {totalQuestions}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="w-3 h-3" style={{ color: `${missionColor}60` }} />
+            <span
+              className="text-[10px] font-mono tracking-[0.2em] uppercase"
+              style={{ color: `${missionColor}70` }}
+            >
+              Integrity: {score}/{currentQuestion}
+            </span>
+          </div>
         </div>
-        <Progress
-          value={progressValue}
-          className="h-2"
+        <div
+          className="h-2 rounded-full overflow-hidden relative"
           style={{
-            background: 'rgba(15, 23, 42, 0.6)',
+            background: 'rgba(0,0,0,0.5)',
+            border: `1px solid ${missionColor}20`,
+            boxShadow: `inset 0 0 8px rgba(0,0,0,0.5)`,
           }}
-        />
+        >
+          <motion.div
+            className="h-full rounded-full relative"
+            style={{
+              background: `linear-gradient(90deg, ${missionColor}40, ${missionColor})`,
+              boxShadow: `0 0 10px ${missionColor}60, 0 0 20px ${missionColor}30`,
+            }}
+            initial={{ width: '0%' }}
+            animate={{ width: `${progressValue}%` }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            {/* Energy pulse */}
+            <div
+              className="absolute right-0 top-0 bottom-0 w-3"
+              style={{
+                background: `${missionColor}`,
+                boxShadow: `0 0 8px ${missionColor}, 0 0 16px ${missionColor}80`,
+                animation: 'energy-pulse 1s ease-in-out infinite',
+              }}
+            />
+          </motion.div>
+        </div>
       </motion.div>
 
-      {/* Question card */}
+      {/* ─── Question Card ─── */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentQuestion}
@@ -530,53 +810,121 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
           exit={{ opacity: 0, x: -80, scale: 0.95 }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-          <Card
-            className="overflow-hidden"
+          <div
+            className="relative overflow-hidden rounded-2xl"
             style={{
-              background: 'rgba(15, 23, 42, 0.7)',
-              border: '1px solid rgba(148, 163, 184, 0.15)',
-              boxShadow: `0 0 30px rgba(15, 23, 42, 0.5), 0 0 60px ${missionColor}08`,
+              background: 'linear-gradient(135deg, rgba(5,11,24,0.92), rgba(10,15,30,0.88))',
+              border: `1px solid ${missionColor}20`,
+              boxShadow: `0 0 30px rgba(0,0,0,0.5), 0 0 60px ${missionColor}06`,
               backdropFilter: 'blur(20px)',
             }}
           >
-            <CardContent className="p-6 sm:p-8">
-              {/* Question number badge */}
+            {/* Scanning beam */}
+            <ScanningBeam color={missionColor} />
+
+            {/* Hologram grid */}
+            <HologramGrid color={missionColor} />
+
+            {/* Data stream particles */}
+            <DataStream color={missionColor} />
+
+            {/* Top accent line */}
+            <div
+              className="h-[2px] w-full relative z-[5]"
+              style={{
+                background: `linear-gradient(90deg, transparent, ${missionColor}80, transparent)`,
+                boxShadow: `0 0 10px ${missionColor}40`,
+              }}
+            />
+
+            <div className="relative z-[5] p-6 sm:p-8">
+              {/* ─── Question Header ─── */}
               <div className="flex items-center gap-3 mb-5">
+                <HologramLetter
+                  letter={missionId[0].toUpperCase()}
+                  color={missionColor}
+                  size="md"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Zap className="w-3.5 h-3.5" style={{ color: `${missionColor}80` }} />
+                    <span
+                      className="text-[10px] font-mono tracking-[0.25em] uppercase"
+                      style={{ color: `${missionColor}70` }}
+                    >
+                      Incoming Transmission
+                    </span>
+                  </div>
+                  <div className="h-px flex-1" style={{ background: `linear-gradient(to right, ${missionColor}40, ${missionColor}10, transparent)` }} />
+                </div>
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black"
+                  className="px-3 py-1 rounded-md text-xs font-mono font-black"
                   style={{
-                    background: `${missionColor}20`,
-                    border: `1px solid ${missionColor}50`,
+                    fontFamily: "var(--font-orbitron), sans-serif",
+                    background: `${missionColor}10`,
+                    border: `1px solid ${missionColor}30`,
                     color: missionColor,
-                    boxShadow: `0 0 10px ${missionColor}30`,
+                    textShadow: `0 0 6px ${missionColor}60`,
+                    boxShadow: `0 0 10px ${missionColor}15`,
                   }}
                 >
-                  {currentQuestion + 1}
+                  {String(currentQuestion + 1).padStart(2, '0')}/{String(totalQuestions).padStart(2, '0')}
                 </div>
-                <div className="h-px flex-1" style={{ background: `linear-gradient(to right, ${missionColor}40, transparent)` }} />
               </div>
 
-              {/* Question text */}
-              <h3
-                className="text-lg sm:text-xl font-bold mb-8 leading-relaxed"
-                style={{ color: '#e2e8f0' }}
-              >
-                {currentQ.question}
-              </h3>
+              {/* ─── Question Text ─── */}
+              <div className="mb-8 min-h-[60px]">
+                {decodingText ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2"
+                  >
+                    <span
+                      className="text-sm font-mono tracking-widest"
+                      style={{ color: `${missionColor}60` }}
+                    >
+                      DECODING TRANSMISSION
+                    </span>
+                    <span
+                      className="text-sm font-mono"
+                      style={{
+                        color: missionColor,
+                        animation: 'decoding-cursor 0.5s steps(2) infinite',
+                      }}
+                    >
+                      █
+                    </span>
+                  </motion.div>
+                ) : (
+                  <motion.h3
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-lg sm:text-xl font-bold leading-relaxed"
+                    style={{
+                      color: '#e2e8f0',
+                      textShadow: '0 0 20px rgba(226,232,240,0.1)',
+                    }}
+                  >
+                    {currentQ.question}
+                  </motion.h3>
+                )}
+              </div>
 
-              {/* Options */}
+              {/* ─── Options ─── */}
               <div className="grid gap-3">
                 {currentQ.options.map((option, index) => (
                   <motion.div
                     key={`${currentQuestion}-${index}`}
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + index * 0.08, duration: 0.3 }}
+                    transition={{ delay: questionRevealed ? 0.05 + index * 0.08 : 0.7 + index * 0.08, duration: 0.3 }}
                     whileHover={
                       selectedAnswer === null
                         ? {
-                            scale: 1.05,
-                            boxShadow: `0 0 25px ${missionColor}30`,
+                            scale: 1.03,
+                            boxShadow: `0 0 25px ${missionColor}20, 0 0 50px ${missionColor}10`,
                           }
                         : {}
                     }
@@ -597,40 +945,60 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                           handleAnswer(index);
                         }
                       }}
-                      aria-label={`Option ${optionLabels[index]}: ${option}`}
+                      aria-label={`Option ${alphaLabels[index]}: ${option}`}
                     >
-                      {/* Option label */}
+                      {/* Option label - hex + alpha */}
                       <div className="flex items-start gap-3">
+                        <div className="flex flex-col items-center gap-0.5 shrink-0 mt-0.5">
+                          <span
+                            className="text-[9px] font-mono tracking-wider"
+                            style={{
+                              color: selectedAnswer === null
+                                ? `${missionColor}50`
+                                : index === questions[currentQuestion].correct
+                                  ? 'rgba(34,197,94,0.5)'
+                                  : index === selectedAnswer
+                                    ? 'rgba(239,68,68,0.5)'
+                                    : 'rgba(100,116,139,0.3)',
+                            }}
+                          >
+                            {hexLabels[index]}
+                          </span>
+                          <span
+                            className="w-7 h-7 rounded-md flex items-center justify-center text-xs font-black"
+                            style={{
+                              fontFamily: "var(--font-orbitron), sans-serif",
+                              background: selectedAnswer === null
+                                ? `linear-gradient(135deg, ${missionColor}10, ${missionColor}18)`
+                                : index === questions[currentQuestion].correct
+                                  ? 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.18))'
+                                  : index === selectedAnswer
+                                    ? 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.18))'
+                                    : 'rgba(100,116,139,0.05)',
+                              border: selectedAnswer === null
+                                ? `1px solid ${missionColor}25`
+                                : index === questions[currentQuestion].correct
+                                  ? '1px solid rgba(34,197,94,0.35)'
+                                  : index === selectedAnswer
+                                    ? '1px solid rgba(239,68,68,0.35)'
+                                    : '1px solid transparent',
+                              color: selectedAnswer === null
+                                ? missionColor
+                                : index === questions[currentQuestion].correct
+                                  ? '#4ade80'
+                                  : index === selectedAnswer
+                                    ? '#f87171'
+                                    : '#475569',
+                              textShadow: selectedAnswer === null
+                                ? `0 0 6px ${missionColor}50`
+                                : 'none',
+                            }}
+                          >
+                            {alphaLabels[index]}
+                          </span>
+                        </div>
                         <span
-                          className="shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-xs font-black mt-0.5"
-                          style={{
-                            background: selectedAnswer === null
-                              ? `${missionColor}15`
-                              : index === questions[currentQuestion].correct
-                                ? 'rgba(34, 197, 94, 0.15)'
-                                : index === selectedAnswer
-                                  ? 'rgba(239, 68, 68, 0.15)'
-                                  : 'rgba(100, 116, 139, 0.1)',
-                            border: selectedAnswer === null
-                              ? `1px solid ${missionColor}30`
-                              : index === questions[currentQuestion].correct
-                                ? '1px solid rgba(34, 197, 94, 0.4)'
-                                : index === selectedAnswer
-                                  ? '1px solid rgba(239, 68, 68, 0.4)'
-                                  : '1px solid transparent',
-                            color: selectedAnswer === null
-                              ? missionColor
-                              : index === questions[currentQuestion].correct
-                                ? '#4ade80'
-                                : index === selectedAnswer
-                                  ? '#f87171'
-                                  : '#64748b',
-                          }}
-                        >
-                          {optionLabels[index]}
-                        </span>
-                        <span
-                          className="text-sm sm:text-base font-medium leading-relaxed"
+                          className="text-sm sm:text-base font-medium leading-relaxed pt-1"
                           style={{
                             color: selectedAnswer === null
                               ? '#cbd5e1'
@@ -638,7 +1006,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                                 ? '#4ade80'
                                 : index === selectedAnswer
                                   ? '#f87171'
-                                  : '#64748b',
+                                  : '#334155',
                           }}
                         >
                           {option}
@@ -652,7 +1020,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                 ))}
               </div>
 
-              {/* Feedback text */}
+              {/* ─── Feedback Text ─── */}
               <AnimatePresence>
                 {selectedAnswer !== null && (
                   <motion.div
@@ -663,43 +1031,107 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                     className="mt-6 text-center"
                   >
                     {isCorrect ? (
-                      <motion.p
+                      <motion.div
                         initial={{ scale: 0.8 }}
                         animate={{ scale: [0.8, 1.1, 1] }}
                         transition={{ duration: 0.4 }}
-                        className="text-lg font-black tracking-widest"
+                        className="inline-flex items-center gap-2 px-5 py-2 rounded-lg"
                         style={{
-                          color: '#4ade80',
-                          textShadow: '0 0 15px rgba(74, 222, 128, 0.5)',
+                          background: 'rgba(34,197,94,0.08)',
+                          border: '1px solid rgba(34,197,94,0.3)',
                         }}
                       >
-                        CORRECT!
-                      </motion.p>
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span
+                          className="text-base font-black tracking-[0.2em]"
+                          style={{
+                            fontFamily: "var(--font-orbitron), sans-serif",
+                            color: '#4ade80',
+                            textShadow: '0 0 15px rgba(74,222,128,0.5), 0 0 30px rgba(74,222,128,0.2)',
+                          }}
+                        >
+                          SIGNAL VERIFIED
+                        </span>
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                      </motion.div>
                     ) : (
-                      <motion.p
+                      <motion.div
                         initial={{ scale: 0.8 }}
                         animate={{ scale: [0.8, 1.1, 1] }}
                         transition={{ duration: 0.4 }}
-                        className="text-lg font-black tracking-widest"
+                        className="inline-flex items-center gap-2 px-5 py-2 rounded-lg"
                         style={{
-                          color: '#f87171',
-                          textShadow: '0 0 15px rgba(248, 113, 113, 0.5)',
+                          background: 'rgba(239,68,68,0.08)',
+                          border: '1px solid rgba(239,68,68,0.3)',
                         }}
                       >
-                        INCORRECT
-                      </motion.p>
+                        <XCircle className="w-4 h-4 text-red-400" />
+                        <span
+                          className="text-base font-black tracking-[0.2em]"
+                          style={{
+                            fontFamily: "var(--font-orbitron), sans-serif",
+                            color: '#f87171',
+                            textShadow: '0 0 15px rgba(248,113,113,0.5), 0 0 30px rgba(248,113,113,0.2)',
+                          }}
+                        >
+                          SIGNAL CORRUPTED
+                        </span>
+                        <XCircle className="w-4 h-4 text-red-400" />
+                      </motion.div>
                     )}
                   </motion.div>
                 )}
               </AnimatePresence>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Bottom accent line */}
+            <div
+              className="h-[1px] w-full relative z-[5]"
+              style={{
+                background: `linear-gradient(90deg, transparent, ${missionColor}30, transparent)`,
+              }}
+            />
+
+            {/* Corner decorations */}
+            <div
+              className="absolute top-0 left-0 w-6 h-6 z-[5]"
+              style={{
+                borderTop: `2px solid ${missionColor}50`,
+                borderLeft: `2px solid ${missionColor}50`,
+                borderTopLeftRadius: '16px',
+              }}
+            />
+            <div
+              className="absolute top-0 right-0 w-6 h-6 z-[5]"
+              style={{
+                borderTop: `2px solid ${missionColor}50`,
+                borderRight: `2px solid ${missionColor}50`,
+                borderTopRightRadius: '16px',
+              }}
+            />
+            <div
+              className="absolute bottom-0 left-0 w-6 h-6 z-[5]"
+              style={{
+                borderBottom: `2px solid ${missionColor}50`,
+                borderLeft: `2px solid ${missionColor}50`,
+                borderBottomLeftRadius: '16px',
+              }}
+            />
+            <div
+              className="absolute bottom-0 right-0 w-6 h-6 z-[5]"
+              style={{
+                borderBottom: `2px solid ${missionColor}50`,
+                borderRight: `2px solid ${missionColor}50`,
+                borderBottomRightRadius: '16px',
+              }}
+            />
+          </div>
         </motion.div>
       </AnimatePresence>
 
       {/* Decorative scanline overlay */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.02]"
+        className="absolute inset-0 pointer-events-none opacity-[0.015]"
         style={{
           backgroundImage:
             'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)',

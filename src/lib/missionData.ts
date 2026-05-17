@@ -273,7 +273,7 @@ export const missions: MissionData[] = [
     history: 'The Division Algorithm, while named as an "algorithm," is actually a theorem that guarantees the existence and uniqueness of quotient and remainder. The concept of division with remainder is ancient — it was used by Babylonian mathematicians around 2000 BC. The formal statement and proof appear in Euclid\'s Elements. The theorem is fundamental to the development of modular arithmetic by Carl Friedrich Gauss in his Disquisitiones Arithmeticae (1801).',
     quiz: [
       { question: 'In the Division Algorithm a = bq + r, what constraint must r satisfy?', options: ['r > b', '0 ≤ r < |b|', 'r = 0', 'r < 0'], correct: 1 },
-      { question: 'If a = 37 and b = 5, what are q and r?', options: ['q = 7, r = 2', 'q = 6, r = 7', 'q = 8, r = -3', 'q = 7, r = 2'], correct: 3 },
+      { question: 'If a = 37 and b = 5, what are q and r?', options: ['q = 6, r = 7', 'q = 8, r = -3', 'q = 7, r = 1', 'q = 7, r = 2'], correct: 3 },
       { question: 'What does the Division Algorithm guarantee about q and r?', options: ['They are positive', 'They are unique', 'They are equal', 'They are prime'], correct: 1 },
       { question: 'If a = 100 and b = 7, what is r?', options: ['1', '2', '3', '14'], correct: 1 },
       { question: 'Who formalized modular arithmetic using the Division Algorithm?', options: ['Euclid', 'Carl Friedrich Gauss', 'Leonhard Euler', 'Pierre de Fermat'], correct: 1 },
