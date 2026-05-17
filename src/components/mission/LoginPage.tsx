@@ -394,7 +394,7 @@ export function LoginPage() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.7 }}
-          className="flex flex-col items-center w-full lg:w-[45%] xl:w-[42%] py-3 px-4 sm:px-6 lg:px-8 overflow-y-auto"
+          className="flex flex-col items-center w-full lg:w-[44%] xl:w-[40%] py-4 px-5 sm:px-8 lg:px-10 overflow-y-auto"
         >
           {/* Sector label — compact */}
           <div className="text-center shrink-0 mb-1">
@@ -412,8 +412,8 @@ export function LoginPage() {
             </div>
           </div>
 
-          {/* Radar SVG — fill column width */}
-          <div className="relative w-full shrink-0" style={{ maxWidth: 320, aspectRatio: '1 / 1' }}>
+          {/* Radar SVG — 260px */}
+          <div className="relative shrink-0" style={{ width: 260, height: 260 }}>
             <div
               className="absolute inset-[-4px] rounded-full"
               style={{
@@ -471,7 +471,7 @@ export function LoginPage() {
           </div>
 
           {/* Telemetry Grid — 2 columns, fills remaining vertical space */}
-          <div className="w-full grid grid-cols-2 gap-2 mt-4 flex-1" style={{ maxWidth: 320 }}>
+          <div className="w-full grid grid-cols-2 gap-2.5 mt-5 flex-1" style={{ maxWidth: 300 }}>
             <GridCell
               label="OXYGEN"
               value="98.2%"
@@ -549,7 +549,7 @@ export function LoginPage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.7 }}
-          className="flex flex-col w-full lg:w-[55%] xl:w-[58%] py-3 px-4 sm:px-6 lg:px-10 overflow-y-auto"
+          className="flex flex-col w-full lg:w-[56%] xl:w-[60%] py-4 px-5 sm:px-8 lg:px-12 overflow-y-auto"
         >
           {/* Subtitle */}
           <div
@@ -561,9 +561,10 @@ export function LoginPage() {
 
           {/* Title with glitch — BIGGER */}
           <div
-            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-[0.08em] uppercase text-center lg:text-left mb-2 shrink-0"
+            className="font-bold tracking-[0.08em] uppercase text-center lg:text-left mb-3 shrink-0"
             style={{
               fontFamily: "var(--font-orbitron), sans-serif",
+              fontSize: 52,
               animation: 'glitch-float 4s ease-in-out infinite',
             }}
           >
@@ -598,7 +599,7 @@ export function LoginPage() {
           </div>
 
           {/* Restricted + Encryption row */}
-          <div className="w-full flex items-center justify-between mb-2 shrink-0">
+          <div className="w-full flex items-center justify-between mb-3 shrink-0">
             <span className="text-[12px] tracking-[0.1em]" style={{ color: P.textMuted }}>
               Restricted terminal — authorized personnel only
             </span>
@@ -613,7 +614,7 @@ export function LoginPage() {
           </div>
 
           {/* Divider */}
-          <div className="w-full flex items-center gap-2 mb-3 shrink-0">
+          <div className="w-full flex items-center gap-2 mb-4 shrink-0">
             <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
             <div className="w-1.5 h-1.5 rotate-45" style={{ backgroundColor: P.primary, opacity: 0.3 }} />
             <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
@@ -621,7 +622,7 @@ export function LoginPage() {
 
           {/* Mission Brief — expands to fill space */}
           <div
-            className="w-full border rounded p-4 mb-3 shrink-0"
+            className="w-full border rounded p-5 mb-4 shrink-0"
             style={{
               borderColor: `rgba(0,206,201,0.1)`,
               background: `linear-gradient(180deg, rgba(5,11,24,0.65), rgba(13,27,42,0.45))`,
@@ -634,7 +635,7 @@ export function LoginPage() {
             >
               MISSION BRIEF
             </div>
-            <p className="text-[14px] leading-relaxed" style={{ color: P.textSec }}>
+            <p className="text-[15px] leading-relaxed" style={{ color: P.textSec }}>
               XLR8 Vessel inbound on Orbit-IV Lab Node. All crew must verify identity
               through biometric-encrypted clearance. AES-256-GCM secured. Unauthorized
               access will be logged.
@@ -642,7 +643,7 @@ export function LoginPage() {
           </div>
 
           {/* Form — flex-1 to fill remaining space */}
-          <form onSubmit={handleSubmit} className="w-full flex flex-col flex-1 gap-3">
+          <form onSubmit={handleSubmit} className="w-full flex flex-col flex-1 gap-4">
             {/* Crew Identifier */}
             <div>
               <label
@@ -658,7 +659,7 @@ export function LoginPage() {
                 onFocus={handleFocus}
                 placeholder="e.g. 2026-0001"
                 disabled={authState !== 'PENDING'}
-                className="para-input w-full px-5 py-3.5 text-lg outline-none"
+                className="para-input w-full px-6 py-4 text-lg outline-none"
                 style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                 autoComplete="username"
               />
@@ -680,7 +681,7 @@ export function LoginPage() {
                   onFocus={handleFocus}
                   placeholder="ENTER ENCRYPTION KEY"
                   disabled={authState !== 'PENDING'}
-                  className="para-input w-full px-5 py-3.5 pr-11 text-lg outline-none"
+                  className="para-input w-full px-6 py-4 pr-12 text-lg outline-none"
                   style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                   autoComplete="current-password"
                 />
@@ -701,7 +702,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={authState !== 'PENDING' || !uid.trim() || !pwd.trim()}
-              className="para-btn w-full py-4 mt-auto text-base tracking-[0.2em] uppercase cursor-pointer"
+              className="para-btn w-full py-4.5 mt-auto text-base tracking-[0.2em] uppercase cursor-pointer"
               onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
               style={{
                 fontFamily: "var(--font-orbitron), sans-serif",
