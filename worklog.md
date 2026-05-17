@@ -291,3 +291,36 @@ Stage Summary:
 - Key structural change: TelemetryItem rows → StatusCard components with progress bars and subtext
 - New Mission Brief panel adds context between title and form
 - Auth flow fully visual: CREW AUTH card shows real-time progress bar + status dot + subtext
+
+---
+Task ID: 3
+Agent: Main
+Task: Redesign telemetry panel as 2-column grid with corner dots, top border accent, and new color specs
+
+Work Log:
+- Replaced single-column StatusCard components with 2-column grid layout
+- Created new GridCell component with:
+  - Thin top border accent (2px) in accent color with glow
+  - Label in tiny Orbitron (7px, muted teal, all caps, tight tracking)
+  - Value in large bold Rajdhani (14px normal / 18px full-width)
+  - 2px glowing progress bar below value
+  - 4 subtle corner dots (3px, accent color, varying opacity)
+  - Dark navy background (#020a12) per cell
+  - Dark teal border (rgba(0,206,201,0.1))
+- Updated color palette:
+  - Background: #020a12 (darker navy)
+  - OK value color: #00ffcc (bright cyan)
+  - Warning value color: #f5c842 (gold)
+  - P.cyan = #00ffcc, P.gold = #f5c842
+- Grid layout:
+  - OXYGEN (98.2%, green accent/bar, cyan value) | THRUST (STANDBY, cyan, no bar, "T-MINUS HOLD" subtext)
+  - SHIELDS (ACTIVE, green accent/bar, cyan value) | FUEL (74.1%, gold accent/bar, gold value)
+  - CREW AUTH — col-span-2, full width, dynamic state colors, status dot, subtext
+- CREW AUTH cell: dynamic accentColor/valueColor/barColor per auth state, animated status dot
+
+Stage Summary:
+- Telemetry panel now uses 2-column CSS grid with GridCell components
+- Each cell has top border accent, corner dots, 2px glowing progress bars
+- Colors: #00ffcc for ok, #f5c842 for warning, #020a12 cell bg
+- CREW AUTH spans both columns with full auth state visualization
+- Lint passes, server compiles and serves correctly

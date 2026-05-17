@@ -8,23 +8,24 @@ import { Eye, EyeOff } from 'lucide-react';
 
 // ─── Palette Tokens ──────────────────────────────────────────────────────────
 const P = {
-  bg:          '#050B18',
+  bg:          '#020a12',
   bgSec:       '#0D1B2A',
   card:        '#132238',
   panel:       '#1B2F4A',
   primary:     '#00CEC9',
   primaryHov:  '#00F5FF',
+  cyan:        '#00ffcc',
+  gold:        '#f5c842',
   green:       '#7DF9C0',
   purple:      '#7B6FFF',
   blue:        '#4DA8FF',
   success:     '#7DF9C0',
-  warning:     '#FFC857',
+  warning:     '#f5c842',
   danger:      '#FF4D00',
   error:       '#FF3B30',
   text:        '#F8FAFC',
   textSec:     '#B8C4D6',
   textMuted:   '#7A8CA5',
-  gold:        '#FFC857',
 };
 
 // ─── Star Field Generator ────────────────────────────────────────────────────
@@ -154,7 +155,7 @@ export function LoginPage() {
       transition={{ duration: 1 }}
       className="relative h-screen w-full overflow-hidden select-none flex flex-col"
       style={{
-        background: `radial-gradient(ellipse at 15% 0%, ${P.bgSec} 0%, ${P.bg} 45%, ${P.bg} 100%)`,
+        background: `radial-gradient(ellipse at 15% 0%, ${P.bgSec} 0%, #020a12 45%, #020a12 100%)`,
         fontFamily: "var(--font-rajdhani), sans-serif",
       }}
       onClick={tryBGM}
@@ -469,18 +470,74 @@ export function LoginPage() {
             </svg>
           </div>
 
-          {/* Individual Status Cards — compact */}
-          <div className="w-full space-y-1.5">
-            <StatusCard label="OXYGEN" value="98.2%" subtext="NOMINAL" barPercent={98.2} barColor={P.primary} status="normal" />
-            <StatusCard label="THRUST" value="STANDBY" subtext="T-MINUS HOLD" barPercent={0} barColor={P.primary} status="normal" noBar />
-            <StatusCard label="SHIELDS" value="ACTIVE" subtext="DEFLECTOR ONLINE" barPercent={100} barColor={P.primary} status="normal" />
-            <StatusCard label="FUEL" value="74.1%" subtext="RESERVES LOW" barPercent={74.1} barColor={P.warning} status="warning" />
-            <StatusCard
-              label="CREW AUTH" value={authStatusText} subtext={authSubtext}
-              barPercent={authState === 'GRANTED' ? 100 : authState === 'VERIFYING' ? 50 : 0}
-              barColor={authState === 'GRANTED' ? P.success : authState === 'VERIFYING' ? P.warning : authState === 'DENIED' ? P.error : P.textMuted}
-              status={authState === 'GRANTED' ? 'success' : authState === 'VERIFYING' ? 'verifying' : authState === 'DENIED' ? 'denied' : 'pending'}
+          {/* Telemetry Grid — 2 columns */}
+          <div className="w-full grid grid-cols-2 gap-1.5">
+            <GridCell
+              label="OXYGEN"
+              value="98.2%"
+              barPercent={98.2}
+              barColor={P.green}
+              valueColor={P.cyan}
+              accentColor={P.green}
             />
+            <GridCell
+              label="THRUST"
+              value="STANDBY"
+              subtext="T-MINUS HOLD"
+              noBar
+              accentColor={P.cyan}
+              valueColor={P.cyan}
+            />
+            <GridCell
+              label="SHIELDS"
+              value="ACTIVE"
+              barPercent={100}
+              barColor={P.green}
+              accentColor={P.green}
+              valueColor={P.cyan}
+            />
+            <GridCell
+              label="FUEL"
+              value="74.1%"
+              barPercent={74.1}
+              barColor={P.gold}
+              accentColor={P.gold}
+              valueColor={P.gold}
+            />
+
+            {/* CREW AUTH — full width, spans both columns */}
+            <div className="col-span-2">
+              <GridCell
+                label="CREW AUTH"
+                value={authStatusText}
+                subtext={authSubtext}
+                barPercent={authState === 'GRANTED' ? 100 : authState === 'VERIFYING' ? 50 : 0}
+                barColor={
+                  authState === 'GRANTED' ? P.success
+                    : authState === 'VERIFYING' ? P.gold
+                      : authState === 'DENIED' ? P.error
+                        : P.textMuted
+                }
+                accentColor={
+                  authState === 'GRANTED' ? P.success
+                    : authState === 'VERIFYING' ? P.gold
+                      : authState === 'DENIED' ? P.error
+                        : P.cyan
+                }
+                valueColor={
+                  authState === 'GRANTED' ? P.success
+                    : authState === 'VERIFYING' ? P.gold
+                      : authState === 'DENIED' ? P.error
+                        : P.cyan
+                }
+                statusDot={
+                  authState === 'VERIFYING' ? 'pulse' as const
+                    : authState === 'DENIED' ? 'fast' as const
+                      : 'none' as const
+                }
+                fullWidth
+              />
+            </div>
           </div>
         </motion.div>
 
@@ -729,107 +786,121 @@ function StatusDot({ label, color, pulse }: { label: string; color: string; puls
   );
 }
 
-// ─── Individual Status Card with progress bar ────────────────────────────────
-function StatusCard({
+// ─── Grid Cell for 2-column telemetry ─────────────────────────────────────────
+function GridCell({
   label,
   value,
   subtext,
-  barPercent,
+  barPercent = 0,
   barColor,
-  status,
+  accentColor,
+  valueColor,
+  statusDot = 'none',
   noBar,
+  fullWidth,
 }: {
   label: string;
   value: string;
-  subtext: string;
-  barPercent: number;
+  subtext?: string;
+  barPercent?: number;
   barColor: string;
-  status: 'normal' | 'warning' | 'pending' | 'verifying' | 'success' | 'denied';
+  accentColor: string;
+  valueColor: string;
+  statusDot?: 'none' | 'pulse' | 'fast';
   noBar?: boolean;
+  fullWidth?: boolean;
 }) {
-  const valueColor =
-    status === 'warning' ? P.warning
-    : status === 'pending' ? P.textMuted
-    : status === 'verifying' ? P.warning
-    : status === 'success' ? P.success
-    : status === 'denied' ? P.error
-    : P.primary;
-
-  const statusDotColor =
-    status === 'warning' ? P.warning
-    : status === 'pending' ? P.textMuted
-    : status === 'verifying' ? P.warning
-    : status === 'success' ? P.success
-    : status === 'denied' ? P.error
-    : P.primary;
-
   return (
     <div
-      className="w-full border rounded px-2.5 py-1.5"
+      className="relative border rounded-sm overflow-hidden"
       style={{
-        borderColor: `rgba(0,206,201,0.08)`,
-        background: `linear-gradient(180deg, rgba(5,11,24,0.55), rgba(13,27,42,0.35))`,
-        animation: 'cardGlow 5s ease-in-out infinite',
-        animationDelay: `${Math.random() * 2}s`,
+        borderColor: 'rgba(0,206,201,0.1)',
+        background: '#020a12',
       }}
     >
-      {/* Top row: label + value */}
-      <div className="flex items-center justify-between">
-        <span
-          className="text-[8px] tracking-[0.18em] uppercase"
-          style={{ fontFamily: "var(--font-orbitron), sans-serif", color: P.textMuted }}
+      {/* Top border accent */}
+      <div
+        className="h-[2px] w-full"
+        style={{
+          background: accentColor,
+          boxShadow: `0 0 6px ${accentColor}60`,
+        }}
+      />
+
+      {/* Corner dots */}
+      <div className="absolute top-[3px] left-[3px] w-[3px] h-[3px] rounded-full"
+        style={{ backgroundColor: accentColor, opacity: 0.5 }} />
+      <div className="absolute top-[3px] right-[3px] w-[3px] h-[3px] rounded-full"
+        style={{ backgroundColor: accentColor, opacity: 0.5 }} />
+      <div className="absolute bottom-[3px] left-[3px] w-[3px] h-[3px] rounded-full"
+        style={{ backgroundColor: accentColor, opacity: 0.3 }} />
+      <div className="absolute bottom-[3px] right-[3px] w-[3px] h-[3px] rounded-full"
+        style={{ backgroundColor: accentColor, opacity: 0.3 }} />
+
+      {/* Content */}
+      <div className={`px-2.5 ${fullWidth ? 'py-2' : 'py-1.5'}`}>
+        {/* Label row */}
+        <div
+          className="text-[7px] tracking-[0.18em] uppercase mb-0.5"
+          style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.4)' }}
         >
           {label}
-        </span>
-        <div className="flex items-center gap-1">
-          <div
-            className="w-1 h-1 rounded-full"
-            style={{
-              backgroundColor: statusDotColor,
-              boxShadow: `0 0 3px ${statusDotColor}`,
-              animation: status === 'verifying' ? 'pulse 0.8s ease-in-out infinite'
-                : status === 'denied' ? 'pulse 0.4s ease-in-out infinite' : 'none',
-            }}
-          />
+        </div>
+
+        {/* Value row */}
+        <div className="flex items-center gap-1.5">
+          {statusDot !== 'none' && (
+            <div
+              className="w-1.5 h-1.5 rounded-full shrink-0"
+              style={{
+                backgroundColor: valueColor,
+                boxShadow: `0 0 5px ${valueColor}`,
+                animation: statusDot === 'pulse' ? 'pulse 0.8s ease-in-out infinite'
+                  : statusDot === 'fast' ? 'pulse 0.4s ease-in-out infinite' : 'none',
+              }}
+            />
+          )}
           <span
-            className="text-xs tracking-[0.06em] uppercase font-semibold"
+            className={`font-bold tracking-[0.04em] uppercase ${fullWidth ? 'text-lg' : 'text-sm'}`}
             style={{
               fontFamily: "var(--font-rajdhani), sans-serif",
               color: valueColor,
-              animation: status === 'verifying' ? 'pulse 0.8s ease-in-out infinite' : 'none',
+              animation: statusDot === 'pulse' ? 'pulse 0.8s ease-in-out infinite' : 'none',
             }}
           >
             {value}
           </span>
         </div>
+
+        {/* Progress bar — 2px, glowing */}
+        {!noBar && (
+          <div
+            className="w-full h-[2px] rounded-full mt-1 mb-0.5"
+            style={{ background: 'rgba(0,206,201,0.06)' }}
+          >
+            <motion.div
+              className="h-full rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${barPercent}%` }}
+              transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }}
+              style={{
+                background: barColor,
+                boxShadow: `0 0 4px ${barColor}80`,
+              }}
+            />
+          </div>
+        )}
+
+        {/* Subtext */}
+        {subtext && (
+          <div
+            className="text-[6px] tracking-[0.14em] uppercase mt-0.5"
+            style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.3)' }}
+          >
+            {subtext}
+          </div>
+        )}
       </div>
-
-      {/* Progress bar */}
-      {!noBar && (
-        <div
-          className="w-full h-[2px] rounded-full my-1"
-          style={{ background: `rgba(0,206,201,0.06)` }}
-        >
-          <motion.div
-            className="h-full rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: `${barPercent}%` }}
-            transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }}
-            style={{
-              background: barColor,
-              boxShadow: `0 0 4px ${barColor}40`,
-            }}
-          />
-        </div>
-      )}
-
-      {/* Subtext */}
-      <span
-        className="text-[7px] tracking-[0.1em] uppercase"
-        style={{ color: P.textMuted, fontFamily: "var(--font-orbitron), sans-serif" }}
-      >
-        {subtext}
-      </span>
     </div>
   );
 }
