@@ -152,7 +152,7 @@ export function LoginPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="relative min-h-screen w-full overflow-hidden select-none"
+      className="relative h-screen w-full overflow-hidden select-none flex flex-col"
       style={{
         background: `radial-gradient(ellipse at 15% 0%, ${P.bgSec} 0%, ${P.bg} 45%, ${P.bg} 100%)`,
         fontFamily: "var(--font-rajdhani), sans-serif",
@@ -201,9 +201,9 @@ export function LoginPage() {
         }
         @keyframes glitch-float {
           0%, 100% { transform: translateY(0); }
-          25% { transform: translateY(-5px); }
+          25% { transform: translateY(-4px); }
           50% { transform: translateY(-2px); }
-          75% { transform: translateY(-7px); }
+          75% { transform: translateY(-5px); }
         }
         @keyframes scanline-drift {
           0% { background-position: 0 0; }
@@ -226,8 +226,8 @@ export function LoginPage() {
           100% { box-shadow: 0 0 0px rgba(125,249,192,0); }
         }
         @keyframes cardGlow {
-          0%, 100% { box-shadow: 0 0 4px rgba(0,206,201,0.08), inset 0 0 4px rgba(0,206,201,0.02); }
-          50% { box-shadow: 0 0 10px rgba(0,206,201,0.18), inset 0 0 8px rgba(0,206,201,0.04); }
+          0%, 100% { box-shadow: 0 0 4px rgba(0,206,201,0.06), inset 0 0 3px rgba(0,206,201,0.02); }
+          50% { box-shadow: 0 0 8px rgba(0,206,201,0.15), inset 0 0 6px rgba(0,206,201,0.03); }
         }
 
         .para-input {
@@ -308,15 +308,6 @@ export function LoginPage() {
             filter: 'blur(50px)',
           }}
         />
-        <div
-          className="absolute"
-          style={{
-            width: '400px', height: '300px', top: '30%', right: '20%',
-            borderRadius: '50%',
-            background: `radial-gradient(ellipse, rgba(255,200,87,0.03) 0%, transparent 70%)`,
-            filter: 'blur(60px)',
-          }}
-        />
       </div>
 
       {/* ── Background: Constellation Lines ──────────────────────────── */}
@@ -374,21 +365,20 @@ export function LoginPage() {
 
       {/* ── Top Bar ──────────────────────────────────────────────────── */}
       <div
-        className="relative z-10 flex items-center justify-between px-4 sm:px-8 py-3 border-b"
+        className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-1.5 border-b shrink-0"
         style={{
           borderColor: `rgba(0,206,201,0.1)`,
           background: `rgba(5,11,24,0.65)`,
           backdropFilter: 'blur(8px)',
-          animation: 'fadeup 0.6s ease both',
         }}
       >
         <div
-          className="text-[10px] sm:text-xs tracking-[0.25em] uppercase"
+          className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
         >
           XLR8 AUTOMATA-IV // RECURSION NODE // FINALS
         </div>
-        <div className="hidden sm:flex items-center gap-5">
+        <div className="hidden sm:flex items-center gap-4">
           <StatusDot label="HULL INTACT" color="cyan" />
           <StatusDot label="CREW: 0/4" color="cyan" />
           <StatusDot label="COMMS LIVE" color="cyan" pulse />
@@ -396,35 +386,35 @@ export function LoginPage() {
       </div>
 
       {/* ── Main Content: Two Column Layout ──────────────────────────── */}
-      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 px-4 sm:px-8 py-6 lg:py-0 lg:min-h-[calc(100vh-100px)]">
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-12 px-4 sm:px-6 py-3 lg:py-2 overflow-auto">
 
         {/* ── Left Column: Radar + Individual Status Cards ─────────────── */}
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.9 }}
-          className="flex flex-col items-center gap-4 w-full max-w-xs"
+          transition={{ delay: 0.3, duration: 0.7 }}
+          className="flex flex-col items-center gap-2 w-full max-w-[260px]"
         >
           {/* Sector label */}
-          <div className="text-center mb-1">
+          <div className="text-center">
             <div
-              className="text-[10px] tracking-[0.3em] uppercase mb-1"
+              className="text-[8px] tracking-[0.3em] uppercase"
               style={{ color: `rgba(0,206,201,0.4)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               Orbit Sector
             </div>
             <div
-              className="text-sm tracking-[0.15em] uppercase"
+              className="text-[11px] tracking-[0.12em] uppercase"
               style={{ color: `rgba(0,206,201,0.75)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               ORBIT-IV &middot; LAB NODE
             </div>
           </div>
 
-          {/* Radar SVG */}
-          <div className="relative w-52 h-52 sm:w-56 sm:h-56">
+          {/* Radar SVG — compact */}
+          <div className="relative w-36 h-36 sm:w-40 sm:h-40">
             <div
-              className="absolute inset-[-6px] rounded-full"
+              className="absolute inset-[-4px] rounded-full"
               style={{
                 background: `radial-gradient(circle, rgba(0,206,201,0.04) 60%, transparent 70%)`,
                 animation: 'breathe 4s ease-in-out infinite',
@@ -479,52 +469,16 @@ export function LoginPage() {
             </svg>
           </div>
 
-          {/* Individual Status Cards */}
-          <div className="w-full space-y-2.5">
+          {/* Individual Status Cards — compact */}
+          <div className="w-full space-y-1.5">
+            <StatusCard label="OXYGEN" value="98.2%" subtext="NOMINAL" barPercent={98.2} barColor={P.primary} status="normal" />
+            <StatusCard label="THRUST" value="STANDBY" subtext="T-MINUS HOLD" barPercent={0} barColor={P.primary} status="normal" noBar />
+            <StatusCard label="SHIELDS" value="ACTIVE" subtext="DEFLECTOR ONLINE" barPercent={100} barColor={P.primary} status="normal" />
+            <StatusCard label="FUEL" value="74.1%" subtext="RESERVES LOW" barPercent={74.1} barColor={P.warning} status="warning" />
             <StatusCard
-              label="OXYGEN"
-              value="98.2%"
-              subtext="NOMINAL"
-              barPercent={98.2}
-              barColor={P.primary}
-              status="normal"
-            />
-            <StatusCard
-              label="THRUST"
-              value="STANDBY"
-              subtext="T-MINUS HOLD"
-              barPercent={0}
-              barColor={P.primary}
-              status="normal"
-              noBar
-            />
-            <StatusCard
-              label="SHIELDS"
-              value="ACTIVE"
-              subtext="DEFLECTOR ONLINE"
-              barPercent={100}
-              barColor={P.primary}
-              status="normal"
-            />
-            <StatusCard
-              label="FUEL"
-              value="74.1%"
-              subtext="RESERVES LOW"
-              barPercent={74.1}
-              barColor={P.warning}
-              status="warning"
-            />
-            <StatusCard
-              label="CREW AUTH"
-              value={authStatusText}
-              subtext={authSubtext}
+              label="CREW AUTH" value={authStatusText} subtext={authSubtext}
               barPercent={authState === 'GRANTED' ? 100 : authState === 'VERIFYING' ? 50 : 0}
-              barColor={
-                authState === 'GRANTED' ? P.success
-                  : authState === 'VERIFYING' ? P.warning
-                    : authState === 'DENIED' ? P.error
-                      : P.textMuted
-              }
+              barColor={authState === 'GRANTED' ? P.success : authState === 'VERIFYING' ? P.warning : authState === 'DENIED' ? P.error : P.textMuted}
               status={authState === 'GRANTED' ? 'success' : authState === 'VERIFYING' ? 'verifying' : authState === 'DENIED' ? 'denied' : 'pending'}
             />
           </div>
@@ -532,22 +486,22 @@ export function LoginPage() {
 
         {/* ── Right Column: Login Form ───────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
+          initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5, duration: 0.9 }}
-          className="flex flex-col items-center lg:items-start w-full max-w-sm"
+          transition={{ delay: 0.4, duration: 0.7 }}
+          className="flex flex-col items-center lg:items-start w-full max-w-[320px]"
         >
           {/* Subtitle */}
           <div
-            className="text-[10px] sm:text-xs tracking-[0.25em] uppercase mb-3 text-center lg:text-left"
+            className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase mb-1.5 text-center lg:text-left"
             style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
           >
             XLR8 VESSEL // FINALS MISSION IV
           </div>
 
-          {/* Title with glitch effect */}
+          {/* Title with glitch */}
           <div
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[0.12em] uppercase text-center lg:text-left mb-2"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[0.1em] uppercase text-center lg:text-left mb-1"
             style={{
               fontFamily: "var(--font-orbitron), sans-serif",
               animation: 'glitch-float 4s ease-in-out infinite',
@@ -556,7 +510,7 @@ export function LoginPage() {
             <span
               style={{
                 color: P.primary,
-                textShadow: `0 0 20px rgba(0,206,201,0.5), 0 0 40px rgba(0,206,201,0.15)`,
+                textShadow: `0 0 18px rgba(0,206,201,0.5), 0 0 36px rgba(0,206,201,0.15)`,
                 position: 'relative',
                 display: 'inline-block',
               }}
@@ -583,58 +537,57 @@ export function LoginPage() {
             </span>
           </div>
 
-          {/* Restricted notice */}
-          <div
-            className="text-xs tracking-[0.12em] mb-4 text-center lg:text-left"
-            style={{ color: P.textMuted }}
-          >
-            Restricted terminal — authorized personnel only
-          </div>
-
-          {/* Divider with encryption badge */}
-          <div className="w-full flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.15)` }} />
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: P.green, boxShadow: `0 0 6px ${P.green}` }} />
-              <span className="text-[9px] tracking-[0.18em] uppercase"
-                style={{ color: `rgba(125,249,192,0.55)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
-                AES-256-GCM
+          {/* Restricted + Encryption row */}
+          <div className="w-full flex items-center justify-between mb-2">
+            <span className="text-[10px] tracking-[0.1em]" style={{ color: P.textMuted }}>
+              Restricted terminal — authorized personnel only
+            </span>
+            <div className="flex items-center gap-1">
+              <div className="w-1 h-1 rounded-full"
+                style={{ backgroundColor: P.green, boxShadow: `0 0 4px ${P.green}` }} />
+              <span className="text-[8px] tracking-[0.15em] uppercase"
+                style={{ color: `rgba(125,249,192,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
+                AES-256
               </span>
             </div>
-            <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.15)` }} />
           </div>
 
-          {/* Mission Brief Panel */}
+          {/* Divider */}
+          <div className="w-full flex items-center gap-2 mb-2">
+            <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
+            <div className="w-1 h-1 rotate-45" style={{ backgroundColor: P.primary, opacity: 0.3 }} />
+            <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
+          </div>
+
+          {/* Mission Brief — compact */}
           <div
-            className="w-full border rounded p-4 mb-5"
+            className="w-full border rounded p-2.5 mb-3"
             style={{
-              borderColor: `rgba(0,206,201,0.12)`,
-              background: `linear-gradient(180deg, rgba(5,11,24,0.7), rgba(13,27,42,0.5))`,
+              borderColor: `rgba(0,206,201,0.1)`,
+              background: `linear-gradient(180deg, rgba(5,11,24,0.65), rgba(13,27,42,0.45))`,
               animation: 'cardGlow 5s ease-in-out infinite',
             }}
           >
             <div
-              className="text-[10px] tracking-[0.2em] uppercase mb-2"
-              style={{ color: `rgba(0,206,201,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}
+              className="text-[8px] tracking-[0.18em] uppercase mb-1"
+              style={{ color: `rgba(0,206,201,0.45)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               MISSION BRIEF
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: P.textSec }}>
-              XLR8 Vessel inbound on Orbit-IV Lab Node. All crew members must verify identity
-              through biometric-encrypted clearance protocol. This terminal is secured with
-              AES-256-GCM encryption. Unauthorized access attempts will be logged and reported
-              to command.
+            <p className="text-[11px] leading-relaxed" style={{ color: P.textSec }}>
+              XLR8 Vessel inbound on Orbit-IV Lab Node. All crew must verify identity
+              through biometric-encrypted clearance. AES-256-GCM secured. Unauthorized
+              access will be logged.
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="w-full space-y-4">
+          <form onSubmit={handleSubmit} className="w-full space-y-2.5">
             {/* Crew Identifier */}
             <div>
               <label
-                className="block text-[11px] tracking-[0.2em] uppercase mb-2"
-                style={{ color: `rgba(0,206,201,0.55)`, fontFamily: "var(--font-orbitron), sans-serif" }}
+                className="block text-[9px] tracking-[0.18em] uppercase mb-1"
+                style={{ color: `rgba(0,206,201,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}
               >
                 [ Crew Identifier ]
               </label>
@@ -645,7 +598,7 @@ export function LoginPage() {
                 onFocus={handleFocus}
                 placeholder="e.g. 2026-0001"
                 disabled={authState !== 'PENDING'}
-                className="para-input w-full px-5 py-3 text-sm outline-none"
+                className="para-input w-full px-4 py-2 text-sm outline-none"
                 style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                 autoComplete="username"
               />
@@ -654,8 +607,8 @@ export function LoginPage() {
             {/* Encryption Key */}
             <div>
               <label
-                className="block text-[11px] tracking-[0.2em] uppercase mb-2"
-                style={{ color: `rgba(0,206,201,0.55)`, fontFamily: "var(--font-orbitron), sans-serif" }}
+                className="block text-[9px] tracking-[0.18em] uppercase mb-1"
+                style={{ color: `rgba(0,206,201,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}
               >
                 [ Encryption Key ]
               </label>
@@ -667,19 +620,19 @@ export function LoginPage() {
                   onFocus={handleFocus}
                   placeholder="ENTER ENCRYPTION KEY"
                   disabled={authState !== 'PENDING'}
-                  className="para-input w-full px-5 py-3 pr-10 text-sm outline-none"
+                  className="para-input w-full px-4 py-2 pr-9 text-sm outline-none"
                   style={{ color: P.text, fontFamily: "var(--font-rajdhani), sans-serif", caretColor: P.primary }}
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => { setShowPwd(!showPwd); if (soundEnabled) soundEngine.playClick(); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer bg-transparent border-0 p-0"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer bg-transparent border-0 p-0"
                   style={{ color: showPwd ? P.primary : P.textMuted, transition: 'color 0.2s' }}
                   aria-label={showPwd ? 'Hide password' : 'Show password'}
                   tabIndex={-1}
                 >
-                  {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPwd ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>
@@ -688,7 +641,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={authState !== 'PENDING' || !uid.trim() || !pwd.trim()}
-              className="para-btn w-full py-3.5 mt-2 text-sm tracking-[0.25em] uppercase cursor-pointer"
+              className="para-btn w-full py-2.5 mt-1 text-xs tracking-[0.2em] uppercase cursor-pointer"
               onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
               style={{
                 fontFamily: "var(--font-orbitron), sans-serif",
@@ -714,18 +667,14 @@ export function LoginPage() {
           </form>
 
           {/* Terminal status footer */}
-          <div className="w-full flex items-center gap-2 mt-3">
-            <span
-              className="text-[9px] tracking-[0.15em] uppercase"
-              style={{ color: `rgba(0,206,201,0.35)`, fontFamily: "var(--font-orbitron), sans-serif" }}
-            >
+          <div className="w-full flex items-center gap-1.5 mt-2">
+            <span className="text-[8px] tracking-[0.12em] uppercase"
+              style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               TERMINAL READY
             </span>
-            <span style={{ color: `rgba(0,206,201,0.2)` }}>:</span>
-            <span
-              className="text-[9px] tracking-[0.15em] uppercase"
-              style={{ color: `rgba(0,206,201,0.35)`, fontFamily: "var(--font-orbitron), sans-serif" }}
-            >
+            <span style={{ color: `rgba(0,206,201,0.15)` }}>:</span>
+            <span className="text-[8px] tracking-[0.12em] uppercase"
+              style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               ENCRYPTION: AES-256-GCM
             </span>
           </div>
@@ -734,7 +683,7 @@ export function LoginPage() {
 
       {/* ── Bottom Bar ──────────────────────────────────────────────── */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-10 flex flex-col sm:flex-row items-center justify-between px-4 sm:px-8 py-3 border-t gap-2"
+        className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-1.5 border-t gap-1 shrink-0"
         style={{
           borderColor: `rgba(0,206,201,0.08)`,
           background: `rgba(5,11,24,0.65)`,
@@ -742,12 +691,12 @@ export function LoginPage() {
         }}
       >
         <div
-          className="text-[10px] sm:text-xs tracking-[0.2em] uppercase"
+          className="text-[8px] sm:text-[10px] tracking-[0.15em] uppercase"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: P.textMuted }}
         >
           HERMOSO ● NUEVAS ● ORENSE ● SANTIAGO ● III - DCSAD
         </div>
-        <div className="flex items-center gap-4 sm:gap-6">
+        <div className="flex items-center gap-3 sm:gap-5">
           <BottomStatusItem label="ENCRYPTION" value="AES-256-GCM" />
           <BottomStatusItem label="NODE" value="RECURSION-04" />
           <BottomStatusItem label="STATUS" value="AWAITING CREW" />
@@ -761,18 +710,18 @@ export function LoginPage() {
 function StatusDot({ label, color, pulse }: { label: string; color: string; pulse?: boolean }) {
   const dotColor = color === 'cyan' ? P.primary : P.gold;
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1">
       <div
-        className="w-1.5 h-1.5 rounded-full"
+        className="w-1 h-1 rounded-full"
         style={{
           backgroundColor: dotColor,
           animation: pulse ? 'pulse 2s ease-in-out infinite' : 'none',
-          boxShadow: `0 0 4px ${dotColor}`,
+          boxShadow: `0 0 3px ${dotColor}`,
         }}
       />
       <span
-        className="text-[10px] tracking-[0.15em] uppercase"
-        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.45)` }}
+        className="text-[8px] tracking-[0.12em] uppercase"
+        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.4)` }}
       >
         {label}
       </span>
@@ -816,34 +765,34 @@ function StatusCard({
 
   return (
     <div
-      className="w-full border rounded p-3"
+      className="w-full border rounded px-2.5 py-1.5"
       style={{
-        borderColor: `rgba(0,206,201,0.1)`,
-        background: `linear-gradient(180deg, rgba(5,11,24,0.6), rgba(13,27,42,0.4))`,
+        borderColor: `rgba(0,206,201,0.08)`,
+        background: `linear-gradient(180deg, rgba(5,11,24,0.55), rgba(13,27,42,0.35))`,
         animation: 'cardGlow 5s ease-in-out infinite',
         animationDelay: `${Math.random() * 2}s`,
       }}
     >
       {/* Top row: label + value */}
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between">
         <span
-          className="text-[10px] tracking-[0.2em] uppercase"
+          className="text-[8px] tracking-[0.18em] uppercase"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: P.textMuted }}
         >
           {label}
         </span>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <div
-            className="w-1.5 h-1.5 rounded-full"
+            className="w-1 h-1 rounded-full"
             style={{
               backgroundColor: statusDotColor,
-              boxShadow: `0 0 4px ${statusDotColor}`,
+              boxShadow: `0 0 3px ${statusDotColor}`,
               animation: status === 'verifying' ? 'pulse 0.8s ease-in-out infinite'
                 : status === 'denied' ? 'pulse 0.4s ease-in-out infinite' : 'none',
             }}
           />
           <span
-            className="text-sm tracking-[0.08em] uppercase font-semibold"
+            className="text-xs tracking-[0.06em] uppercase font-semibold"
             style={{
               fontFamily: "var(--font-rajdhani), sans-serif",
               color: valueColor,
@@ -858,8 +807,8 @@ function StatusCard({
       {/* Progress bar */}
       {!noBar && (
         <div
-          className="w-full h-[3px] rounded-full mb-1.5"
-          style={{ background: `rgba(0,206,201,0.08)` }}
+          className="w-full h-[2px] rounded-full my-1"
+          style={{ background: `rgba(0,206,201,0.06)` }}
         >
           <motion.div
             className="h-full rounded-full"
@@ -868,7 +817,7 @@ function StatusCard({
             transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }}
             style={{
               background: barColor,
-              boxShadow: `0 0 6px ${barColor}40`,
+              boxShadow: `0 0 4px ${barColor}40`,
             }}
           />
         </div>
@@ -876,7 +825,7 @@ function StatusCard({
 
       {/* Subtext */}
       <span
-        className="text-[9px] tracking-[0.12em] uppercase"
+        className="text-[7px] tracking-[0.1em] uppercase"
         style={{ color: P.textMuted, fontFamily: "var(--font-orbitron), sans-serif" }}
       >
         {subtext}
@@ -888,16 +837,16 @@ function StatusCard({
 // ─── Bottom Status Item ──────────────────────────────────────────────────────
 function BottomStatusItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1">
       <span
-        className="text-[9px] sm:text-[10px] tracking-[0.15em] uppercase"
-        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.3)` }}
+        className="text-[7px] sm:text-[8px] tracking-[0.12em] uppercase"
+        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.25)` }}
       >
         {label}:
       </span>
       <span
-        className="text-[9px] sm:text-[10px] tracking-[0.12em] uppercase"
-        style={{ fontFamily: "var(--font-rajdhani), sans-serif", color: `rgba(0,206,201,0.6)` }}
+        className="text-[7px] sm:text-[8px] tracking-[0.1em] uppercase"
+        style={{ fontFamily: "var(--font-rajdhani), sans-serif", color: `rgba(0,206,201,0.5)` }}
       >
         {value}
       </span>
