@@ -890,6 +890,12 @@ export function Dashboard() {
           50% { transform: translateY(-2px); }
           75% { transform: translateY(-5px); }
         }
+        @keyframes title-sway {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(8px); }
+          50% { transform: translateX(0); }
+          75% { transform: translateX(-8px); }
+        }
       `}</style>
 
       {/* ─── Layer 0: Deep dark background ─── */}
@@ -1104,10 +1110,36 @@ export function Dashboard() {
             className="mb-6 sm:mb-8"
           >
             <h2
-              className="text-lg sm:text-xl font-bold tracking-wider uppercase"
-              style={{ color: 'rgba(255, 255, 255, 0.9)' }}
+              className="text-2xl sm:text-3xl font-bold tracking-wider uppercase relative inline-block"
+              style={{
+                color: 'rgba(255, 255, 255, 0.9)',
+                textShadow: '0 0 10px rgba(0,206,201,0.4), 0 0 20px rgba(0,206,201,0.15)',
+                animation: 'title-sway 5s ease-in-out infinite',
+              }}
             >
-              Available Missions
+              <span style={{ position: 'relative', display: 'inline-block' }}>
+                Available Missions
+                {/* Glitch top layer */}
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute', top: 0, left: 0,
+                    color: 'rgba(255,77,0,0.5)',
+                    clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
+                    animation: 'dash-glitch-top 4s infinite linear alternate-reverse',
+                  }}
+                >Available Missions</span>
+                {/* Glitch bottom layer */}
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute', top: 0, left: 0,
+                    color: 'rgba(123,111,255,0.5)',
+                    clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
+                    animation: 'dash-glitch-bottom 3.5s infinite linear alternate-reverse',
+                  }}
+                >Available Missions</span>
+              </span>
             </h2>
             <div
               className="mt-2 h-px w-48"
