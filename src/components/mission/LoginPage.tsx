@@ -162,6 +162,7 @@ export function LoginPage() {
     >
       {/* ── Keyframe Styles ────────────────────────────────────────── */}
       <style>{`
+        html, body { overflow: hidden !important; }
         @keyframes scan {
           0% { top: -2px; }
           100% { top: 100%; }
@@ -394,7 +395,7 @@ export function LoginPage() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.7 }}
-          className="flex flex-col items-center w-full lg:w-[44%] xl:w-[40%] py-4 px-5 sm:px-8 lg:px-10 overflow-y-auto"
+          className="flex flex-col items-center w-full lg:w-[44%] xl:w-[40%] py-4 px-5 sm:px-8 lg:px-10 overflow-hidden"
         >
           {/* Sector label — compact */}
           <div className="text-center shrink-0 mb-1">
@@ -549,7 +550,7 @@ export function LoginPage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.7 }}
-          className="flex flex-col items-center lg:items-start w-full lg:w-[55%] xl:w-[58%] py-4 px-5 sm:px-8 lg:px-10 overflow-y-auto"
+          className="flex flex-col items-center lg:items-start w-full lg:w-[55%] xl:w-[58%] py-4 px-5 sm:px-8 lg:px-10 overflow-hidden"
         >
           {/* Subtitle */}
           <div
