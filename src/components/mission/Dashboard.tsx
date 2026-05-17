@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useAppStore } from '@/store/appStore';
 import MissionsTitleCanvas from '@/components/mission/MissionsTitleCanvas';
+import MissionControlCanvas from '@/components/mission/MissionControlCanvas';
 import { soundEngine } from '@/lib/soundEngine';
 import { missions } from '@/lib/missionData';
 import { Button } from '@/components/ui/button';
