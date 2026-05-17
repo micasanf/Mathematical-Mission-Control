@@ -354,16 +354,19 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
 
             <div className="relative z-[5] p-4 sm:p-6">
 
-              {/* ─── QUESTION HEADER ─── */}
-              <div className="flex items-start gap-3 mb-5 pb-4" style={{ borderBottom: `1px solid ${missionColor}08` }}>
-                <HologramLetter letter={missionId[0].toUpperCase()} color={missionColor} size="md" />
-                <div className="flex-1 min-w-0 pt-1">
-                  <h3 className="text-base sm:text-lg font-bold leading-relaxed" style={{ color: '#c8d0de' }}>
-                    {typedQ}
-                    {!typeDone && <span className="inline-block w-[2px] h-[14px] ml-0.5 align-middle" style={{ background: missionColor, boxShadow: `0 0 4px ${missionColor}`, animation: 'cursor-blink 0.5s steps(2) infinite' }} />}
-                  </h3>
-                </div>
+              {/* ─── TOP LABEL ─── */}
+              <div className="flex items-center gap-2 mb-4">
+                <HologramLetter letter={missionId[0].toUpperCase()} color={missionColor} size="sm" />
+                <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, ${missionColor}20, transparent)` }} />
                 <SoundWave color={`${missionColor}50`} active={answersLocked} />
+              </div>
+
+              {/* ─── QUESTION ─── */}
+              <div className="mb-5 pb-4" style={{ borderBottom: `1px solid ${missionColor}08` }}>
+                <h3 className="text-base sm:text-lg font-bold leading-relaxed" style={{ color: '#c8d0de' }}>
+                  {typedQ}
+                  {!typeDone && <span className="inline-block w-[2px] h-[14px] ml-0.5 align-middle" style={{ background: missionColor, boxShadow: `0 0 4px ${missionColor}`, animation: 'cursor-blink 0.5s steps(2) infinite' }} />}
+                </h3>
               </div>
 
               {/* ─── OPTIONS — Clean Terminal Command Style ─── */}
