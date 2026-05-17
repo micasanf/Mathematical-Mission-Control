@@ -891,10 +891,10 @@ export function Dashboard() {
           75% { transform: translateY(-5px); }
         }
         @keyframes title-sway {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(2px); }
-          50% { transform: translateX(0); }
-          75% { transform: translateX(-2px); }
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(2px, -3px); }
+          50% { transform: translate(-1px, -5px); }
+          75% { transform: translate(-2px, -2px); }
         }
       `}</style>
 
