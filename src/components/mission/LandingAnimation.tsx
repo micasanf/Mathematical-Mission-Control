@@ -1081,7 +1081,7 @@ export default function LandingAnimation() {
         @keyframes la-hud-blink { 0%,80%,100%{opacity:1} 90%{opacity:0.2} }
         @keyframes la-touchdown-flash { 0%{opacity:0} 5%{opacity:0.9} 40%{opacity:0.6} 100%{opacity:0} }
         @keyframes la-approach-ping { 0%{transform:translateX(-50%) scale(1);opacity:0.8} 100%{transform:translateX(-50%) scale(3);opacity:0} }
-        @keyframes la-surface-shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-2px)} 40%{transform:translateX(2px)} 60%{transform:translateX(-1px)} 80%{transform:translateX(1px)} }
+        @keyframes la-surface-shake { 0%,100%{transform:translate(0,0)} 20%{transform:translate(-3px,-1px)} 40%{transform:translate(3px,1px)} 60%{transform:translate(-2px,0)} 80%{transform:translate(2px,-1px)} }
         @keyframes la-pod-beacon { 0%,100%{opacity:1;box-shadow:0 0 10px rgba(0,255,128,0.9)} 50%{opacity:0.3;box-shadow:0 0 3px rgba(0,255,128,0.3)} }
 
         .la-flame-flicker { animation: la-flame-flicker 0.1s ease-in-out infinite; transform-origin: 26px 142px; }
@@ -1132,7 +1132,7 @@ export default function LandingAnimation() {
         className="absolute z-[2]"
         style={{
           width: '200vh', height: '200vh', borderRadius: '50%', overflow: 'hidden',
-          bottom: '-182vh', left: '50%', transform: 'translateX(-50%)',
+          bottom: '-182vh', left: '50%', marginLeft: '-100vh',
           background: planetFallback,
           ...(surfaceShake ? { animation: 'la-surface-shake 0.4s ease-out' } : {}),
         }}
@@ -1162,7 +1162,7 @@ export default function LandingAnimation() {
         className="absolute z-[3] pointer-events-none"
         style={{
           width: '200vh', height: '200vh', borderRadius: '50%',
-          bottom: '-182vh', left: '50%', transform: 'translateX(-50%)',
+          bottom: '-182vh', left: '50%', marginLeft: '-100vh',
           border: `2px solid ${surfaceColors.atmosphereBorder}`,
           boxShadow: `0 0 30px ${surfaceColors.atmosphereBorder}, inset 0 0 60px ${surfaceColors.atmosphereBorder}`,
         }}
