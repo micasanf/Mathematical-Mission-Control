@@ -261,3 +261,33 @@ Stage Summary:
 - Lint passes clean, dev server compiles successfully
 - Key palette: #050B18 bg, #00CEC9 primary, #FFC857 gold, #7DF9C0 success, #FF3B30 error
 - Auth states: PENDING → VERIFYING → GRANTED/DENIED with distinct visual feedback per state
+
+---
+Task ID: 2
+Agent: Main
+Task: Rebuild login page to match user's reference image exactly
+
+Work Log:
+- Analyzed reference image via VLM - identified key differences from previous design
+- Rebuilt LoginPage.tsx to match reference with:
+  - **Individual status cards**: Each telemetry item (OXYGEN, THRUST, SHIELDS, FUEL, CREW AUTH) now has its own bordered card with:
+    - Label (small muted) + value (large colored) + status dot on top row
+    - Thin glowing progress bar (3px) with animated fill
+    - Subtext line (e.g., "NOMINAL", "T-MINUS HOLD", "RESERVES LOW", "AWAITING CLEARANCE INPUT")
+  - **Mission Brief panel**: Dark bordered panel between title and form with descriptive text about XLR8 Vessel clearance protocol
+  - **Card glow animation**: Individual cards pulse with subtle teal glow
+  - **Reordered left column**: Sector label first, then radar, then status cards
+  - **Replaced telemetry panel**: Old single-panel layout replaced with 5 individual StatusCard components
+  - **Replaced telemetry item rows**: Old compact row format replaced with full cards
+  - **Added "Orbit Sector" label**: Above "ORBIT-IV · LAB NODE" matching reference
+  - **Updated placeholder text**: "e.g. 2026-0001" instead of "ENTER CREW ID"
+  - **Added terminal footer**: "TERMINAL READY : ENCRYPTION: AES-256-GCM" below form
+  - **Dynamic auth subtext**: Changes per auth state (AWAITING CLEARANCE INPUT → DECRYPTING CREDENTIALS → UNAUTHORIZED ACCESS / IDENTITY CONFIRMED)
+  - **Dynamic auth bar**: Progress bar fills based on auth state (0% → 50% → 100%/0%)
+- Lint passes clean, dev server compiles successfully
+
+Stage Summary:
+- Login page now matches reference image with individual status cards, mission brief, progress bars
+- Key structural change: TelemetryItem rows → StatusCard components with progress bars and subtext
+- New Mission Brief panel adds context between title and form
+- Auth flow fully visual: CREW AUTH card shows real-time progress bar + status dot + subtext
