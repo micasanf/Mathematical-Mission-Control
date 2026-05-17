@@ -57,12 +57,52 @@ function useConstellationPoints() {
 // ─── Auth State ──────────────────────────────────────────────────────────────
 type AuthState = 'PENDING' | 'VERIFYING' | 'GRANTED' | 'DENIED';
 
+// ─── Static Burst Component ─────────────────────────────────────────────────
+function StaticBurst({ active }: { active: boolean }) {
+  if (!active) return null;
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: 100 }}
+    >
+      {/* Random horizontal displacement bars */}
+      {Array.from({ length: 12 }, (_, i) => {
+        const top = Math.random() * 100;
+        const height = Math.random() * 3 + 1;
+        const shift = (Math.random() - 0.5) * 20;
+        return (
+          <div
+            key={`burst-${i}`}
+            className="absolute w-full"
+            style={{
+              top: `${top}%`,
+              height: `${height}px`,
+              transform: `translateX(${shift}px)`,
+              background: `rgba(${Math.random() > 0.5 ? '0,206,201' : '255,59,48'}, ${Math.random() * 0.15 + 0.03})`,
+            }}
+          />
+        );
+      })}
+      {/* Full-screen white flash */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `rgba(255,255,255,${Math.random() * 0.04 + 0.01})`,
+          mixBlendMode: 'overlay',
+        }}
+      />
+    </div>
+  );
+}
+
 // ─── Main Component ─────────────────────────────────────────────────────────
 export function LoginPage() {
   const [uid, setUid] = useState('');
   const [pwd, setPwd] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [authState, setAuthState] = useState<AuthState>('PENDING');
+  const [glitchActive, setGlitchActive] = useState(false);
+  const [staticBurst, setStaticBurst] = useState(false);
   const bgmStarted = useRef(false);
 
   const login = useAppStore((s) => s.login);
@@ -76,6 +116,24 @@ export function LoginPage() {
     const t = setTimeout(() => { if (soundEnabled) soundEngine.playDeploy(); }, 300);
     return () => clearTimeout(t);
   }, [soundEnabled]);
+
+  // ── Random glitch trigger ───────────────────────────────────────────────
+  useEffect(() => {
+    const triggerGlitch = () => {
+      setGlitchActive(true);
+      setTimeout(() => setGlitchActive(false), 150 + Math.random() * 200);
+    };
+    const triggerBurst = () => {
+      setStaticBurst(true);
+      setTimeout(() => setStaticBurst(false), 80 + Math.random() * 120);
+    };
+    const interval = setInterval(() => {
+      const roll = Math.random();
+      if (roll < 0.3) triggerGlitch();
+      if (roll < 0.08) triggerBurst();
+    }, 3000 + Math.random() * 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const tryBGM = useCallback(() => {
     if (!bgmStarted.current) {
@@ -155,7 +213,7 @@ export function LoginPage() {
       transition={{ duration: 1 }}
       className="relative h-screen w-full overflow-hidden select-none flex flex-col"
       style={{
-        background: `radial-gradient(ellipse at 15% 0%, ${P.bgSec} 0%, #020a12 45%, #020a12 100%)`,
+        background: `radial-gradient(ellipse at 30% 20%, ${P.bgSec} 0%, #020a12 50%, #020a12 100%)`,
         fontFamily: "var(--font-rajdhani), sans-serif",
       }}
       onClick={tryBGM}
@@ -163,6 +221,7 @@ export function LoginPage() {
       {/* ── Keyframe Styles ────────────────────────────────────────── */}
       <style>{`
         html, body { overflow: hidden !important; }
+
         @keyframes scan {
           0% { top: -2px; }
           100% { top: 100%; }
@@ -187,6 +246,8 @@ export function LoginPage() {
           from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
         }
+
+        /* ── Glitch keyframes for title ── */
         @keyframes glitch-top {
           0%, 88%, 100% { transform: translate(0); }
           90% { transform: translate(-3px, -1px); }
@@ -207,10 +268,24 @@ export function LoginPage() {
           50% { transform: translateY(-2px); }
           75% { transform: translateY(-5px); }
         }
+
+        /* ── Background glitch RGB shift ── */
+        @keyframes bgGlitchShift {
+          0% { clip-path: inset(0 0 0 0); transform: translate(0); }
+          20% { clip-path: inset(20% 0 60% 0); transform: translate(-4px, 0); }
+          40% { clip-path: inset(50% 0 20% 0); transform: translate(3px, 0); }
+          60% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 0); }
+          80% { clip-path: inset(70% 0 5% 0); transform: translate(5px, 0); }
+          100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+        }
+
+        /* ── Scanline drift ── */
         @keyframes scanline-drift {
           0% { background-position: 0 0; }
           100% { background-position: 0 4px; }
         }
+
+        /* ── Auth state animations ── */
         @keyframes verifyingPulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
@@ -228,10 +303,21 @@ export function LoginPage() {
           100% { box-shadow: 0 0 0px rgba(125,249,192,0); }
         }
         @keyframes cardGlow {
-          0%, 100% { box-shadow: 0 0 4px rgba(0,206,201,0.06), inset 0 0 3px rgba(0,206,201,0.02); }
-          50% { box-shadow: 0 0 8px rgba(0,206,201,0.15), inset 0 0 6px rgba(0,206,201,0.03); }
+          0%, 100% { box-shadow: 0 0 6px rgba(0,206,201,0.08), inset 0 0 4px rgba(0,206,201,0.03); }
+          50% { box-shadow: 0 0 14px rgba(0,206,201,0.2), inset 0 0 8px rgba(0,206,201,0.05); }
         }
 
+        /* ── Flicker for background ── */
+        @keyframes flicker {
+          0%, 100% { opacity: 1; }
+          92% { opacity: 1; }
+          93% { opacity: 0.85; }
+          94% { opacity: 1; }
+          96% { opacity: 0.9; }
+          97% { opacity: 1; }
+        }
+
+        /* ── Parallelogram input ── */
         .para-input {
           clip-path: polygon(2% 0%, 100% 0%, 98% 100%, 0% 100%);
           background: linear-gradient(135deg, rgba(5,11,24,0.92), rgba(13,27,42,0.88));
@@ -249,6 +335,11 @@ export function LoginPage() {
           font-size: 11px;
           text-transform: uppercase;
         }
+        .para-input:disabled {
+          opacity: 0.5;
+        }
+
+        /* ── Parallelogram button ── */
         .para-btn {
           clip-path: polygon(1.5% 0%, 100% 0%, 98.5% 100%, 0% 100%);
           position: relative;
@@ -268,10 +359,18 @@ export function LoginPage() {
         .para-btn:hover::before {
           left: 100%;
         }
+        .para-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
       `}</style>
 
-      {/* ── Background: Animated Star Field ──────────────────────────── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* ══════════════════════════════════════════════════════════════════
+          BACKGROUND LAYERS — all absolute, behind content
+          ══════════════════════════════════════════════════════════════════ */}
+
+      {/* ── Star Field ──────────────────────────────────────────────────── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ animation: 'flicker 8s linear infinite' }}>
         {stars.map((star) => (
           <div
             key={star.id}
@@ -290,32 +389,41 @@ export function LoginPage() {
         ))}
       </div>
 
-      {/* ── Background: Nebula Clouds ────────────────────────────────── */}
+      {/* ── Nebula Clouds ────────────────────────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute"
           style={{
-            width: '600px', height: '600px', top: '-10%', left: '-5%',
+            width: '800px', height: '800px', top: '-15%', left: '-10%',
             borderRadius: '50%',
-            background: `radial-gradient(ellipse, rgba(123,111,255,0.06) 0%, transparent 70%)`,
-            filter: 'blur(40px)',
+            background: `radial-gradient(ellipse, rgba(123,111,255,0.07) 0%, transparent 70%)`,
+            filter: 'blur(60px)',
           }}
         />
         <div
           className="absolute"
           style={{
-            width: '500px', height: '500px', bottom: '-8%', right: '-3%',
+            width: '600px', height: '600px', bottom: '-10%', right: '-5%',
             borderRadius: '50%',
-            background: `radial-gradient(ellipse, rgba(0,206,201,0.05) 0%, transparent 70%)`,
+            background: `radial-gradient(ellipse, rgba(0,206,201,0.06) 0%, transparent 70%)`,
             filter: 'blur(50px)',
+          }}
+        />
+        <div
+          className="absolute"
+          style={{
+            width: '400px', height: '400px', top: '30%', left: '50%',
+            borderRadius: '50%',
+            background: `radial-gradient(ellipse, rgba(0,206,201,0.03) 0%, transparent 70%)`,
+            filter: 'blur(40px)',
           }}
         />
       </div>
 
-      {/* ── Background: Constellation Lines ──────────────────────────── */}
+      {/* ── Constellation Lines ──────────────────────────────────────────── */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
-        style={{ opacity: 0.15 }}
+        style={{ opacity: 0.12 }}
         preserveAspectRatio="none"
       >
         {constellationPts.slice(0, 26).map((p, i) => {
@@ -334,49 +442,146 @@ export function LoginPage() {
         ))}
       </svg>
 
-      {/* ── Background: Grid Overlay ─────────────────────────────────── */}
+      {/* ── Grid Overlay ─────────────────────────────────────────────────── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(0,206,201,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,206,201,0.03) 1px, transparent 1px)
+            linear-gradient(rgba(0,206,201,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,206,201,0.025) 1px, transparent 1px)
           `,
-          backgroundSize: '120px 120px',
+          backgroundSize: '100px 100px',
         }}
       />
 
-      {/* ── Scanline Effect ──────────────────────────────────────────── */}
+      {/* ── Radar as Background Element — large, semi-transparent ────────── */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: '520px',
+          height: '520px',
+          left: '5%',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          opacity: 0.18,
+        }}
+      >
+        <div
+          className="absolute inset-[-8px] rounded-full"
+          style={{
+            background: `radial-gradient(circle, rgba(0,206,201,0.08) 50%, transparent 70%)`,
+            animation: 'breathe 6s ease-in-out infinite',
+          }}
+        />
+        <svg viewBox="0 0 200 200" className="w-full h-full relative">
+          {[25, 50, 75].map((r, i) => (
+            <circle key={`rc-${i}`} cx="100" cy="100" r={r} fill="none"
+              stroke={P.primary} strokeWidth="0.5" opacity={0.12 + i * 0.03} />
+          ))}
+          <circle cx="100" cy="100" r="95" fill="none" stroke={P.primary} strokeWidth="1" opacity="0.25" />
+          <line x1="100" y1="5" x2="100" y2="195" stroke={P.primary} strokeWidth="0.4" opacity="0.12" />
+          <line x1="5" y1="100" x2="195" y2="100" stroke={P.primary} strokeWidth="0.4" opacity="0.12" />
+          <line x1="25" y1="25" x2="175" y2="175" stroke={P.primary} strokeWidth="0.2" opacity="0.06" />
+          <line x1="175" y1="25" x2="25" y2="175" stroke={P.primary} strokeWidth="0.2" opacity="0.06" />
+
+          {Array.from({ length: 36 }, (_, i) => {
+            const angle = (i * 10) * Math.PI / 180;
+            const inner = i % 3 === 0 ? 88 : 91;
+            return (
+              <line key={`tick-${i}`}
+                x1={100 + inner * Math.cos(angle)} y1={100 + inner * Math.sin(angle)}
+                x2={100 + 95 * Math.cos(angle)} y2={100 + 95 * Math.sin(angle)}
+                stroke={P.primary} strokeWidth={i % 3 === 0 ? 0.8 : 0.4} opacity={i % 3 === 0 ? 0.3 : 0.12}
+              />
+            );
+          })}
+
+          <g style={{ transformOrigin: '100px 100px', animation: 'radarSweep 4s linear infinite' }}>
+            <line x1="100" y1="100" x2="100" y2="5" stroke={P.primary} strokeWidth="1.5" opacity="0.7" />
+            <path d="M100,100 L100,15 A85,85 0 0,1 173,47 Z" fill="rgba(0,206,201,0.08)" />
+            <path d="M100,100 L173,47 A85,85 0 0,1 185,100 Z" fill="rgba(0,206,201,0.03)" />
+          </g>
+
+          <circle cx="68" cy="55" fill={P.primary}>
+            <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="145" cy="75" fill={P.primary}>
+            <animate attributeName="r" values="1.5;3;1.5" dur="2.5s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="105" cy="145" fill={P.gold}>
+            <animate attributeName="r" values="2;3.5;2" dur="1.8s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.3;0.7;0.3" dur="1.8s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="60" cy="120" fill={P.purple}>
+            <animate attributeName="r" values="1;2.5;1" dur="3s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.2;0.6;0.2" dur="3s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="100" cy="100" r="2.5" fill={P.primary} opacity="0.9" />
+        </svg>
+      </div>
+
+      {/* ── Glitch Background Layer (RGB split) ──────────────────────────── */}
+      {glitchActive && (
+        <>
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `rgba(255,59,48,0.03)`,
+              animation: 'bgGlitchShift 0.15s linear',
+              zIndex: 5,
+            }}
+          />
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `rgba(0,206,201,0.03)`,
+              animation: 'bgGlitchShift 0.2s linear reverse',
+              zIndex: 5,
+            }}
+          />
+        </>
+      )}
+
+      {/* ── Static Burst Flash ───────────────────────────────────────────── */}
+      <StaticBurst active={staticBurst} />
+
+      {/* ── Scanline — moving bar ────────────────────────────────────────── */}
       <div
         className="absolute left-0 w-full pointer-events-none"
         style={{
           height: '2px',
-          background: 'linear-gradient(transparent, rgba(0,206,201,0.1), transparent)',
-          animation: 'scan 5s linear infinite',
+          background: 'linear-gradient(transparent, rgba(0,206,201,0.08), transparent)',
+          animation: 'scan 4s linear infinite',
           zIndex: 50,
         }}
       />
+
+      {/* ── Scanline — full screen overlay ───────────────────────────────── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)',
+          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)',
           animation: 'scanline-drift 0.3s linear infinite',
           zIndex: 45,
         }}
       />
 
-      {/* ── Top Bar ──────────────────────────────────────────────────── */}
+      {/* ══════════════════════════════════════════════════════════════════
+          TOP BAR
+          ══════════════════════════════════════════════════════════════════ */}
       <div
         className="relative z-10 flex items-center justify-between px-5 sm:px-8 py-2 border-b shrink-0"
         style={{
-          borderColor: `rgba(0,206,201,0.1)`,
-          background: `rgba(5,11,24,0.65)`,
-          backdropFilter: 'blur(8px)',
+          borderColor: `rgba(0,206,201,0.08)`,
+          background: `rgba(5,11,24,0.5)`,
+          backdropFilter: 'blur(12px)',
         }}
       >
         <div
-          className="text-[10px] sm:text-[12px] tracking-[0.2em] uppercase"
-          style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
+          className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase"
+          style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.4)` }}
         >
           XLR8 AUTOMATA-IV // RECURSION NODE // FINALS
         </div>
@@ -387,182 +592,36 @@ export function LoginPage() {
         </div>
       </div>
 
-      {/* ── Main Content: Two Column Layout — fills viewport ──────────── */}
-      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-stretch gap-0 lg:gap-0 overflow-hidden">
+      {/* ══════════════════════════════════════════════════════════════════
+          MAIN CONTENT — single centered hero section
+          ══════════════════════════════════════════════════════════════════ */}
+      <div className="relative z-10 flex-1 flex items-center justify-center overflow-hidden px-4">
 
-        {/* ── Left Column: Radar + Telemetry Grid — fills full height ── */}
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.7 }}
-          className="flex flex-col items-center w-full lg:w-[44%] xl:w-[40%] py-4 px-5 sm:px-8 lg:px-10 overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
+          className="w-full max-w-md flex flex-col gap-3"
+          style={{
+            background: `linear-gradient(180deg, rgba(5,11,24,0.7) 0%, rgba(13,27,42,0.5) 100%)`,
+            backdropFilter: 'blur(16px)',
+            border: `1px solid rgba(0,206,201,0.08)`,
+            borderRadius: '4px',
+            padding: '28px 24px',
+            animation: 'cardGlow 5s ease-in-out infinite',
+          }}
         >
-          {/* Sector label — compact */}
-          <div className="text-center shrink-0 mb-1">
-            <div
-              className="text-[10px] tracking-[0.3em] uppercase"
-              style={{ color: `rgba(0,206,201,0.4)`, fontFamily: "var(--font-orbitron), sans-serif" }}
-            >
-              Orbit Sector
-            </div>
-            <div
-              className="text-[15px] tracking-[0.12em] uppercase"
-              style={{ color: `rgba(0,206,201,0.75)`, fontFamily: "var(--font-orbitron), sans-serif" }}
-            >
-              ORBIT-IV &middot; LAB NODE
-            </div>
-          </div>
-
-          {/* Radar SVG — 260px */}
-          <div className="relative shrink-0" style={{ width: 260, height: 260 }}>
-            <div
-              className="absolute inset-[-4px] rounded-full"
-              style={{
-                background: `radial-gradient(circle, rgba(0,206,201,0.04) 60%, transparent 70%)`,
-                animation: 'breathe 4s ease-in-out infinite',
-              }}
-            />
-            <svg viewBox="0 0 200 200" className="w-full h-full relative">
-              {[25, 50, 75].map((r, i) => (
-                <circle key={`rc-${i}`} cx="100" cy="100" r={r} fill="none"
-                  stroke={P.primary} strokeWidth="0.4" opacity={0.12 + i * 0.03} />
-              ))}
-              <circle cx="100" cy="100" r="95" fill="none" stroke={P.primary} strokeWidth="0.8" opacity="0.2" />
-              <line x1="100" y1="5" x2="100" y2="195" stroke={P.primary} strokeWidth="0.3" opacity="0.1" />
-              <line x1="5" y1="100" x2="195" y2="100" stroke={P.primary} strokeWidth="0.3" opacity="0.1" />
-              <line x1="25" y1="25" x2="175" y2="175" stroke={P.primary} strokeWidth="0.2" opacity="0.06" />
-              <line x1="175" y1="25" x2="25" y2="175" stroke={P.primary} strokeWidth="0.2" opacity="0.06" />
-
-              {Array.from({ length: 36 }, (_, i) => {
-                const angle = (i * 10) * Math.PI / 180;
-                const inner = i % 3 === 0 ? 88 : 91;
-                return (
-                  <line key={`tick-${i}`}
-                    x1={100 + inner * Math.cos(angle)} y1={100 + inner * Math.sin(angle)}
-                    x2={100 + 95 * Math.cos(angle)} y2={100 + 95 * Math.sin(angle)}
-                    stroke={P.primary} strokeWidth={i % 3 === 0 ? 0.6 : 0.3} opacity={i % 3 === 0 ? 0.25 : 0.12}
-                  />
-                );
-              })}
-
-              <g style={{ transformOrigin: '100px 100px', animation: 'radarSweep 4s linear infinite' }}>
-                <line x1="100" y1="100" x2="100" y2="5" stroke={P.primary} strokeWidth="1" opacity="0.6" />
-                <path d="M100,100 L100,15 A85,85 0 0,1 173,47 Z" fill="rgba(0,206,201,0.06)" />
-                <path d="M100,100 L173,47 A85,85 0 0,1 185,100 Z" fill="rgba(0,206,201,0.02)" />
-              </g>
-
-              <circle cx="68" cy="55" fill={P.primary}>
-                <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="145" cy="75" fill={P.primary}>
-                <animate attributeName="r" values="1.5;3;1.5" dur="2.5s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="105" cy="145" fill={P.gold}>
-                <animate attributeName="r" values="2;3.5;2" dur="1.8s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.3;0.7;0.3" dur="1.8s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="60" cy="120" fill={P.purple}>
-                <animate attributeName="r" values="1;2.5;1" dur="3s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.2;0.6;0.2" dur="3s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="100" cy="100" r="2" fill={P.primary} opacity="0.8" />
-            </svg>
-          </div>
-
-          {/* Telemetry Grid — 2 columns, fills remaining vertical space */}
-          <div className="w-full grid grid-cols-2 gap-2.5 mt-5 flex-1" style={{ maxWidth: 300 }}>
-            <GridCell
-              label="OXYGEN"
-              value="98.2%"
-              barPercent={98.2}
-              barColor={P.green}
-              valueColor={P.cyan}
-              accentColor={P.green}
-            />
-            <GridCell
-              label="THRUST"
-              value="STANDBY"
-              subtext="T-MINUS HOLD"
-              noBar
-              accentColor={P.cyan}
-              valueColor={P.cyan}
-            />
-            <GridCell
-              label="SHIELDS"
-              value="ACTIVE"
-              barPercent={100}
-              barColor={P.green}
-              accentColor={P.green}
-              valueColor={P.cyan}
-            />
-            <GridCell
-              label="FUEL"
-              value="74.1%"
-              barPercent={74.1}
-              barColor={P.gold}
-              accentColor={P.gold}
-              valueColor={P.gold}
-            />
-
-            {/* CREW AUTH — full width, spans both columns */}
-            <div className="col-span-2">
-              <GridCell
-                label="CREW AUTH"
-                value={authStatusText}
-                subtext={authSubtext}
-                barPercent={authState === 'GRANTED' ? 100 : authState === 'VERIFYING' ? 50 : 0}
-                barColor={
-                  authState === 'GRANTED' ? P.success
-                    : authState === 'VERIFYING' ? P.gold
-                      : authState === 'DENIED' ? P.error
-                        : P.textMuted
-                }
-                accentColor={
-                  authState === 'GRANTED' ? P.success
-                    : authState === 'VERIFYING' ? P.gold
-                      : authState === 'DENIED' ? P.error
-                        : P.cyan
-                }
-                valueColor={
-                  authState === 'GRANTED' ? P.success
-                    : authState === 'VERIFYING' ? P.gold
-                      : authState === 'DENIED' ? P.error
-                        : P.cyan
-                }
-                statusDot={
-                  authState === 'VERIFYING' ? 'pulse' as const
-                    : authState === 'DENIED' ? 'fast' as const
-                      : 'none' as const
-                }
-                fullWidth
-              />
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ── Vertical Divider ──────────────────────────────────────── */}
-        <div className="hidden lg:block w-px shrink-0" style={{ background: `rgba(0,206,201,0.08)` }} />
-
-        {/* ── Right Column: Login Form — fills full height ──────────── */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.7 }}
-          className="flex flex-col items-center lg:items-start w-full lg:w-[55%] xl:w-[58%] py-4 px-5 sm:px-8 lg:px-10 overflow-hidden"
-        >
-          {/* Subtitle */}
+          {/* ── Header: subtitle ── */}
           <div
-            className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase mb-1.5 text-center lg:text-left shrink-0"
-            style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.5)` }}
+            className="text-[10px] tracking-[0.2em] uppercase text-center"
+            style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.4)` }}
           >
             XLR8 VESSEL // FINALS MISSION IV
           </div>
 
-          {/* Title with glitch — BIGGER */}
+          {/* ── Title with glitch ── */}
           <div
-            className="text-2xl sm:text-3xl font-bold tracking-[0.08em] uppercase text-center lg:text-left mb-2 shrink-0"
+            className="text-2xl sm:text-3xl font-bold tracking-[0.08em] uppercase text-center"
             style={{
               fontFamily: "var(--font-orbitron), sans-serif",
               animation: 'glitch-float 4s ease-in-out infinite',
@@ -580,7 +639,7 @@ export function LoginPage() {
               <span
                 style={{
                   position: 'absolute', top: 0, left: 0,
-                  color: 'rgba(255,77,0,0.6)',
+                  color: 'rgba(255,77,0,0.55)',
                   clipPath: 'polygon(0 0, 100% 0, 100% 33%, 0 33%)',
                   animation: 'glitch-top 3s infinite linear alternate-reverse',
                 }}
@@ -589,7 +648,7 @@ export function LoginPage() {
               <span
                 style={{
                   position: 'absolute', top: 0, left: 0,
-                  color: `rgba(0,245,255,0.6)`,
+                  color: `rgba(0,245,255,0.55)`,
                   clipPath: 'polygon(0 67%, 100% 67%, 100% 100%, 0 100%)',
                   animation: 'glitch-bottom 2.5s infinite linear alternate-reverse',
                 }}
@@ -598,50 +657,68 @@ export function LoginPage() {
             </span>
           </div>
 
-          {/* Restricted + Encryption row */}
-          <div className="w-full flex items-center justify-between mb-2 shrink-0">
-            <span className="text-[11px] tracking-[0.1em]" style={{ color: P.textMuted }}>
+          {/* ── Restricted + AES-256 row ── */}
+          <div className="w-full flex items-center justify-between">
+            <span className="text-[10px] tracking-[0.08em]" style={{ color: P.textMuted }}>
               Restricted terminal — authorized personnel only
             </span>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full"
                 style={{ backgroundColor: P.green, boxShadow: `0 0 4px ${P.green}` }} />
-              <span className="text-[10px] tracking-[0.15em] uppercase"
+              <span className="text-[9px] tracking-[0.12em] uppercase"
                 style={{ color: `rgba(125,249,192,0.5)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
                 AES-256
               </span>
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="w-full flex items-center gap-2 mb-3 shrink-0">
-            <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
-            <div className="w-1.5 h-1.5 rotate-45" style={{ backgroundColor: P.primary, opacity: 0.3 }} />
-            <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.12)` }} />
+          {/* ── Divider ── */}
+          <div className="w-full flex items-center gap-2">
+            <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.1)` }} />
+            <div className="w-1.5 h-1.5 rotate-45" style={{ backgroundColor: P.primary, opacity: 0.25 }} />
+            <div className="flex-1 h-px" style={{ background: `rgba(0,206,201,0.1)` }} />
           </div>
 
-          {/* Mission Brief — expands to fill space */}
+          {/* ── Mission Brief ── */}
           <div
-            className="w-full border rounded p-3 mb-3 shrink-0"
+            className="w-full border rounded p-3"
             style={{
-              borderColor: `rgba(0,206,201,0.1)`,
-              background: `linear-gradient(180deg, rgba(5,11,24,0.65), rgba(13,27,42,0.45))`,
-              animation: 'cardGlow 5s ease-in-out infinite',
+              borderColor: `rgba(0,206,201,0.08)`,
+              background: `linear-gradient(180deg, rgba(5,11,24,0.5), rgba(13,27,42,0.3))`,
             }}
           >
             <div
-              className="text-[10px] tracking-[0.18em] uppercase mb-1"
-              style={{ color: `rgba(0,206,201,0.45)`, fontFamily: "var(--font-orbitron), sans-serif" }}
+              className="text-[9px] tracking-[0.18em] uppercase mb-1"
+              style={{ color: `rgba(0,206,201,0.4)`, fontFamily: "var(--font-orbitron), sans-serif" }}
             >
               MISSION BRIEF
             </div>
-            <p className="text-[12px] leading-relaxed" style={{ color: P.textSec }}>
+            <p className="text-[11px] leading-relaxed" style={{ color: P.textSec }}>
               XLR8 Vessel inbound on Orbit-IV Lab Node. Docking corridor requires biometric-level crew verification before approach vector is cleared. All unauthorized personnel will be flagged to RECURSION Command. Authenticate to proceed.
             </p>
           </div>
 
-          {/* Form — flex-1 to fill remaining space */}
-          <form onSubmit={handleSubmit} className="w-full flex flex-col flex-1 gap-2.5">
+          {/* ── Telemetry Row — inline horizontal status ── */}
+          <div className="w-full flex items-center gap-2">
+            <TelemetryChip label="O₂" value="98.2%" color={P.green} />
+            <TelemetryChip label="THR" value="HOLD" color={P.cyan} />
+            <TelemetryChip label="SHD" value="ACT" color={P.green} />
+            <TelemetryChip label="FUEL" value="74%" color={P.gold} />
+            <TelemetryChip
+              label="AUTH"
+              value={authStatusText}
+              color={
+                authState === 'GRANTED' ? P.success
+                  : authState === 'VERIFYING' ? P.gold
+                    : authState === 'DENIED' ? P.error
+                      : P.textMuted
+              }
+              pulse={authState === 'VERIFYING'}
+            />
+          </div>
+
+          {/* ── Form ── */}
+          <form onSubmit={handleSubmit} className="w-full flex flex-col gap-2.5">
             {/* Crew Identifier */}
             <div>
               <label
@@ -696,11 +773,11 @@ export function LoginPage() {
               </div>
             </div>
 
-            {/* Submit Button — PROMINENT */}
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={authState !== 'PENDING' || !uid.trim() || !pwd.trim()}
-              className="para-btn w-full py-3 mt-auto text-xs tracking-[0.2em] uppercase cursor-pointer"
+              className="para-btn w-full py-3 text-xs tracking-[0.2em] uppercase cursor-pointer mt-1"
               onMouseEnter={() => { if (soundEnabled) soundEngine.playHover(); }}
               style={{
                 fontFamily: "var(--font-orbitron), sans-serif",
@@ -725,33 +802,40 @@ export function LoginPage() {
             </button>
           </form>
 
-          {/* Terminal status footer */}
-          <div className="w-full flex items-center gap-2 mt-2 shrink-0">
-            <span className="text-[9px] tracking-[0.12em] uppercase"
-              style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
+          {/* ── Terminal footer ── */}
+          <div className="w-full flex items-center justify-center gap-2">
+            <span className="text-[8px] tracking-[0.12em] uppercase"
+              style={{ color: `rgba(0,206,201,0.25)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               TERMINAL READY
             </span>
-            <span style={{ color: `rgba(0,206,201,0.15)` }}>:</span>
-            <span className="text-[9px] tracking-[0.12em] uppercase"
-              style={{ color: `rgba(0,206,201,0.3)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
+            <span style={{ color: `rgba(0,206,201,0.12)` }}>·</span>
+            <span className="text-[8px] tracking-[0.12em] uppercase"
+              style={{ color: `rgba(0,206,201,0.25)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
               ENCRYPTION: AES-256-GCM
+            </span>
+            <span style={{ color: `rgba(0,206,201,0.12)` }}>·</span>
+            <span className="text-[8px] tracking-[0.12em] uppercase"
+              style={{ color: `rgba(0,206,201,0.25)`, fontFamily: "var(--font-orbitron), sans-serif" }}>
+              {authSubtext}
             </span>
           </div>
         </motion.div>
       </div>
 
-      {/* ── Bottom Bar ──────────────────────────────────────────────── */}
+      {/* ══════════════════════════════════════════════════════════════════
+          BOTTOM BAR
+          ══════════════════════════════════════════════════════════════════ */}
       <div
-        className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-5 sm:px-8 py-2 border-t gap-1.5 shrink-0"
+        className="relative z-10 flex flex-col sm:flex-row items-center justify-between px-5 sm:px-8 py-2 border-t gap-1 shrink-0"
         style={{
-          borderColor: `rgba(0,206,201,0.08)`,
-          background: `rgba(5,11,24,0.65)`,
-          backdropFilter: 'blur(8px)',
+          borderColor: `rgba(0,206,201,0.06)`,
+          background: `rgba(5,11,24,0.5)`,
+          backdropFilter: 'blur(12px)',
         }}
       >
         <div
-          className="text-[10px] sm:text-[12px] tracking-[0.15em] uppercase"
-          style={{ fontFamily: "var(--font-orbitron), sans-serif", color: P.textMuted }}
+          className="text-[9px] sm:text-[10px] tracking-[0.15em] uppercase"
+          style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.2)` }}
         >
           HERMOSO ● NUEVAS ● ORENSE ● SANTIAGO ● III - DCSAD
         </div>
@@ -779,8 +863,8 @@ function StatusDot({ label, color, pulse }: { label: string; color: string; puls
         }}
       />
       <span
-        className="text-[10px] tracking-[0.12em] uppercase"
-        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.4)` }}
+        className="text-[9px] tracking-[0.12em] uppercase"
+        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.35)` }}
       >
         {label}
       </span>
@@ -788,120 +872,31 @@ function StatusDot({ label, color, pulse }: { label: string; color: string; puls
   );
 }
 
-// ─── Grid Cell for 2-column telemetry ─────────────────────────────────────────
-function GridCell({
-  label,
-  value,
-  subtext,
-  barPercent = 0,
-  barColor,
-  accentColor,
-  valueColor,
-  statusDot = 'none',
-  noBar,
-  fullWidth,
-}: {
-  label: string;
-  value: string;
-  subtext?: string;
-  barPercent?: number;
-  barColor: string;
-  accentColor: string;
-  valueColor: string;
-  statusDot?: 'none' | 'pulse' | 'fast';
-  noBar?: boolean;
-  fullWidth?: boolean;
-}) {
+// ─── Telemetry Chip — compact inline status ──────────────────────────────────
+function TelemetryChip({ label, value, color, pulse }: { label: string; value: string; color: string; pulse?: boolean }) {
   return (
     <div
-      className="relative border rounded-sm overflow-hidden"
+      className="flex-1 flex flex-col items-center border rounded-sm py-1.5 px-1"
       style={{
-        borderColor: 'rgba(0,206,201,0.1)',
-        background: '#020a12',
+        borderColor: 'rgba(0,206,201,0.08)',
+        background: 'rgba(5,11,24,0.6)',
       }}
     >
-      {/* Top border accent */}
       <div
-        className="h-[2px] w-full"
+        className="text-[7px] tracking-[0.15em] uppercase mb-0.5"
+        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.3)' }}
+      >
+        {label}
+      </div>
+      <div
+        className="text-[11px] font-bold tracking-[0.04em] uppercase"
         style={{
-          background: accentColor,
-          boxShadow: `0 0 6px ${accentColor}60`,
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          color,
+          animation: pulse ? 'pulse 0.8s ease-in-out infinite' : 'none',
         }}
-      />
-
-      {/* Corner dots */}
-      <div className="absolute top-[4px] left-[4px] w-[4px] h-[4px] rounded-full"
-        style={{ backgroundColor: accentColor, opacity: 0.5 }} />
-      <div className="absolute top-[4px] right-[4px] w-[4px] h-[4px] rounded-full"
-        style={{ backgroundColor: accentColor, opacity: 0.5 }} />
-      <div className="absolute bottom-[4px] left-[4px] w-[4px] h-[4px] rounded-full"
-        style={{ backgroundColor: accentColor, opacity: 0.3 }} />
-      <div className="absolute bottom-[4px] right-[4px] w-[4px] h-[4px] rounded-full"
-        style={{ backgroundColor: accentColor, opacity: 0.3 }} />
-
-      {/* Content */}
-      <div className={`px-4 ${fullWidth ? 'py-3.5' : 'py-3'}`}>
-        {/* Label row */}
-        <div
-          className="text-[10px] tracking-[0.18em] uppercase mb-1"
-          style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.4)' }}
-        >
-          {label}
-        </div>
-
-        {/* Value row */}
-        <div className="flex items-center gap-2">
-          {statusDot !== 'none' && (
-            <div
-              className="w-2.5 h-2.5 rounded-full shrink-0"
-              style={{
-                backgroundColor: valueColor,
-                boxShadow: `0 0 6px ${valueColor}`,
-                animation: statusDot === 'pulse' ? 'pulse 0.8s ease-in-out infinite'
-                  : statusDot === 'fast' ? 'pulse 0.4s ease-in-out infinite' : 'none',
-              }}
-            />
-          )}
-          <span
-            className={`font-bold tracking-[0.04em] uppercase ${fullWidth ? 'text-2xl' : 'text-lg'}`}
-            style={{
-              fontFamily: "var(--font-rajdhani), sans-serif",
-              color: valueColor,
-              animation: statusDot === 'pulse' ? 'pulse 0.8s ease-in-out infinite' : 'none',
-            }}
-          >
-            {value}
-          </span>
-        </div>
-
-        {/* Progress bar — 3px, glowing */}
-        {!noBar && (
-          <div
-            className="w-full h-[3px] rounded-full mt-2 mb-1"
-            style={{ background: 'rgba(0,206,201,0.06)' }}
-          >
-            <motion.div
-              className="h-full rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${barPercent}%` }}
-              transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }}
-              style={{
-                background: barColor,
-                boxShadow: `0 0 4px ${barColor}80`,
-              }}
-            />
-          </div>
-        )}
-
-        {/* Subtext */}
-        {subtext && (
-          <div
-            className="text-[9px] tracking-[0.14em] uppercase mt-1"
-            style={{ fontFamily: "var(--font-orbitron), sans-serif", color: 'rgba(0,206,201,0.3)' }}
-          >
-            {subtext}
-          </div>
-        )}
+      >
+        {value}
       </div>
     </div>
   );
@@ -912,14 +907,14 @@ function BottomStatusItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center gap-1.5">
       <span
-        className="text-[9px] sm:text-[10px] tracking-[0.12em] uppercase"
-        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.25)` }}
+        className="text-[8px] sm:text-[9px] tracking-[0.12em] uppercase"
+        style={{ fontFamily: "var(--font-orbitron), sans-serif", color: `rgba(0,206,201,0.2)` }}
       >
         {label}:
       </span>
       <span
-        className="text-[9px] sm:text-[10px] tracking-[0.1em] uppercase"
-        style={{ fontFamily: "var(--font-rajdhani), sans-serif", color: `rgba(0,206,201,0.5)` }}
+        className="text-[8px] sm:text-[9px] tracking-[0.1em] uppercase"
+        style={{ fontFamily: "var(--font-rajdhani), sans-serif", color: `rgba(0,206,201,0.4)` }}
       >
         {value}
       </span>

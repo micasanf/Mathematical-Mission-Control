@@ -324,3 +324,29 @@ Stage Summary:
 - Colors: #00ffcc for ok, #f5c842 for warning, #020a12 cell bg
 - CREW AUTH spans both columns with full auth state visualization
 - Lint passes, server compiles and serves correctly
+---
+Task ID: 1
+Agent: main
+Task: Redesign login page — seamless layout, radar as background, enhanced glitch effects
+
+Work Log:
+- Removed two-column partition/divider layout entirely
+- Radar moved to absolute-positioned background element (520px, left:5%, opacity:0.18)
+- Login form now centered as a single hero card with glass-morphism (backdrop-blur, semi-transparent bg)
+- Telemetry grid replaced with compact inline TelemetryChip row (O₂, THR, SHD, FUEL, AUTH)
+- Added RGB glitch background effect (bgGlitchShift keyframe) triggered at random intervals
+- Added StaticBurst component for occasional full-screen static flash
+- Added flicker animation on star field layer
+- Enhanced scanline overlay with drift animation
+- Title glitch effect preserved (glitch-top, glitch-bottom, glitch-float keyframes)
+- All auth state machine (PENDING→VERIFYING→GRANTED→DENIED) preserved
+- All sound triggers preserved
+- Star field, constellation lines, nebula clouds, grid overlay all preserved
+- Parallelogram-clipped inputs and button preserved
+- No scrollbar (overflow-hidden + html/body override)
+
+Stage Summary:
+- Login page fully redesigned from split-panel to seamless hero layout
+- Radar is now a decorative atmospheric background element
+- Enhanced glitch effects: RGB split, static bursts, flicker, scanlines
+- All existing functionality intact
