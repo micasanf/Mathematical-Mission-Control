@@ -123,6 +123,7 @@ export function LoginPage() {
           // Wait for bar to finish filling to 100% (2s), THEN update display
           setTimeout(() => {
             setDisplayState('GRANTED');
+            if (soundEnabled) soundEngine.confirmChirp();
           }, 2000);
           // Then navigate after showing GRANTED
           setTimeout(() => {
