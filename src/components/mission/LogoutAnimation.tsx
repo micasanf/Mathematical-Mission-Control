@@ -96,7 +96,7 @@ interface AnimState {
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
 
-const DUR = 3.0;
+const DUR = 1.2;
 
 const NPT: [number, number][] = [
   [-0.35, -0.75],

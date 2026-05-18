@@ -342,6 +342,63 @@ class SoundEngine {
     osc2.stop(ctx.currentTime + 2.5);
   }
 
+  /**
+   * Sci-fi confirmation chirp — "chhh" sound for when something is confirmed/granted
+   * White noise burst + rising tone = that satisfying "access granted" feel
+   */
+  confirmChirp() {
+    if (this.muted) return;
+    const ctx = this.getContext();
+
+    // Layer 1: Short noise burst — the "chhh" texture
+    const noiseSize = Math.floor(ctx.sampleRate * 0.08); // 80ms
+    const noiseBuffer = ctx.createBuffer(1, noiseSize, ctx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseSize; i++) {
+      noiseData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (noiseSize * 0.25));
+    }
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.setValueAtTime(2500, ctx.currentTime);
+    noiseFilter.Q.setValueAtTime(1.5, ctx.currentTime);
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(this.volume * 0.35, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    noiseSource.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noiseSource.start(ctx.currentTime);
+    noiseSource.stop(ctx.currentTime + 0.08);
+
+    // Layer 2: Rising chirp tone — the "confirmed" sweep
+    const chirp = ctx.createOscillator();
+    const chirpGain = ctx.createGain();
+    chirp.type = 'sine';
+    chirp.frequency.setValueAtTime(800, ctx.currentTime);
+    chirp.frequency.exponentialRampToValueAtTime(1400, ctx.currentTime + 0.06);
+    chirpGain.gain.setValueAtTime(this.volume * 0.25, ctx.currentTime);
+    chirpGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    chirp.connect(chirpGain);
+    chirpGain.connect(ctx.destination);
+    chirp.start(ctx.currentTime);
+    chirp.stop(ctx.currentTime + 0.1);
+
+    // Layer 3: Quick high ping — the satisfying "ding" on top
+    const ping = ctx.createOscillator();
+    const pingGain = ctx.createGain();
+    ping.type = 'sine';
+    ping.frequency.setValueAtTime(2200, ctx.currentTime + 0.04);
+    pingGain.gain.setValueAtTime(0, ctx.currentTime);
+    pingGain.gain.setValueAtTime(this.volume * 0.2, ctx.currentTime + 0.04);
+    pingGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    ping.connect(pingGain);
+    pingGain.connect(ctx.destination);
+    ping.start(ctx.currentTime + 0.04);
+    ping.stop(ctx.currentTime + 0.15);
+  }
+
   countdown() {
     this.playTone(440, 0.15, 'square', 0.2);
   }
