@@ -643,6 +643,16 @@ export default function LogoutAnimation() {
 
     const st = stRef.current;
 
+    // Play crash sound immediately on exit
+    if (!st.crashSoundPlayed) {
+      st.crashSoundPlayed = true;
+      const soundOn = useAppStore.getState().soundEnabled;
+      if (soundOn) {
+        soundEngine.crash();
+        soundEngine.playRocketCrash();
+      }
+    }
+
     // Initialize stars
     st.stars = Array.from({ length: 380 }, () => ({
       x: Math.random(),
@@ -838,15 +848,6 @@ export default function LogoutAnimation() {
         st.impactTS = ts;
         spawnImpact(st, cX, cY, cR);
         st.shakeAmt = 65;
-
-        // Play crash sounds
-        if (!st.crashSoundPlayed) {
-          st.crashSoundPlayed = true;
-          if (soundOn) {
-            soundEngine.crash();
-            soundEngine.playRocketCrash();
-          }
-        }
 
         // Double-flash effect
         if (flashRef.current) {
