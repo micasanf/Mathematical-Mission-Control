@@ -672,14 +672,7 @@ export default function LogoutAnimation() {
 
       const prog = clamp(st.T / DUR, 0, 1);
 
-      // Play launch sound once at start
-      if (!st.launchSoundPlayed && st.T > 0.05) {
-        st.launchSoundPlayed = true;
-        if (soundOn) {
-          soundEngine.launch();
-          soundEngine.playRocketLaunch();
-        }
-      }
+      // Launch sound removed — only crash on exit
 
       st.shakePhase += dt * 80;
       if (st.impacted) {
