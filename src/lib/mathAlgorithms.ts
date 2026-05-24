@@ -153,7 +153,7 @@ export function palindromeCheck(input: string): { isPalindrome: boolean; normali
       isPalindrome = false;
       break;
     } else {
-      steps.push(`Position ${i}: '${left}' = '${right}' (position ${len - 1 - i}) ✓`);
+      steps.push(`Position ${i}: '${left}' = '${right}' (position ${len - 1 - i}) ✔`);
     }
   }
   

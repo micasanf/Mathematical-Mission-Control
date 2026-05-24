@@ -297,12 +297,12 @@ export const missions: MissionData[] = [
         'Input: "racecar" (7 characters)',
         'Normalize: "racecar" (already lowercase, no spaces)',
         'Compare positions from outside in:',
-        'Position 1 vs 7: r vs r ✓',
-        'Position 2 vs 6: a vs a ✓',
-        'Position 3 vs 5: c vs c ✓',
-        'Position 4 (middle): e — single center character, no pair needed ✓',
+        'Position 1 vs 7: r vs r ✔',
+        'Position 2 vs 6: a vs a ✔',
+        'Position 3 vs 5: c vs c ✔',
+        'Position 4 (middle): e — single center character, no pair needed ✔',
         'All character pairs match → "racecar" IS a palindrome!',
-        'PDA perspective: Push r,a,c,e onto stack; guess midpoint; pop e (skip center), pop c vs c ✓, pop a vs a ✓, pop r vs r ✓ → Accept'
+        'PDA perspective: Push r,a,c,e onto stack; guess midpoint; pop e (skip center), pop c vs c ✔, pop a vs a ✔, pop r vs r ✔ → Accept'
       ]
     },
     simulatorLabel: 'Word, Phrase, or Number',

@@ -332,7 +332,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                   border: `1px solid ${resultColor}20`,
                   boxShadow: `0 0 20px ${resultColor}10`,
                 }}>
-                  {passed ? <Shield className="w-7 h-7 text-green-400" style={{ filter: 'drop-shadow(0 0 6px rgba(34,197,94,0.5))' }} /> : <ShieldAlert className="w-7 h-7 text-red-400" style={{ filter: 'drop-shadow(0 0 6px rgba(239,68,68,0.5))' }} />}
+                  {passed ? <span className="text-green-400 text-2xl font-bold" style={{ textShadow: '0 0 8px rgba(34,197,94,0.6)' }}>✔</span> : <span className="text-red-400 text-2xl font-bold" style={{ textShadow: '0 0 8px rgba(239,68,68,0.6)' }}>✖</span>}
                 </div>
               </motion.div>
 
@@ -504,7 +504,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                     indexColor = '#4ade80';
                     indexBg = 'rgba(34,197,94,0.08)';
                     indexBorder = 'rgba(34,197,94,0.25)';
-                    rightIcon = <CheckCircle2 className="w-4 h-4 text-green-400" style={{ filter: 'drop-shadow(0 0 4px rgba(74,222,128,0.6))' }} />;
+                    rightIcon = <span className="text-green-400 text-base font-bold" style={{ textShadow: '0 0 6px rgba(74,222,128,0.6)' }}>✔</span>;
                   } else if (isWrongOpt) {
                     borderColor = 'rgba(239,68,68,0.3)';
                     bgColor = 'rgba(239,68,68,0.04)';
@@ -512,7 +512,7 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                     indexColor = '#f87171';
                     indexBg = 'rgba(239,68,68,0.08)';
                     indexBorder = 'rgba(239,68,68,0.25)';
-                    rightIcon = <XCircle className="w-4 h-4 text-red-400" style={{ filter: 'drop-shadow(0 0 4px rgba(248,113,113,0.6))' }} />;
+                    rightIcon = <span className="text-red-400 text-base font-bold" style={{ textShadow: '0 0 6px rgba(248,113,113,0.6)' }}>✖</span>;
                   } else if (isDimmed) {
                     borderColor = 'rgba(255,255,255,0.02)';
                     bgColor = 'transparent';
@@ -609,12 +609,12 @@ export default function QuizComponent({ missionId, questions, missionColor }: Qu
                   <motion.div initial={{ opacity: 0, y: 10, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} exit={{ opacity: 0, y: 5, height: 0 }} transition={{ duration: 0.25 }} className="mt-4 overflow-hidden">
                     {isCorrect ? (
                       <div className="flex items-center justify-center gap-2.5 py-3 rounded-md" style={{ background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)', boxShadow: '0 0 20px rgba(34,197,94,0.08)' }}>
-                        <Shield className="w-4 h-4 text-green-400" style={{ filter: 'drop-shadow(0 0 4px rgba(74,222,128,0.5))' }} />
+                        <span className="text-green-400 text-lg font-bold" style={{ textShadow: '0 0 6px rgba(74,222,128,0.6)' }}>✔</span>
                         <span className="text-xs font-black tracking-[0.25em]" style={{ fontFamily: 'var(--font-orbitron), sans-serif', color: '#4ade80', textShadow: '0 0 12px rgba(74,222,128,0.5), 0 0 25px rgba(74,222,128,0.2)' }}>ACCESS GRANTED</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-2.5 py-3 rounded-md" style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', boxShadow: '0 0 20px rgba(239,68,68,0.08)' }}>
-                        <ShieldAlert className="w-4 h-4 text-red-400" style={{ filter: 'drop-shadow(0 0 4px rgba(248,113,113,0.5))' }} />
+                        <span className="text-red-400 text-lg font-bold" style={{ textShadow: '0 0 6px rgba(248,113,113,0.6)' }}>✖</span>
                         <span className="text-xs font-black tracking-[0.25em]" style={{ fontFamily: 'var(--font-orbitron), sans-serif', color: '#f87171', textShadow: '0 0 12px rgba(248,113,113,0.5), 0 0 25px rgba(248,113,113,0.2)' }}>ACCESS DENIED</span>
                       </div>
                     )}

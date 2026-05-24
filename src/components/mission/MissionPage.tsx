@@ -364,7 +364,7 @@ export default function MissionPage() {
               Palindrome Check: "{simInput1}"
             </div>
             <div className="text-slate-300 text-lg font-bold">
-              {result.isPalindrome ? '✅ IS a palindrome!' : '❌ NOT a palindrome'}
+              {result.isPalindrome ? '✔ IS a palindrome!' : '✖ NOT a palindrome'}
             </div>
             <div className="text-sm text-slate-400">
               Normalized: <span className="text-white font-mono">"{result.normalized}"</span>
