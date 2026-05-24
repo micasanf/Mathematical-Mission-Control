@@ -760,7 +760,7 @@ export function LoginPage() {
           className="text-[10px] sm:text-[12px] tracking-[0.15em] uppercase"
           style={{ fontFamily: "var(--font-orbitron), sans-serif", color: P.textMuted }}
         >
-          HERMOSO ● NUEVAS ● ORENSE ● SANTIAGO ● III - DCSAD
+          ACHURRA ● HERMOSO ● NUEVAS ● ORENSE ● SANTIAGO ● III - DCSAD
         </div>
         <div className="flex items-center gap-4 sm:gap-6">
           <BottomStatusItem label="ENCRYPTION" value="AES-256-GCM" />
