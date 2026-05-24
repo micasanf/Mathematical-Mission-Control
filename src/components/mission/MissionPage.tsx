@@ -143,12 +143,14 @@ export default function MissionPage() {
   // ---- Simulator logic ----
   const handleCompute = () => {
     const id = mission.id;
+    let isWrong = false; // track if the simulation result is a "wrong/negative" outcome
 
     try {
       if (id === 'collatz') {
         const n = parseInt(simInput1);
         if (isNaN(n) || n < 1) {
           setSimResult(<span className="text-red-400">Please enter a positive integer.</span>);
+          if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
         const seq = collatzSequence(n);
@@ -190,6 +192,7 @@ export default function MissionPage() {
         const n = parseInt(simInput1);
         if (isNaN(n) || n < 1 || n > 50) {
           setSimResult(<span className="text-red-400">Enter a number between 1 and 50.</span>);
+          if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
         const seq = fibonacciSequence(n);
@@ -225,6 +228,7 @@ export default function MissionPage() {
         const n = parseInt(simInput1);
         if (isNaN(n) || n < 1 || n > 50) {
           setSimResult(<span className="text-red-400">Enter a number between 1 and 50.</span>);
+          if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
         const seq = tribonacciSequence(n);
@@ -260,6 +264,7 @@ export default function MissionPage() {
         const n = parseInt(simInput1);
         if (isNaN(n) || n < 1 || n > 50) {
           setSimResult(<span className="text-red-400">Enter a number between 1 and 50.</span>);
+          if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
         const seq = lucasSequence(n);
@@ -296,6 +301,7 @@ export default function MissionPage() {
         const b = parseInt(simInput2);
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) {
           setSimResult(<span className="text-red-400">Please enter two positive integers.</span>);
+          if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
         const result = euclideanAlgorithm(a, b);
@@ -333,6 +339,7 @@ export default function MissionPage() {
         const b = parseInt(simInput2);
         if (isNaN(a) || isNaN(b) || b === 0) {
           setSimResult(<span className="text-red-400">Enter a valid dividend and a non-zero divisor.</span>);
+          if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
         const result = divisionAlgorithm(a, b);
@@ -355,9 +362,11 @@ export default function MissionPage() {
         const validation = validatePalindromeInput(simInput1);
         if (!validation.valid) {
           setSimResult(<span className="text-red-400">{validation.error}</span>);
+          if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
         const result = palindromeCheck(simInput1);
+        if (!result.isPalindrome) isWrong = true;
         setSimResult(
           <div className="space-y-4">
             <div className="text-lg font-semibold" style={{ color: colors.primary }}>
@@ -392,9 +401,10 @@ export default function MissionPage() {
       }
     } catch {
       setSimResult(<span className="text-red-400">Computation error. Please check your inputs.</span>);
+      if (soundEnabled) soundEngine.errorBuzzer();
     }
 
-    if (soundEnabled) soundEngine.success();
+    if (soundEnabled) { if (isWrong) { soundEngine.errorBuzzer(); } else { soundEngine.success(); } }
   };
 
   // ---- Visualization data ----

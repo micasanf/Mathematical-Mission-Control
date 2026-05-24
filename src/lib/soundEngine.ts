@@ -293,6 +293,65 @@ class SoundEngine {
     });
   }
 
+  /**
+   * Error buzzer — harsh dual-tone buzz for wrong simulation results
+   * Sounds like an alarm / denial buzzer: low buzzy tone + high dissonant tone
+   */
+  errorBuzzer() {
+    if (this.muted) return;
+    const ctx = this.getContext();
+
+    // Layer 1: Low buzzy square wave — the "buzzer" base
+    const buzz = ctx.createOscillator();
+    const buzzGain = ctx.createGain();
+    buzz.type = 'square';
+    buzz.frequency.setValueAtTime(150, ctx.currentTime);
+    buzzGain.gain.setValueAtTime(this.volume * 0.25, ctx.currentTime);
+    buzzGain.gain.setValueAtTime(this.volume * 0.25, ctx.currentTime + 0.15);
+    buzzGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    buzz.connect(buzzGain);
+    buzzGain.connect(ctx.destination);
+    buzz.start(ctx.currentTime);
+    buzz.stop(ctx.currentTime + 0.35);
+
+    // Layer 2: Dissonant high tone — the "alarm" sting
+    const alarm = ctx.createOscillator();
+    const alarmGain = ctx.createGain();
+    alarm.type = 'sawtooth';
+    alarm.frequency.setValueAtTime(520, ctx.currentTime);
+    alarm.frequency.setValueAtTime(480, ctx.currentTime + 0.1);
+    alarm.frequency.setValueAtTime(520, ctx.currentTime + 0.2);
+    alarmGain.gain.setValueAtTime(this.volume * 0.15, ctx.currentTime);
+    alarmGain.gain.setValueAtTime(this.volume * 0.15, ctx.currentTime + 0.2);
+    alarmGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    alarm.connect(alarmGain);
+    alarmGain.connect(ctx.destination);
+    alarm.start(ctx.currentTime);
+    alarm.stop(ctx.currentTime + 0.4);
+
+    // Layer 3: Quick noise burst — digital "rejected" texture
+    const noiseSize = Math.floor(ctx.sampleRate * 0.06);
+    const noiseBuffer = ctx.createBuffer(1, noiseSize, ctx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseSize; i++) {
+      noiseData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (noiseSize * 0.3));
+    }
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.setValueAtTime(800, ctx.currentTime);
+    noiseFilter.Q.setValueAtTime(2, ctx.currentTime);
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(this.volume * 0.2, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+    noiseSource.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noiseSource.start(ctx.currentTime);
+    noiseSource.stop(ctx.currentTime + 0.06);
+  }
+
   achievement() {
     if (this.muted) return;
     const ctx = this.getContext();
