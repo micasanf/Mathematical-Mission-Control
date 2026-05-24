@@ -305,8 +305,8 @@ export const missions: MissionData[] = [
         'PDA perspective: Push r,a,c,e onto stack; guess midpoint; pop e (skip center), pop c vs c ✓, pop a vs a ✓, pop r vs r ✓ → Accept'
       ]
     },
-    simulatorLabel: 'Word or Phrase',
-    simulatorPlaceholder: 'Enter a word or phrase (e.g., racecar, A man a plan a canal Panama)',
+    simulatorLabel: 'Word, Phrase, or Number',
+    simulatorPlaceholder: 'Enter a word, phrase, or number (e.g., racecar, 12321, A man a plan a canal Panama)',
     applications: [
       'DNA sequence analysis — palindromic sequences play a crucial role in gene regulation and restriction enzyme recognition sites',
       'Error detection in data transmission — palindromic parity checks and cyclic redundancy codes',

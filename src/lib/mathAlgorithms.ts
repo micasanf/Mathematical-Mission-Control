@@ -166,22 +166,22 @@ export function palindromeCheck(input: string): { isPalindrome: boolean; normali
   return { isPalindrome, normalized, steps };
 }
 
-// Validate that input contains only letters and spaces
+// Validate that input contains only letters, digits, and spaces
 export function validatePalindromeInput(input: string): { valid: boolean; error: string | null } {
   if (!input || input.trim().length === 0) {
     return { valid: false, error: 'Please enter a word or phrase. Empty input is not accepted.' };
   }
   
-  // Check for special characters and numbers
-  const invalidChars = /[^a-zA-Z\s]/;
+  // Check for special characters (only letters, digits, and spaces allowed)
+  const invalidChars = /[^a-zA-Z0-9\s]/;
   if (invalidChars.test(input)) {
-    const found = input.match(/[^a-zA-Z\s]/g);
-    return { valid: false, error: `Special character${found && found.length > 1 ? 's' : ''} not allowed: "${[...new Set(found)].join('", "')}". Only letters and spaces are accepted.` };
+    const found = input.match(/[^a-zA-Z0-9\s]/g);
+    return { valid: false, error: `Special character${found && found.length > 1 ? 's' : ''} not allowed: "${[...new Set(found)].join('", "')}". Only letters, digits, and spaces are accepted.` };
   }
   
-  // Check that there's at least one letter
-  if (!/[a-zA-Z]/.test(input)) {
-    return { valid: false, error: 'Please enter at least one letter. Spaces alone are not valid input.' };
+  // Check that there's at least one letter or digit
+  if (!/[a-zA-Z0-9]/.test(input)) {
+    return { valid: false, error: 'Please enter at least one letter or digit. Spaces alone are not valid input.' };
   }
   
   return { valid: true, error: null };
