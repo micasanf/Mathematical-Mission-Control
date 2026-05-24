@@ -715,7 +715,7 @@ function AltitudeBar({ landing }: { landing: boolean }) {
 // ─── Power Bar ──────────────────────────────────────────────────────────
 function PowerBar({ landing }: { landing: boolean }) {
   return (
-    <div className="absolute left-5 z-30" style={{ bottom: 32, width: 120 }}>
+    <div className="absolute left-5 z-30" style={{ bottom: 18, width: 120 }}>
       <div style={{ fontSize: '9px', color: 'rgba(0,220,255,0.45)', letterSpacing: '1px', marginBottom: 3 }}>
         RETRO THRUST
       </div>
