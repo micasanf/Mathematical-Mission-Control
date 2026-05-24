@@ -454,8 +454,8 @@ export default function MissionPage() {
   const progressPercent = (sectionsViewed.length / tabDefs.length) * 100;
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'radial-gradient(ellipse at 20% 0%, #0D1B2A 0%, #050B18 40%, #050B18 100%)' }}>
-      {/* Glitch keyframes for mission title */}
+    <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: '#050B18' }}>
+      {/* ── Keyframe Styles ── */}
       <style>{`
         @keyframes mission-glitch-top {
           0%, 90%, 100% { transform: translate(0); }
@@ -478,7 +478,128 @@ export default function MissionPage() {
           75% { opacity: 0.4; }
           100% { opacity: 1; }
         }
+        @keyframes mp-data-rain {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100vh); }
+        }
+        @keyframes mp-glow-pulse {
+          0% { opacity: 0.4; }
+          100% { opacity: 0.7; }
+        }
+        @keyframes mp-noise-shift {
+          0% { transform: translate(0, 0); }
+          33% { transform: translate(-2px, 1px); }
+          66% { transform: translate(1px, -2px); }
+          100% { transform: translate(0, 0); }
+        }
+        @keyframes mp-screen-flicker {
+          0%, 95%, 100% { opacity: 1; }
+          96% { opacity: 0.92; }
+          97% { opacity: 1; }
+          98% { opacity: 0.95; }
+        }
       `}</style>
+
+      {/* ── Background: Radial gradient ── */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 20% 0%, #0D1B2A 0%, #050B18 40%, #050B18 100%)',
+          zIndex: 0,
+        }}
+      />
+
+      {/* ── Background: Grid overlay ── */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(0,206,201,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,206,201,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '120px 120px',
+          zIndex: 1,
+        }}
+      />
+
+      {/* ── Background: Data rain ── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
+        {Array.from({ length: 20 }, (_, i) => ({
+          id: i,
+          x: Math.random() * 100,
+          speed: 4 + Math.random() * 8,
+          delay: Math.random() * 10,
+          chars: Array.from({ length: 6 + Math.floor(Math.random() * 8) }, () =>
+            String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96))
+          ),
+          opacity: 0.03 + Math.random() * 0.05,
+        })).map(col => (
+          <div
+            key={col.id}
+            className="absolute top-0"
+            style={{
+              left: `${col.x}%`,
+              fontFamily: "var(--font-share-tech-mono), monospace",
+              fontSize: '11px',
+              lineHeight: '1.3',
+              color: `rgba(0, 206, 201, ${col.opacity})`,
+              writingMode: 'vertical-rl',
+              textOrientation: 'upright',
+              animation: `mp-data-rain ${col.speed}s linear ${col.delay}s infinite`,
+              textShadow: `0 0 4px rgba(0,206,201,${col.opacity * 2})`,
+            }}
+          >
+            {col.chars.join('')}
+          </div>
+        ))}
+      </div>
+
+      {/* ── Background: Radial glow ── */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          zIndex: 1,
+          backgroundImage: 'radial-gradient(rgba(0,206,201,0.06) 15%, transparent 60%)',
+          animation: 'mp-glow-pulse 8s ease-in-out infinite alternate',
+        }}
+      />
+
+      {/* ── Background: Scan lines ── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 2 }}>
+        {Array.from({ length: 100 }, (_, i) => (
+          <div
+            key={i}
+            className="absolute left-0 right-0"
+            style={{
+              top: `${i * 10}px`,
+              height: '1px',
+              background: 'rgba(0,206,201,0.015)',
+              boxShadow: '0 0 1px rgba(0,20,30,0.3)',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* ── Background: Noise grain ── */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          zIndex: 3,
+          opacity: 0.035,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: '128px 128px',
+          animation: 'mp-noise-shift 0.15s steps(3) infinite',
+        }}
+      />
+
+      {/* ── Background: Screen flicker ── */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          zIndex: 3,
+          animation: 'mp-screen-flicker 8s linear infinite',
+        }}
+      />
 
       {/* ---- Top Bar ---- */}
       <motion.header
@@ -577,7 +698,7 @@ export default function MissionPage() {
       </motion.header>
 
       {/* ---- Main Content ---- */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-6">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-6 relative z-10">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="flex flex-col gap-6">
           {/* Tab navigation */}
           <div className="overflow-x-auto pb-2 -mx-4 px-4">
@@ -1082,7 +1203,7 @@ export default function MissionPage() {
       </main>
 
       {/* ---- Footer ---- */}
-      <footer className="border-t border-slate-800/50 py-4 text-center">
+      <footer className="border-t border-slate-800/50 py-4 text-center relative z-10">
         <p className="text-xs text-slate-600 tracking-wider">
           XLR8 - SPACE MISSION • {mission.title.toUpperCase()}
         </p>
