@@ -335,7 +335,7 @@ function AltitudeBar({ launched }: { launched: boolean }) {
 // ─── Power Bar (grows from 20% to 100% during launch) ────────────────────────
 function PowerBar({ launched }: { launched: boolean }) {
   return (
-    <div className="absolute left-5 z-30" style={{ bottom: 32, width: 120 }}>
+    <div className="absolute left-5 z-30" style={{ bottom: 18, width: 120 }}>
       <div style={{ fontSize: '9px', color: 'rgba(0,220,255,0.45)', letterSpacing: '1px', marginBottom: 3 }}>ENGINE POWER</div>
       <div className="h-[5px] rounded-[2px] overflow-hidden" style={{ background: 'rgba(0,220,255,0.1)', border: '1px solid rgba(0,220,255,0.2)' }}>
         <div
