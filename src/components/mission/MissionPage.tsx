@@ -1074,7 +1074,7 @@ export default function MissionPage() {
       {/* ---- Footer ---- */}
       <footer className="border-t border-slate-800/50 py-4 text-center">
         <p className="text-xs text-slate-600 tracking-wider">
-          XLRS - SPACE MISSION • {mission.title.toUpperCase()}
+          XLR8 - SPACE MISSION • {mission.title.toUpperCase()}
         </p>
       </footer>
 

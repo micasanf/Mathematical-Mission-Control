@@ -1467,7 +1467,7 @@ export function Dashboard() {
             className="text-[10px] sm:text-xs tracking-[0.2em] uppercase"
             style={{ color: 'rgba(0, 206, 201, 0.25)', textShadow: '0 0 4px rgba(0,206,201,0.15)' }}
           >
-            XLRS - SPACE MISSION v1.0 — All Systems Operational
+            XLR8 - SPACE MISSION v1.0 — All Systems Operational
           </p>
         </footer>
       </div>

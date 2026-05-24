@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-const TEXT = 'XLRS - SPACE MISSION';
+const TEXT = 'XLR8 - SPACE MISSION';
 const FONT = 'bold 28px Orbitron, monospace';
 const PRIMARY = '#FF4D00';
 const CW = 460;
