@@ -1015,6 +1015,15 @@ export function Dashboard() {
                     </span>
                   </span>
                 </p>
+                <p
+                  className="text-[10px] tracking-[3px] mt-0.5"
+                  style={{
+                    color: 'rgba(0,206,201,0.45)',
+                    textShadow: '0 0 8px rgba(0,206,201,0.2)',
+                  }}
+                >
+                  ACHURRA
+                </p>
               </motion.div>
 
               {/* Mobile welcome */}
