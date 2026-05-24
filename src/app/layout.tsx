@@ -32,10 +32,10 @@ const shareTechMono = Share_Tech_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mathematical Mission Control — Explore Math in Space",
+  title: "XLRS - SPACE MISSION",
   description: "An immersive space-themed educational platform for learning mathematical sequences and algorithms through interactive missions.",
   keywords: ["mathematics", "education", "sequences", "algorithms", "Fibonacci", "Collatz", "Euclidean", "interactive"],
-  authors: [{ name: "Mathematical Mission Control" }],
+  authors: [{ name: "XLRS - SPACE MISSION" }],
   icons: {
     icon: "/favicon.png",
   },

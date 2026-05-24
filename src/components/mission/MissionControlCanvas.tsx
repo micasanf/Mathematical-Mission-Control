@@ -2,10 +2,10 @@
 
 import { useEffect, useRef } from 'react';
 
-const TEXT = 'MISSION CONTROL';
+const TEXT = 'XLRS - SPACE MISSION';
 const FONT = 'bold 28px Orbitron, monospace';
 const PRIMARY = '#FF4D00';
-const CW = 340;
+const CW = 460;
 const CH = 44;
 const BY = 32;
 const CYCLE = 260;
