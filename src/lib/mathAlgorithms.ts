@@ -486,34 +486,40 @@ export function validateEuclideanInput(input1: string, input2: string): { valid:
 
 // ─── DIVISION ALGORITHM ─────────────────────────────────────────────────────
 
-export function divisionAlgorithm(dividend: number, divisor: number): { quotient: number; remainder: number; steps: string[]; dividend: number; divisor: number } {
+export function divisionAlgorithm(m: number, n: number): { quotient: number; remainder: number; steps: string[]; m: number; n: number } {
   const steps: string[] = [];
 
-  // Auto-assign: higher number as dividend, smaller as divisor (per lab spec)
-  const m = Math.abs(dividend) >= Math.abs(divisor) ? Math.abs(dividend) : Math.abs(divisor);
-  const n = Math.abs(dividend) >= Math.abs(divisor) ? Math.abs(divisor) : Math.abs(dividend);
+  // Division Algorithm Theorem:
+  // Let m and n be positive integers. There exist non-negative integers q and r,
+  // with 0 <= r < n, such that m = nq + r.
+  // Here, q is the quotient when m is divided by n, and r is the remainder.
 
   if (n === 0) {
-    return { quotient: 0, remainder: 0, steps: ['Division by zero is undefined'], dividend: m, divisor: 0 };
+    return { quotient: 0, remainder: 0, steps: ['Division by zero is undefined'], m, n: 0 };
   }
 
-  // Division Algorithm: m = n*q + r, where 0 ≤ r < n
+  // Compute quotient q and remainder r: m = nq + r, where 0 ≤ r < n
   const q = Math.floor(m / n);
   const r = m % n;
 
   steps.push(`SOLUTION:`);
+  steps.push(`Let m = ${m} and n = ${n} be positive integers.`);
+  steps.push(`By the Division Algorithm, there exist non-negative integers q and r`);
+  steps.push(`such that m = nq + r, where 0 ≤ r < n.`);
+  steps.push(``);
   steps.push(`${m} = ${n}(${q})${r > 0 ? ` + ${r}` : ''}`);
-  steps.push(`The dividend is ${m}`);
-  steps.push(`The divisor is ${n}`);
-  steps.push(`The quotient is ${q}${r > 0 ? ` and the remainder is ${r}` : ''}`);
+  steps.push(`The quotient q = ${q}${r > 0 ? ` and the remainder r = ${r}` : r === 0 ? ` and the remainder r = 0` : ''}`);
+  if (r > 0) {
+    steps.push(`Check: 0 ≤ ${r} < ${n} ✔`);
+  }
 
-  return { quotient: q, remainder: r, steps, dividend: m, divisor: n };
+  return { quotient: q, remainder: r, steps, m, n };
 }
 
-/** Validate Division Algorithm input — two positive integers, per lab spec */
+/** Validate Division Algorithm input — two positive integers m and n (per theorem: m and n are positive integers) */
 export function validateDivisionInput(input1: string, input2: string): { valid: boolean; error: string | null; parsed1: number | null; parsed2: number | null } {
   const result = validateDualIntegerInput(input1, input2, 'Division Algorithm', {
-    allowZeroFirst: true,
+    allowZeroFirst: false,
     allowZeroSecond: false,
     allowNegativeFirst: false,
     allowNegativeSecond: false,
@@ -522,20 +528,29 @@ export function validateDivisionInput(input1: string, input2: string): { valid: 
 
   if (!result.valid) return result;
 
-  // Divisor is zero
+  // n (divisor) must be positive — both m and n must be positive integers per theorem
   if (result.parsed2 === 0) {
-    // Both zero
     if (result.parsed1 === 0) {
       return {
         valid: false,
-        error: `Both inputs are zero. Division by zero is undefined regardless of the dividend.`,
+        error: `Both inputs are zero. The theorem requires m and n to be positive integers.`,
         parsed1: null,
         parsed2: null,
       };
     }
     return {
       valid: false,
-      error: `Divisor must not be zero. Division by zero is undefined.`,
+      error: `n must be a positive integer. Division by zero is undefined, and the theorem requires n > 0.`,
+      parsed1: null,
+      parsed2: null,
+    };
+  }
+
+  // m must be positive per theorem
+  if (result.parsed1 !== null && result.parsed1 <= 0) {
+    return {
+      valid: false,
+      error: `m must be a positive integer. The theorem states: "Let m and n be positive integers."`,
       parsed1: null,
       parsed2: null,
     };

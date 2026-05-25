@@ -803,7 +803,7 @@ export default function MissionPage() {
                           {mission.id === 'tribonacci' && 'Ratio converges to ≈ 1.839'}
                           {mission.id === 'lucas' && 'L(n) = F(n-1) + F(n+1)'}
                           {mission.id === 'euclidean' && 'GCD(a,0) = a terminates algorithm'}
-                          {mission.id === 'division' && 'Remainder is unique: 0 ≤ r < |b|'}
+                          {mission.id === 'division' && 'Remainder is unique: 0 ≤ r < n'}
                           {mission.id === 'palindrome' && 'Requires PDA — cannot be recognized by FA'}
                         </div>
                       </div>
@@ -905,7 +905,7 @@ export default function MissionPage() {
                       <>
                         <div className="flex-1 w-full space-y-2">
                           <Label className="text-slate-400 text-xs">
-                            {mission.id === 'euclidean' ? 'First Integer (a)' : 'Dividend (a)'}
+                            {mission.id === 'euclidean' ? 'First Integer (a)' : 'm (positive integer)'}
                           </Label>
                           <Input
                             value={simInput1}
@@ -918,7 +918,7 @@ export default function MissionPage() {
                         </div>
                         <div className="flex-1 w-full space-y-2">
                           <Label className="text-slate-400 text-xs">
-                            {mission.id === 'euclidean' ? 'Second Integer (b)' : 'Divisor (b)'}
+                            {mission.id === 'euclidean' ? 'Second Integer (b)' : 'n (positive integer)'}
                           </Label>
                           <Input
                             value={simInput2}
@@ -1115,7 +1115,7 @@ export default function MissionPage() {
                     {mission.id === 'tribonacci' && 'First 15 Tribonacci numbers'}
                     {mission.id === 'lucas' && 'First 15 Lucas numbers'}
                     {mission.id === 'euclidean' && 'Euclidean algorithm: GCD(48, 18)'}
-                    {mission.id === 'division' && 'Division by 7: quotient and remainder'}
+                    {mission.id === 'division' && 'Division by 7: quotient q and remainder r'}
                   </p>
                 </div>
               </GlassPanel>

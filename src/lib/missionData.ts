@@ -247,21 +247,21 @@ export const missions: MissionData[] = [
     description: 'Understand the Division Algorithm — the fundamental theorem that underlies all of arithmetic.',
     icon: 'D',
     color: 'warp',
-    overview: `The Division Algorithm (also called the Division Theorem) states that for any integers a and b (where b > 0), there exist unique integers q (quotient) and r (remainder) such that:\n\na = bq + r, where 0 ≤ r < b\n\nThis seemingly simple statement is actually a profound result that forms the basis for much of number theory, including the Euclidean Algorithm, modular arithmetic, and the fundamental theorem of arithmetic.\n\nIt guarantees that division always "works out" with a unique quotient and remainder, even when we restrict ourselves to integers.`,
-    formula: 'a = bq + r, \\quad \\text{where } 0 \\leq r < |b|',
-    formulaDescription: 'For integers a (dividend) and b (divisor, b ≠ 0), there exist unique integers q (quotient) and r (remainder) such that a = bq + r with 0 ≤ r < |b|. The quotient q = ⌊a/b⌋ and remainder r = a - bq.',
+    overview: `The Division Algorithm (also called the Division Theorem) states:\n\nLet m and n be positive integers. There exist non-negative integers q and r, with 0 ≤ r < n, such that m = nq + r. Here, q is the quotient when m is divided by n, and r is the remainder.\n\nThis seemingly simple statement is actually a profound result that forms the basis for much of number theory, including the Euclidean Algorithm, modular arithmetic, and the fundamental theorem of arithmetic.\n\nIt guarantees that division always "works out" with a unique quotient and remainder, even when we restrict ourselves to integers.`,
+    formula: 'm = nq + r, \\quad \\text{where } 0 \\leq r < n',
+    formulaDescription: 'Let m and n be positive integers. There exist non-negative integers q and r, with 0 ≤ r < n, such that m = nq + r. Here, q is the quotient when m is divided by n, and r is the remainder. The quotient q = ⌊m/n⌋ and remainder r = m - nq.',
     workedExample: {
-      title: 'Applying the Division Algorithm to a = 43, b = 7',
+      title: 'Applying the Division Algorithm to m = 43, n = 7',
       steps: [
-        'Dividend a = 43, Divisor b = 7',
-        '43 ÷ 7 = 6 remainder 1',
-        'Quotient q = 6',
-        'Remainder r = 1',
-        'Verification: a = bq + r -> 43 = 7 x 6 + 1 = 42 + 1 = 43 [OK]',
-        'Check: 0 <= r < |b| -> 0 <= 1 < 7 [OK]'
+        'Let m = 43 and n = 7 be positive integers.',
+        'By the Division Algorithm, there exist non-negative integers q and r',
+        'such that m = nq + r, where 0 ≤ r < n.',
+        '43 = 7(6) + 1',
+        'The quotient q = 6 and the remainder r = 1',
+        'Check: 0 ≤ 1 < 7 ✔'
       ]
     },
-    simulatorLabel: 'Dividend and Divisor (comma-separated)',
+    simulatorLabel: 'Positive integers m and n (comma-separated)',
     simulatorPlaceholder: 'e.g., 43, 7',
     applications: [
       'Modular arithmetic and congruence relations',
@@ -272,13 +272,13 @@ export const missions: MissionData[] = [
     ],
     history: 'The Division Algorithm, while named as an "algorithm," is actually a theorem that guarantees the existence and uniqueness of quotient and remainder. The concept of division with remainder is ancient — it was used by Babylonian mathematicians around 2000 BC. The formal statement and proof appear in Euclid\'s Elements. The theorem is fundamental to the development of modular arithmetic by Carl Friedrich Gauss in his Disquisitiones Arithmeticae (1801).',
     quiz: [
-      { question: 'In the Division Algorithm a = bq + r, what constraint must r satisfy?', options: ['r > b', '0 ≤ r < |b|', 'r = 0', 'r < 0'], correct: 1 },
-      { question: 'If a = 37 and b = 5, what are q and r?', options: ['q = 6, r = 7', 'q = 8, r = -3', 'q = 7, r = 1', 'q = 7, r = 2'], correct: 3 },
+      { question: 'In the Division Algorithm m = nq + r, what constraint must r satisfy?', options: ['r > n', '0 ≤ r < n', 'r = 0', 'r < 0'], correct: 1 },
+      { question: 'If m = 37 and n = 5, what are q and r?', options: ['q = 6, r = 7', 'q = 8, r = -3', 'q = 7, r = 1', 'q = 7, r = 2'], correct: 3 },
       { question: 'What does the Division Algorithm guarantee about q and r?', options: ['They are positive', 'They are unique', 'They are equal', 'They are prime'], correct: 1 },
-      { question: 'If a = 100 and b = 7, what is r?', options: ['1', '2', '3', '14'], correct: 1 },
+      { question: 'If m = 100 and n = 7, what is r?', options: ['1', '2', '3', '14'], correct: 1 },
       { question: 'Who formalized modular arithmetic using the Division Algorithm?', options: ['Euclid', 'Carl Friedrich Gauss', 'Leonhard Euler', 'Pierre de Fermat'], correct: 1 },
-      { question: 'When the remainder r = 0, what does it mean?', options: ['a is prime', 'b divides a evenly', 'a equals b', 'q equals 0'], correct: 1 },
-      { question: 'What is the remainder when 256 is divided by 17?', options: ['1', '15', '16', '0'], correct: 0 },
+      { question: 'When the remainder r = 0, what does it mean?', options: ['m is prime', 'n divides m evenly', 'm equals n', 'q equals 0'], correct: 1 },
+      { question: 'If m = 256 and n = 17, what is r?', options: ['1', '15', '16', '0'], correct: 0 },
     ]
   },
   {
