@@ -111,7 +111,7 @@ class SoundEngine {
     if (this.muted) return;
     // If already playing, just adjust volume down gently
     if (this.bgAudioRef) {
-      this.bgAudioRef.volume = 0.08 * this.volume;
+      this.bgAudioRef.volume = 0.10 * this.volume;
       if (!this.muted) {
         this.bgAudioRef.play().catch(() => {});
       }
@@ -128,7 +128,7 @@ class SoundEngine {
     });
 
     // Gentle fade-in to minimal volume over 2 seconds
-    const targetVolume = 0.08 * this.volume;
+    const targetVolume = 0.10 * this.volume;
     const fadeSteps = 40;
     const fadeTime = 2000;
     const stepTime = fadeTime / fadeSteps;
