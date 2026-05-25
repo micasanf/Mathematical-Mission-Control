@@ -532,7 +532,7 @@ export function validateDivisionInput(input1: string, input2: string): { valid: 
 export function palindromeCheck(input: string): { isPalindrome: boolean; normalized: string; steps: string[] } {
   const steps: string[] = [];
 
-  // Step 1: Remove spaces and convert to lowercase
+  // Step 1: Remove spaces and convert to lowercase (keep dots for decimal strings like "5.5")
   const normalized = input.replace(/\s/g, '').toLowerCase();
   steps.push(`Original input: "${input}"`);
   steps.push(`Remove spaces and convert to lowercase: "${normalized}"`);
@@ -583,16 +583,16 @@ export function validatePalindromeInput(input: string): { valid: boolean; error:
     return { valid: true, error: null };
   }
 
-  // Check for special characters (only letters, digits, and spaces allowed)
-  const invalidChars = /[^a-zA-Z0-9\s]/;
+  // Check for special characters (only letters, digits, dots, and spaces allowed)
+  const invalidChars = /[^a-zA-Z0-9.\s]/;
   if (invalidChars.test(input)) {
-    const found = input.match(/[^a-zA-Z0-9\s]/g);
-    return { valid: false, error: `Special character${found && found.length > 1 ? 's' : ''} not allowed: "${[...new Set(found)].join('", "')}". Only letters, digits, and spaces are accepted.` };
+    const found = input.match(/[^a-zA-Z0-9.\s]/g);
+    return { valid: false, error: `Special character${found && found.length > 1 ? 's' : ''} not allowed: "${[...new Set(found)].join('", "')}". Only letters, digits, dots, and spaces are accepted.` };
   }
 
-  // Check that there's at least one letter or digit
-  if (!/[a-zA-Z0-9]/.test(input)) {
-    return { valid: false, error: 'Please enter at least one letter or digit. Spaces alone are not valid input.' };
+  // Check that there's at least one letter, digit, or dot
+  if (!/[a-zA-Z0-9.]/.test(input)) {
+    return { valid: false, error: 'Please enter at least one letter, digit, or number. Spaces alone are not valid input.' };
   }
 
   return { valid: true, error: null };
