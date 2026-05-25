@@ -563,7 +563,7 @@ export function palindromeCheck(input: string): { isPalindrome: boolean; normali
   return { isPalindrome, normalized, steps };
 }
 
-// Validate that input contains only letters, digits, and spaces
+// Validate palindrome input — accept any characters (letters, digits, special chars, spaces)
 export function validatePalindromeInput(input: string): { valid: boolean; error: string | null } {
   // Empty string
   if (input === '') {
@@ -575,24 +575,9 @@ export function validatePalindromeInput(input: string): { valid: boolean; error:
     return { valid: false, error: 'A string or integer argument is required.' };
   }
 
-  // Whitespace-only — treated as a palindrome per spec, but we check for only-spaces
-  // Actually per spec: "Whitespace-only strings are accepted and treated as palindromes"
-  // But we still need at least something. Empty is different from whitespace.
+  // Whitespace-only — treated as a palindrome per spec
   if (input.trim().length === 0 && input.length > 0) {
-    // Whitespace only — this IS valid, it's a palindrome
     return { valid: true, error: null };
-  }
-
-  // Check for special characters (only letters, digits, dots, and spaces allowed)
-  const invalidChars = /[^a-zA-Z0-9.\s]/;
-  if (invalidChars.test(input)) {
-    const found = input.match(/[^a-zA-Z0-9.\s]/g);
-    return { valid: false, error: `Special character${found && found.length > 1 ? 's' : ''} not allowed: "${[...new Set(found)].join('", "')}". Only letters, digits, dots, and spaces are accepted.` };
-  }
-
-  // Check that there's at least one letter, digit, or dot
-  if (!/[a-zA-Z0-9.]/.test(input)) {
-    return { valid: false, error: 'Please enter at least one letter, digit, or number. Spaces alone are not valid input.' };
   }
 
   return { valid: true, error: null };
