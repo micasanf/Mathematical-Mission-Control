@@ -103,6 +103,46 @@ class SoundEngine {
     }
   }
 
+  /**
+   * Play ambient BGM at very low volume — for Dashboard and MissionPage
+   * Creates a new BGM instance with a gentle fade-in to a minimal volume
+   */
+  playAmbientBGM() {
+    if (this.muted) return;
+    // If already playing, just adjust volume down gently
+    if (this.bgAudioRef) {
+      this.bgAudioRef.volume = 0.08 * this.volume;
+      if (!this.muted) {
+        this.bgAudioRef.play().catch(() => {});
+      }
+      return;
+    }
+
+    const audio = new Audio('/audio/bg.mp4');
+    audio.loop = true;
+    audio.volume = 0; // Start silent, fade in
+    this.bgAudioRef = audio;
+
+    audio.play().catch(() => {
+      // Autoplay blocked
+    });
+
+    // Gentle fade-in to minimal volume over 2 seconds
+    const targetVolume = 0.08 * this.volume;
+    const fadeSteps = 40;
+    const fadeTime = 2000;
+    const stepTime = fadeTime / fadeSteps;
+    let step = 0;
+    const fadeInterval = setInterval(() => {
+      step++;
+      audio.volume = Math.min(targetVolume, (targetVolume / fadeSteps) * step);
+      if (step >= fadeSteps) {
+        clearInterval(fadeInterval);
+        audio.volume = targetVolume;
+      }
+    }, stepTime);
+  }
+
   // ─── Rocket Sound Effects ────────────────────────────────────────────
 
   playRocketLaunch() {

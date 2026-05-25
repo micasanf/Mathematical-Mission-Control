@@ -764,9 +764,10 @@ export function Dashboard() {
     return Math.min(100, Math.round(sectionPercent + quizPercent));
   };
 
-  // Deploy sound on mount
+  // Deploy sound on mount + restart ambient BGM
   useEffect(() => {
     if (soundEnabled) soundEngine.playDeploy();
+    if (soundEnabled) soundEngine.playAmbientBGM();
   }, [soundEnabled]);
 
   // Handle launch mission — go directly to landing animation (no liftoff)

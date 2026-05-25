@@ -128,9 +128,10 @@ export default function MissionPage() {
 
   const colors = missionColors[mission.color] ?? missionColors.solar;
 
-  // Deploy sound on page mount
+  // Deploy sound on page mount + restart ambient BGM
   useEffect(() => {
     if (soundEnabled) soundEngine.playDeploy();
+    if (soundEnabled) soundEngine.playAmbientBGM();
   }, [soundEnabled]);
 
   // Track section view
