@@ -964,8 +964,12 @@ export default function LandingAnimation() {
 
         // After 1.5 seconds landed, transition to mission page
         addTimer(() => {
-          // Fade out BGM before transition
+          // Fade out landing BGM and crossfade into ambient main BGM
           stopLandingBGM();
+          // Start the main BGM at ambient volume right away (no gap)
+          setTimeout(() => {
+            if (soundEnabled) soundEngine.playAmbientBGM();
+          }, 400);
 
           // Fade out and stop landing SFX
           if (sfxRef.current) {
