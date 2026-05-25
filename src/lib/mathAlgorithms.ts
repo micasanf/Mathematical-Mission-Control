@@ -440,25 +440,53 @@ export function validateLucasInput(input: string): { valid: boolean; error: stri
 
 // ─── EUCLIDEAN ──────────────────────────────────────────────────────────────
 
-export function euclideanAlgorithm(a: number, b: number): { gcd: number; lcm: number; steps: { a: number; b: number; quotient: number; remainder: number }[] } {
-  const steps: { a: number; b: number; quotient: number; remainder: number }[] = [];
-  // Auto-assign: higher number as dividend, smaller as divisor (per lab spec)
-  let x = Math.abs(a) >= Math.abs(b) ? Math.abs(a) : Math.abs(b);
-  let y = Math.abs(a) >= Math.abs(b) ? Math.abs(b) : Math.abs(a);
-  while (y !== 0) {
-    const quotient = Math.floor(x / y);
-    const remainder = x % y;
-    steps.push({ a: x, b: y, quotient, remainder });
-    x = y;
-    y = remainder;
+// The Euclidean Algorithm:
+// Let m and n be positive integers with n < m. Let
+//   m = n·q₁ + r₁
+//   n = r₁·q₂ + r₂
+//   r₁ = r₂·q₃ + r₃
+//   …
+//   r_{N-1} = r_N·q_N
+// be the result of iterating the Division Algorithm, where r_N is the last non-zero remainder.
+// Then gcd(m, n) = r_N.
+//
+// The GCD and LCM are related by: lcm(m, n) = (m · n) / gcd(m, n)
+
+export function euclideanAlgorithm(m: number, n: number): { gcd: number; lcm: number; steps: { dividend: number; divisor: number; quotient: number; remainder: number }[]; stepStrings: string[] } {
+  const steps: { dividend: number; divisor: number; quotient: number; remainder: number }[] = [];
+  const stepStrings: string[] = [];
+
+  // Ensure m > n per theorem: "Let m and n be positive integers with n < m"
+  let big = m >= n ? m : n;
+  let small = m >= n ? n : m;
+
+  // Iterate the Division Algorithm
+  let stepNum = 1;
+  while (small !== 0) {
+    const q = Math.floor(big / small);
+    const r = big % small;
+    steps.push({ dividend: big, divisor: small, quotient: q, remainder: r });
+
+    if (r === 0) {
+      stepStrings.push(`${big} = ${small}(${q})`);
+    } else {
+      stepStrings.push(`${big} = ${small}(${q}) + ${r}`);
+    }
+
+    big = small;
+    small = r;
+    stepNum++;
   }
-  // LCM = |a * b| / GCD
-  const gcd = x;
-  const lcm = Math.abs(a) * Math.abs(b) / gcd;
-  return { gcd, lcm, steps };
+
+  // gcd = last non-zero remainder = the last divisor before remainder became 0
+  const gcd = big;
+  // lcm(m, n) = (m · n) / gcd(m, n)
+  const lcm = (m * n) / gcd;
+
+  return { gcd, lcm, steps, stepStrings };
 }
 
-/** Validate Euclidean input — two positive integers, not both zero, per lab spec */
+/** Validate Euclidean input — two positive integers m and n with n < m, per theorem */
 export function validateEuclideanInput(input1: string, input2: string): { valid: boolean; error: string | null; parsed1: number | null; parsed2: number | null } {
   const result = validateDualIntegerInput(input1, input2, 'Euclidean Algorithm', {
     allowZeroFirst: false,
@@ -474,7 +502,7 @@ export function validateEuclideanInput(input1: string, input2: string): { valid:
   if (result.parsed1 === 0 && result.parsed2 === 0) {
     return {
       valid: false,
-      error: `Both inputs are zero. The GCD of 0 and 0 is undefined. At least one value must be non-zero.`,
+      error: `Both inputs are zero. The theorem requires m and n to be positive integers.`,
       parsed1: null,
       parsed2: null,
     };

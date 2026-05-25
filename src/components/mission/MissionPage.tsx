@@ -314,27 +314,33 @@ export default function MissionPage() {
           if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
-        const a = validation.parsed1;
-        const b = validation.parsed2;
-        const result = euclideanAlgorithm(a, b);
-        const higher = Math.abs(a) >= Math.abs(b) ? Math.abs(a) : Math.abs(b);
-        const smaller = Math.abs(a) >= Math.abs(b) ? Math.abs(b) : Math.abs(a);
+        const m = validation.parsed1;
+        const n = validation.parsed2;
+        const result = euclideanAlgorithm(m, n);
+        const bigM = m >= n ? m : n;
+        const smallN = m >= n ? n : m;
         setSimResult(
           <div className="space-y-4">
             <div className="text-lg font-semibold" style={{ color: colors.primary }}>
               SOLUTION:
             </div>
+            <div className="text-sm text-slate-400">
+              Let m = <span className="text-white font-bold">{bigM}</span> and n = <span className="text-white font-bold">{smallN}</span> be positive integers with n &lt; m.
+            </div>
+            <div className="text-sm text-slate-400 mb-1">
+              Iterating the Division Algorithm:
+            </div>
             <div className="space-y-1 font-mono text-sm">
-              {result.steps.map((s, i) => (
-                <div key={i} className="text-slate-300 py-1">
-                  {s.a} = {s.b}({s.quotient}){s.remainder > 0 ? ` + ${s.remainder}` : ''}
+              {result.stepStrings.map((s, i) => (
+                <div key={i} className="text-slate-300 py-1 border-b border-slate-800/50">
+                  {s}
                 </div>
               ))}
             </div>
             <div className="pt-2 space-y-1">
-              <div className="text-sm text-slate-400">The integers are <span className="text-white font-bold">{higher}</span> and <span className="text-white font-bold">{smaller}</span></div>
-              <div className="text-sm text-slate-400">The greatest common divisor of {higher} and {smaller} is <span className="font-bold" style={{ color: colors.primary }}>{result.gcd}</span></div>
-              <div className="text-sm text-slate-400">The least common multiple of {higher} and {smaller} is <span className="font-bold" style={{ color: colors.primary }}>{result.lcm}</span></div>
+              <div className="text-sm text-slate-400">The last non-zero remainder is <span className="font-bold" style={{ color: colors.primary }}>{result.gcd}</span></div>
+              <div className="text-sm text-slate-400">Therefore, gcd({bigM}, {smallN}) = <span className="font-bold" style={{ color: colors.primary }}>{result.gcd}</span></div>
+              <div className="text-sm text-slate-400">lcm({bigM}, {smallN}) = ({bigM} · {smallN}) / {result.gcd} = <span className="font-bold" style={{ color: colors.primary }}>{result.lcm}</span></div>
             </div>
           </div>
         );
@@ -431,7 +437,7 @@ export default function MissionPage() {
       return seq.map((v, i) => ({ index: i, value: v }));
     } else if (id === 'euclidean') {
       const result = euclideanAlgorithm(48, 18);
-      return result.steps.map((s, i) => ({ step: i + 1, a: s.a, b: s.b, remainder: s.remainder }));
+      return result.steps.map((s, i) => ({ step: i + 1, m: s.dividend, n: s.divisor, remainder: s.remainder }));
     } else if (id === 'division') {
       // Show division results for numbers 1-15 divided by 7
       return Array.from({ length: 15 }, (_, i) => {
@@ -802,7 +808,7 @@ export default function MissionPage() {
                           {mission.id === 'fibonacci' && 'Ratio converges to φ ≈ 1.618'}
                           {mission.id === 'tribonacci' && 'Ratio converges to ≈ 1.839'}
                           {mission.id === 'lucas' && 'L(n) = F(n-1) + F(n+1)'}
-                          {mission.id === 'euclidean' && 'GCD(a,0) = a terminates algorithm'}
+                          {mission.id === 'euclidean' && 'gcd(m, n) = r_N (last non-zero remainder)'}
                           {mission.id === 'division' && 'Remainder is unique: 0 ≤ r < n'}
                           {mission.id === 'palindrome' && 'Requires PDA — cannot be recognized by FA'}
                         </div>
@@ -905,7 +911,7 @@ export default function MissionPage() {
                       <>
                         <div className="flex-1 w-full space-y-2">
                           <Label className="text-slate-400 text-xs">
-                            {mission.id === 'euclidean' ? 'First Integer (a)' : 'm (positive integer)'}
+                            m (positive integer)
                           </Label>
                           <Input
                             value={simInput1}
@@ -918,7 +924,7 @@ export default function MissionPage() {
                         </div>
                         <div className="flex-1 w-full space-y-2">
                           <Label className="text-slate-400 text-xs">
-                            {mission.id === 'euclidean' ? 'Second Integer (b)' : 'n (positive integer)'}
+                            n (positive integer)
                           </Label>
                           <Input
                             value={simInput2}

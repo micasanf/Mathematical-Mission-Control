@@ -206,21 +206,23 @@ export const missions: MissionData[] = [
     description: 'Master the Euclidean Algorithm — the oldest and most elegant method for finding GCD.',
     icon: 'E',
     color: 'crimson',
-    overview: `The Euclidean Algorithm is one of the oldest algorithms still in common use. It efficiently computes the Greatest Common Divisor (GCD) of two numbers — the largest number that divides both without a remainder.\n\nThe algorithm is based on the principle that the GCD of two numbers also divides their difference. More practically, if we divide the larger number by the smaller and take the remainder, the GCD of the original pair equals the GCD of the smaller number and the remainder.\n\nThis process is repeated until the remainder is zero, at which point the last non-zero remainder is the GCD.`,
-    formula: '\\gcd(a, b) = \\gcd(b, a \\bmod b), \\quad \\gcd(a, 0) = a',
-    formulaDescription: 'The Euclidean algorithm replaces the larger number with the remainder of dividing the larger by the smaller. This continues until the remainder is 0. The Extended Euclidean Algorithm also finds integers x, y such that ax + by = gcd(a,b).',
+    overview: `The Euclidean Algorithm is one of the oldest algorithms still in common use. It efficiently computes the Greatest Common Divisor (GCD) of two numbers.\n\nThe theorem states:\n\nLet m and n be positive integers with n < m. Let\n  m = n·q₁ + r₁\n  n = r₁·q₂ + r₂\n  r₁ = r₂·q₃ + r₃\n  …\n  r_{N-1} = r_N·q_N\n\nbe the result of iterating the Division Algorithm, where r_N is the last non-zero remainder. Then gcd(m, n) = r_N.\n\nThe greatest common divisor and the least common multiple of two integers are related by the formula:\n  lcm(m, n) = (m · n) / gcd(m, n)`,
+    formula: 'm = nq_1 + r_1, \\quad n = r_1q_2 + r_2, \\quad \\ldots \\quad \\implies \\gcd(m, n) = r_N',
+    formulaDescription: 'Let m and n be positive integers with n < m. Iterating the Division Algorithm produces a sequence of remainders r₁, r₂, …, r_N where r_N is the last non-zero remainder. Then gcd(m, n) = r_N. The LCM is given by lcm(m, n) = (m · n) / gcd(m, n).',
     workedExample: {
-      title: 'Finding GCD(48, 18)',
+      title: 'Finding gcd(48, 18) using the Euclidean Algorithm',
       steps: [
-        'GCD(48, 18): 48 ÷ 18 = 2 remainder 12',
-        'GCD(18, 12): 18 ÷ 12 = 1 remainder 6',
-        'GCD(12, 6): 12 ÷ 6 = 2 remainder 0',
-        'GCD = 6 (last non-zero remainder)',
-        'Verification: 48 = 6 × 8 [OK] and 18 = 6 × 3 [OK]',
-        'Extended: 6 = 18 × 1 - 48 × (−(2)) → 6 = (-1)(48) + (3)(18)'
+        'Let m = 48 and n = 18 (positive integers with n < m).',
+        'Iterating the Division Algorithm:',
+        '48 = 18(2) + 12',
+        '18 = 12(1) + 6',
+        '12 = 6(2)',
+        'The last non-zero remainder is 6.',
+        'Therefore, gcd(48, 18) = 6',
+        'lcm(48, 18) = (48 · 18) / gcd(48, 18) = 864 / 6 = 144'
       ]
     },
-    simulatorLabel: 'Two Integers (comma-separated)',
+    simulatorLabel: 'Positive integers m and n (comma-separated)',
     simulatorPlaceholder: 'Enter two positive integers (e.g., 48, 18)',
     applications: [
       'Simplifying fractions to lowest terms',
@@ -232,11 +234,11 @@ export const missions: MissionData[] = [
     history: 'The Euclidean Algorithm appears in Euclid\'s Elements (Book VII, Propositions 1–2), written around 300 BC, making it one of the oldest algorithms still in use. The algorithm was likely known even earlier. In the 19th century, it was extended to find the Bézout coefficients (Extended Euclidean Algorithm). The algorithm is fundamental to modern computational number theory and is used extensively in cryptographic systems like RSA.',
     quiz: [
       { question: 'What does the Euclidean Algorithm find?', options: ['Least Common Multiple', 'Greatest Common Divisor', 'Prime factors', 'Square root'], correct: 1 },
-      { question: 'What is GCD(56, 98)?', options: ['7', '14', '28', '2'], correct: 1 },
+      { question: 'What is gcd(56, 98)?', options: ['7', '14', '28', '2'], correct: 1 },
       { question: 'When does the Euclidean Algorithm terminate?', options: ['When both numbers are equal', 'When the remainder is 0', 'When the quotient is 1', 'After 10 steps'], correct: 1 },
       { question: 'In what ancient text does the Euclidean Algorithm appear?', options: ['The Art of War', 'Euclid\'s Elements', 'The Republic', 'Arithmetica'], correct: 1 },
-      { question: 'What is GCD(17, 13)?', options: ['1', '13', '17', '221'], correct: 0 },
-      { question: 'What does the Extended Euclidean Algorithm additionally find?', options: ['Prime factorization', 'Bézout coefficients', 'Modular square root', 'Least common multiple'], correct: 1 },
+      { question: 'What is gcd(17, 13)?', options: ['1', '13', '17', '221'], correct: 0 },
+      { question: 'How is lcm(m, n) related to gcd(m, n)?', options: ['lcm(m, n) = gcd(m, n)²', 'lcm(m, n) = (m · n) / gcd(m, n)', 'lcm(m, n) = m + n - gcd(m, n)', 'lcm(m, n) = gcd(m, n) · n'], correct: 1 },
       { question: 'How old is the Euclidean Algorithm (approximately)?', options: ['500 years', '1000 years', '2300 years', '3000 years'], correct: 2 },
     ]
   },
