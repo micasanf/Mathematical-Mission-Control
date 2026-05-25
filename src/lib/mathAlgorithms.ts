@@ -313,15 +313,28 @@ export function collatzSteps(start: number): { step: number; value: number; rule
   return steps;
 }
 
-/** Validate Collatz input — requires positive integer > 0 */
+/** Validate Collatz input — requires odd positive integer > 0 */
 export function validateCollatzInput(input: string): { valid: boolean; error: string | null; parsed: number | null } {
-  return validateIntegerInput(input, 'Collatz', {
+  const result = validateIntegerInput(input, 'Collatz', {
     mustBePositive: true,
     allowZero: false,
     allowNegative: false,
     minValue: 1,
     maxValue: 100000,
   });
+
+  if (!result.valid) return result;
+
+  // Must be odd
+  if (result.parsed !== null && result.parsed % 2 === 0) {
+    return {
+      valid: false,
+      error: `Input must be an odd positive integer. Even numbers are not accepted as starting values.`,
+      parsed: null,
+    };
+  }
+
+  return result;
 }
 
 
