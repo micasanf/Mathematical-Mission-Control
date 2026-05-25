@@ -317,32 +317,24 @@ export default function MissionPage() {
         const a = validation.parsed1;
         const b = validation.parsed2;
         const result = euclideanAlgorithm(a, b);
+        const higher = Math.abs(a) >= Math.abs(b) ? Math.abs(a) : Math.abs(b);
+        const smaller = Math.abs(a) >= Math.abs(b) ? Math.abs(b) : Math.abs(a);
         setSimResult(
           <div className="space-y-4">
             <div className="text-lg font-semibold" style={{ color: colors.primary }}>
-              GCD({a}, {b}) = {result.gcd}
+              SOLUTION:
             </div>
-            <div className="overflow-x-auto max-h-64 overflow-y-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="text-left py-2 px-3 text-slate-400">a</th>
-                    <th className="text-left py-2 px-3 text-slate-400">b</th>
-                    <th className="text-left py-2 px-3 text-slate-400">Quotient</th>
-                    <th className="text-left py-2 px-3 text-slate-400">Remainder</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.steps.map((s, i) => (
-                    <tr key={i} className="border-b border-slate-800/50">
-                      <td className="py-2 px-3 font-mono text-white">{s.a}</td>
-                      <td className="py-2 px-3 font-mono text-white">{s.b}</td>
-                      <td className="py-2 px-3 font-mono" style={{ color: colors.primary }}>{s.quotient}</td>
-                      <td className="py-2 px-3 font-mono text-slate-400">{s.remainder}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-1 font-mono text-sm">
+              {result.steps.map((s, i) => (
+                <div key={i} className="text-slate-300 py-1">
+                  {s.a} = {s.b}({s.quotient}){s.remainder > 0 ? ` + ${s.remainder}` : ''}
+                </div>
+              ))}
+            </div>
+            <div className="pt-2 space-y-1">
+              <div className="text-sm text-slate-400">The integers are <span className="text-white font-bold">{higher}</span> and <span className="text-white font-bold">{smaller}</span></div>
+              <div className="text-sm text-slate-400">The greatest common divisor of {higher} and {smaller} is <span className="font-bold" style={{ color: colors.primary }}>{result.gcd}</span></div>
+              <div className="text-sm text-slate-400">The least common multiple of {higher} and {smaller} is <span className="font-bold" style={{ color: colors.primary }}>{result.lcm}</span></div>
             </div>
           </div>
         );
@@ -359,11 +351,11 @@ export default function MissionPage() {
         setSimResult(
           <div className="space-y-4">
             <div className="text-lg font-semibold" style={{ color: colors.primary }}>
-              {a} = {b} × {result.quotient} + {result.remainder}
+              SOLUTION:
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 font-mono text-sm">
               {result.steps.map((s, i) => (
-                <div key={i} className="text-sm text-slate-300 py-1 border-b border-slate-800/50 font-mono">
+                <div key={i} className="text-slate-300 py-1 border-b border-slate-800/50">
                   {s}
                 </div>
               ))}

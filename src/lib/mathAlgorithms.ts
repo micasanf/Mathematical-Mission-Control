@@ -361,12 +361,12 @@ export function fibonacciNth(n: number): number {
   return b;
 }
 
-/** Validate Fibonacci input — requires positive integer >= 1 */
+/** Validate Fibonacci input — requires positive integer > 2 (per lab spec: valid input is greater than 2) */
 export function validateFibonacciInput(input: string): { valid: boolean; error: string | null; parsed: number | null } {
   return validateIntegerInput(input, 'Fibonacci', {
     allowZero: false,
     allowNegative: false,
-    minValue: 1,
+    minValue: 3,
     maxValue: 78, // Fibonacci(79) exceeds Number.MAX_SAFE_INTEGER
   });
 }
@@ -393,12 +393,12 @@ export function tribonacciNth(n: number): number {
   return seq[seq.length - 1];
 }
 
-/** Validate Tribonacci input — requires positive integer >= 1 */
+/** Validate Tribonacci input — requires positive integer > 3 (per lab spec: valid input is greater than 3) */
 export function validateTribonacciInput(input: string): { valid: boolean; error: string | null; parsed: number | null } {
   return validateIntegerInput(input, 'Tribonacci', {
     allowZero: false,
     allowNegative: false,
-    minValue: 1,
+    minValue: 4,
     maxValue: 60, // Tribonacci grows faster than Fibonacci
   });
 }
@@ -427,11 +427,12 @@ export function lucasNth(n: number): number {
   return b;
 }
 
-/** Validate Lucas input — requires non-negative integer >= 0 */
+/** Validate Lucas input — requires positive integer > 2 (per lab spec: valid input is greater than 2) */
 export function validateLucasInput(input: string): { valid: boolean; error: string | null; parsed: number | null } {
   return validateIntegerInput(input, 'Lucas', {
-    allowZero: true,
+    allowZero: false,
     allowNegative: false,
+    minValue: 3,
     maxValue: 76, // Lucas(77) exceeds Number.MAX_SAFE_INTEGER
   });
 }
@@ -439,10 +440,11 @@ export function validateLucasInput(input: string): { valid: boolean; error: stri
 
 // ─── EUCLIDEAN ──────────────────────────────────────────────────────────────
 
-export function euclideanAlgorithm(a: number, b: number): { gcd: number; steps: { a: number; b: number; quotient: number; remainder: number }[] } {
+export function euclideanAlgorithm(a: number, b: number): { gcd: number; lcm: number; steps: { a: number; b: number; quotient: number; remainder: number }[] } {
   const steps: { a: number; b: number; quotient: number; remainder: number }[] = [];
-  let x = Math.abs(a);
-  let y = Math.abs(b);
+  // Auto-assign: higher number as dividend, smaller as divisor (per lab spec)
+  let x = Math.abs(a) >= Math.abs(b) ? Math.abs(a) : Math.abs(b);
+  let y = Math.abs(a) >= Math.abs(b) ? Math.abs(b) : Math.abs(a);
   while (y !== 0) {
     const quotient = Math.floor(x / y);
     const remainder = x % y;
@@ -450,16 +452,19 @@ export function euclideanAlgorithm(a: number, b: number): { gcd: number; steps: 
     x = y;
     y = remainder;
   }
-  return { gcd: x, steps };
+  // LCM = |a * b| / GCD
+  const gcd = x;
+  const lcm = Math.abs(a) * Math.abs(b) / gcd;
+  return { gcd, lcm, steps };
 }
 
-/** Validate Euclidean input — two integers, not both zero, negatives accepted as absolute values */
+/** Validate Euclidean input — two positive integers, not both zero, per lab spec */
 export function validateEuclideanInput(input1: string, input2: string): { valid: boolean; error: string | null; parsed1: number | null; parsed2: number | null } {
   const result = validateDualIntegerInput(input1, input2, 'Euclidean Algorithm', {
-    allowZeroFirst: true,
-    allowZeroSecond: true,
-    allowNegativeFirst: true,
-    allowNegativeSecond: true,
+    allowZeroFirst: false,
+    allowZeroSecond: false,
+    allowNegativeFirst: false,
+    allowNegativeSecond: false,
     maxValue: 999999999,
   });
 
@@ -481,37 +486,37 @@ export function validateEuclideanInput(input1: string, input2: string): { valid:
 
 // ─── DIVISION ALGORITHM ─────────────────────────────────────────────────────
 
-export function divisionAlgorithm(dividend: number, divisor: number): { quotient: number; remainder: number; steps: string[] } {
+export function divisionAlgorithm(dividend: number, divisor: number): { quotient: number; remainder: number; steps: string[]; dividend: number; divisor: number } {
   const steps: string[] = [];
-  const absB = Math.abs(divisor);
 
-  if (absB === 0) {
-    return { quotient: 0, remainder: 0, steps: ['Division by zero is undefined'] };
+  // Auto-assign: higher number as dividend, smaller as divisor (per lab spec)
+  const m = Math.abs(dividend) >= Math.abs(divisor) ? Math.abs(dividend) : Math.abs(divisor);
+  const n = Math.abs(dividend) >= Math.abs(divisor) ? Math.abs(divisor) : Math.abs(dividend);
+
+  if (n === 0) {
+    return { quotient: 0, remainder: 0, steps: ['Division by zero is undefined'], dividend: m, divisor: 0 };
   }
 
-  // Division Algorithm: a = bq + r, where 0 ≤ r < |b|
-  // Fix for negative dividends: JS % can return negative remainders
-  const r = ((dividend % absB) + absB) % absB;
-  const q = (dividend - r) / divisor;
+  // Division Algorithm: m = n*q + r, where 0 ≤ r < n
+  const q = Math.floor(m / n);
+  const r = m % n;
 
-  steps.push(`Dividend = ${dividend}, Divisor = ${divisor}`);
-  steps.push(`${dividend} ÷ ${divisor} = ${q} remainder ${r}`);
-  steps.push(`Quotient (q) = ${q}`);
-  steps.push(`Remainder (r) = ${r}`);
-  steps.push(`Verification: ${divisor} × ${q} + ${r} = ${divisor * q + r} = ${dividend}`);
-  steps.push(`Division Algorithm: a = bq + r where 0 ≤ r < |b|`);
-  steps.push(`${dividend} = ${divisor} × ${q} + ${r}`);
+  steps.push(`SOLUTION:`);
+  steps.push(`${m} = ${n}(${q})${r > 0 ? ` + ${r}` : ''}`);
+  steps.push(`The dividend is ${m}`);
+  steps.push(`The divisor is ${n}`);
+  steps.push(`The quotient is ${q}${r > 0 ? ` and the remainder is ${r}` : ''}`);
 
-  return { quotient: q, remainder: r, steps };
+  return { quotient: q, remainder: r, steps, dividend: m, divisor: n };
 }
 
-/** Validate Division Algorithm input — two integers, divisor cannot be zero, negatives accepted */
+/** Validate Division Algorithm input — two positive integers, per lab spec */
 export function validateDivisionInput(input1: string, input2: string): { valid: boolean; error: string | null; parsed1: number | null; parsed2: number | null } {
   const result = validateDualIntegerInput(input1, input2, 'Division Algorithm', {
     allowZeroFirst: true,
     allowZeroSecond: false,
-    allowNegativeFirst: true,
-    allowNegativeSecond: true,
+    allowNegativeFirst: false,
+    allowNegativeSecond: false,
     maxValue: 999999999,
   });
 
