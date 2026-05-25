@@ -1045,8 +1045,8 @@ export default function MissionPage() {
                               fontSize: 12,
                             }}
                           />
-                          <Bar dataKey="a" fill={colors.primary} radius={[4, 4, 0, 0]} name="a" opacity={0.8} />
-                          <Bar dataKey="b" fill="#7B6FFF" radius={[4, 4, 0, 0]} name="b" opacity={0.8} />
+                          <Bar dataKey="m" fill={colors.primary} radius={[4, 4, 0, 0]} name="m" opacity={0.8} />
+                          <Bar dataKey="n" fill="#7B6FFF" radius={[4, 4, 0, 0]} name="n" opacity={0.8} />
                           <Bar dataKey="remainder" fill="#B44DFF" radius={[4, 4, 0, 0]} name="remainder" opacity={0.6} />
                         </BarChart>
                       </ResponsiveContainer>
