@@ -119,7 +119,6 @@ export function LoginPage() {
       setTimeout(() => {
         if (uid.trim().toUpperCase() === AUTH_CREDS.uid && pwd.trim().toUpperCase() === AUTH_CREDS.pwd) {
           setAuthState('GRANTED');
-          if (soundEnabled) soundEngine.playTransmission();
           // Wait for bar to finish filling to 100% (2s), THEN update display
           setTimeout(() => {
             setDisplayState('GRANTED');
