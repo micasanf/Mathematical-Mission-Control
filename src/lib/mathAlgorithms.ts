@@ -532,15 +532,21 @@ export function validateDivisionInput(input1: string, input2: string): { valid: 
 export function palindromeCheck(input: string): { isPalindrome: boolean; normalized: string; steps: string[] } {
   const steps: string[] = [];
 
-  // Step 1: Remove spaces and convert to lowercase (keep dots for decimal strings like "5.5")
-  const normalized = input.replace(/\s/g, '').toLowerCase();
+  // Step 1: Remove non-alphanumeric characters and convert to lowercase
+  // This strips spaces, parentheses, commas, punctuation, etc. — only letters and digits remain
+  const normalized = input.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
   steps.push(`Original input: "${input}"`);
-  steps.push(`Remove spaces and convert to lowercase: "${normalized}"`);
+  steps.push(`Strip non-alphanumeric characters and convert to lowercase: "${normalized}"`);
 
   // Step 2: Check each character pair
   let isPalindrome = true;
   const len = normalized.length;
   steps.push(`String length: ${len} characters`);
+
+  if (len === 0) {
+    steps.push(`No alphanumeric characters found — nothing to compare.`);
+    return { isPalindrome: true, normalized, steps };
+  }
 
   for (let i = 0; i < Math.floor(len / 2); i++) {
     const left = normalized[i];
