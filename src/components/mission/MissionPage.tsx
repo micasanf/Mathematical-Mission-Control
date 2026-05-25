@@ -19,6 +19,12 @@ import {
   divisionAlgorithm,
   palindromeCheck,
   validatePalindromeInput,
+  validateCollatzInput,
+  validateFibonacciInput,
+  validateTribonacciInput,
+  validateLucasInput,
+  validateEuclideanInput,
+  validateDivisionInput,
 } from '@/lib/mathAlgorithms';
 import KaTeXFormula from './KaTeXFormula';
 import QuizComponent from './QuizComponent';
@@ -148,12 +154,13 @@ export default function MissionPage() {
 
     try {
       if (id === 'collatz') {
-        const n = parseInt(simInput1);
-        if (isNaN(n) || n < 1) {
-          setSimResult(<span className="text-red-400">Please enter a positive integer.</span>);
+        const validation = validateCollatzInput(simInput1);
+        if (!validation.valid || validation.parsed === null) {
+          setSimResult(<span className="text-red-400">{validation.error}</span>);
           if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
+        const n = validation.parsed;
         const seq = collatzSequence(n);
         const steps = collatzSteps(n);
         setSimResult(
@@ -190,12 +197,13 @@ export default function MissionPage() {
           </div>
         );
       } else if (id === 'fibonacci') {
-        const n = parseInt(simInput1);
-        if (isNaN(n) || n < 1 || n > 50) {
-          setSimResult(<span className="text-red-400">Enter a number between 1 and 50.</span>);
+        const validation = validateFibonacciInput(simInput1);
+        if (!validation.valid || validation.parsed === null) {
+          setSimResult(<span className="text-red-400">{validation.error}</span>);
           if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
+        const n = validation.parsed;
         const seq = fibonacciSequence(n);
         setSimResult(
           <div className="space-y-4">
@@ -226,12 +234,13 @@ export default function MissionPage() {
           </div>
         );
       } else if (id === 'tribonacci') {
-        const n = parseInt(simInput1);
-        if (isNaN(n) || n < 1 || n > 50) {
-          setSimResult(<span className="text-red-400">Enter a number between 1 and 50.</span>);
+        const validation = validateTribonacciInput(simInput1);
+        if (!validation.valid || validation.parsed === null) {
+          setSimResult(<span className="text-red-400">{validation.error}</span>);
           if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
+        const n = validation.parsed;
         const seq = tribonacciSequence(n);
         setSimResult(
           <div className="space-y-4">
@@ -262,12 +271,13 @@ export default function MissionPage() {
           </div>
         );
       } else if (id === 'lucas') {
-        const n = parseInt(simInput1);
-        if (isNaN(n) || n < 1 || n > 50) {
-          setSimResult(<span className="text-red-400">Enter a number between 1 and 50.</span>);
+        const validation = validateLucasInput(simInput1);
+        if (!validation.valid || validation.parsed === null) {
+          setSimResult(<span className="text-red-400">{validation.error}</span>);
           if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
+        const n = validation.parsed;
         const seq = lucasSequence(n);
         setSimResult(
           <div className="space-y-4">
@@ -298,13 +308,14 @@ export default function MissionPage() {
           </div>
         );
       } else if (id === 'euclidean') {
-        const a = parseInt(simInput1);
-        const b = parseInt(simInput2);
-        if (isNaN(a) || isNaN(b) || a < 1 || b < 1) {
-          setSimResult(<span className="text-red-400">Please enter two positive integers.</span>);
+        const validation = validateEuclideanInput(simInput1, simInput2);
+        if (!validation.valid || validation.parsed1 === null || validation.parsed2 === null) {
+          setSimResult(<span className="text-red-400">{validation.error}</span>);
           if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
+        const a = validation.parsed1;
+        const b = validation.parsed2;
         const result = euclideanAlgorithm(a, b);
         setSimResult(
           <div className="space-y-4">
@@ -336,13 +347,14 @@ export default function MissionPage() {
           </div>
         );
       } else if (id === 'division') {
-        const a = parseInt(simInput1);
-        const b = parseInt(simInput2);
-        if (isNaN(a) || isNaN(b) || b === 0) {
-          setSimResult(<span className="text-red-400">Enter a valid dividend and a non-zero divisor.</span>);
+        const validation = validateDivisionInput(simInput1, simInput2);
+        if (!validation.valid || validation.parsed1 === null || validation.parsed2 === null) {
+          setSimResult(<span className="text-red-400">{validation.error}</span>);
           if (soundEnabled) soundEngine.errorBuzzer();
           return;
         }
+        const a = validation.parsed1;
+        const b = validation.parsed2;
         const result = divisionAlgorithm(a, b);
         setSimResult(
           <div className="space-y-4">
