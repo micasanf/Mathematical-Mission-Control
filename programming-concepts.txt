@@ -1,0 +1,684 @@
+================================================================================
+  XLR8 - SPACE MISSION: PROGRAMMING CONCEPTS APPLIED IN THE CODEBASE
+================================================================================
+
+
+================================================================================
+  PART 1: GENERAL PROGRAMMING CONCEPTS
+================================================================================
+
+
+1. ALGORITHM DESIGN
+-------------------
+
+a) Iterative Loops
+   - Used in ALL 7 algorithms (for loops to generate sequences)
+   - Collatz: while loop until value reaches 1
+   - Fibonacci/Tribonacci/Lucas: for loop pushing to array
+   - Euclidean: while loop until remainder is 0
+
+b) Sliding Window Technique
+   - fibonacciNth(), lucasNth() keep only 2 variables (a, b) instead
+     of a full array. The window slides forward each iteration:
+     [a, b] = [b, a + b]
+   - This is O(1) memory vs O(n) memory for the array version
+
+c) Modulo Arithmetic
+   - Collatz: n % 2 to check even/odd
+   - Euclidean: a % b to get remainder for GCD steps
+   - Division: ((a % absB) + absB) % absB for non-negative remainder
+   - Palindrome: index pairing (len - 1 - i) to find mirror position
+
+d) Recurrence Relations
+   - Fibonacci:  F(n) = F(n-1) + F(n-2),      seeds F(0)=0, F(1)=1
+   - Tribonacci: T(n) = T(n-1) + T(n-2) + T(n-3), seeds T(0)=0, T(1)=0, T(2)=1
+   - Lucas:      L(n) = L(n-1) + L(n-2),       seeds L(0)=2, L(1)=1
+   - Collatz:    if even n/2, else 3n+1
+
+e) Two-Pointer Technique
+   - Palindrome checker uses two pointers: one from the start (i),
+     one from the end (len-1-i), moving inward until they meet
+
+f) Mathematical Correction for Division Algorithm
+   - JavaScript's % returns negative remainders for negative dividends
+     e.g., -5 % 3 = -2 in JS, but Division Algorithm requires 0 <= r < |b|
+   - Fix: ((a % absB) + absB) % absB ensures non-negative remainder
+   - Quotient derived from: q = (a - r) / b
+
+
+2. INPUT VALIDATION & ERROR HANDLING
+--------------------------------------
+
+a) Input Sanitization
+   - trim() removes leading/trailing whitespace before parsing
+   - toUpperCase() normalizes login credentials for case-insensitive match
+
+b) Type Checking
+   - Detecting integers vs decimals vs letters vs special chars vs alphanumeric
+   - Each type gets its own specific error message
+   - Order matters: check empty first, then letters, then specials, then
+     alphanumeric, then decimal, then valid integer
+
+c) Regular Expressions (Pattern Matching)
+   - /^\d+$/           — pure positive integer
+   - /^-?\d+$/         — integer with optional negative sign
+   - /^-?\d+\.\d+$/    — decimal number
+   - /[a-zA-Z]/        — contains letters
+   - /[^a-zA-Z0-9\s]/  — contains special characters
+   - /[a-zA-Z]/.test && /\d/.test  — alphanumeric (has both)
+
+d) Guard Clauses / Early Returns
+   - Every validator returns early on first error found
+   - Prevents deep nesting and makes the validation chain readable
+   - Example: if empty → return error, if letters → return error, etc.
+
+e) Descriptive Error Messages
+   - Each invalid case has its own specific error message
+   - Negative: "Input must be a positive integer..."
+   - Decimal: "Input must be a whole number. Decimal values are not accepted."
+   - Empty: "No input provided. Please enter a positive integer."
+   - Alphanumeric: "Input must be a pure integer. Alphanumeric strings..."
+
+f) Try-Catch Blocks
+   - handleCompute() wraps all simulation logic in try-catch
+   - Catches any unexpected computation errors gracefully
+
+g) Boundary Checking
+   - Min/max values prevent overflow and performance issues
+   - Collatz max 100000, Fibonacci max 78 (exceeds MAX_SAFE_INTEGER),
+     Tribonacci max 60, Lucas max 76
+   - Division max 999999999
+
+
+3. STATE MANAGEMENT
+---------------------
+
+a) Zustand Store (Global State)
+   - useAppStore holds: auth state, current page, username, mission
+     progress, sound toggle, loading state
+   - Single source of truth shared across all components
+   - Persistent via localStorage (progress data survives page refresh)
+
+b) Local Component State
+   - useState for inputs (simInput1, simInput2), results (simResult),
+     active tabs, animation phases
+   - Each component manages its own UI state independently
+
+c) Refs for Persistence Without Re-renders
+   - useRef for BGM audio element, timer IDs, animation flags
+   - Changing a ref does NOT trigger a re-render (performance benefit)
+   - bgmStarted ref prevents BGM from starting twice
+
+d) Derived State (useMemo)
+   - Visualization data computed from mission ID
+   - Star field positions, constellation points generated once
+   - Only recomputed when dependencies change
+
+e) State Machine (Login Auth Flow)
+   - PENDING -> VERIFYING -> GRANTED or DENIED
+   - Two separate states: authState (actual) and displayState (visual)
+   - displayState lags behind authState for animation timing
+
+
+4. REACT PATTERNS
+-------------------
+
+a) Controlled Components
+   - Input fields bound to state: value={simInput1}, onChange={handler}
+   - React owns the input value, not the DOM
+
+b) Custom Hooks
+   - useStarField(count) — generates random star positions once
+   - useConstellationPoints() — generates random constellation nodes
+
+c) Callback Memoization
+   - useCallback wraps event handlers to prevent unnecessary re-renders
+   - tryBGM, handleUidChange, handlePwdChange all memoized
+
+d) Component Composition
+   - Small reusable components composed into pages:
+     StatusDot, GridCell, BottomStatusItem, HologramLetter
+   - Each has a single responsibility and clear props interface
+
+e) Conditional Rendering
+   - Different UI branches by mission ID:
+     if (id === 'collatz') ... else if (id === 'fibonacci') ...
+   - Auth state determines which text to show on the login button
+
+f) Effect Cleanup
+   - useEffect return functions clear intervals, timeouts, audio refs
+   - Prevents memory leaks when components unmount
+
+
+5. WEB AUDIO API
+------------------
+
+a) OscillatorNode
+   - playTone() generates sine, square, sawtooth, triangle wave sounds
+   - Different wave types create different sound textures:
+     sine = smooth, square = buzzy, sawtooth = harsh, triangle = soft
+
+b) GainNode
+   - Volume control and exponential ramp for fade-in/fade-out
+   - exponentialRampToValueAtTime() creates natural-sounding decay
+
+c) AudioBuffer / BufferSource
+   - errorBuzzer() and playTypeClick() generate noise bursts
+   - Procedurally created from random data — no audio files needed
+   - White noise = random samples, shaped by filters
+
+d) BiquadFilter
+   - Highpass filter for type click sound (removes low frequencies)
+   - Bandpass filter for buzzer noise (isolates mid frequencies)
+   - Lowpass filter for crash sound (removes high frequencies)
+
+e) Audio Scheduling
+   - setValueAtTime() sets a value at an exact time
+   - exponentialRampToValueAtTime() transitions smoothly between values
+   - Precise timing for multi-layered sound effects
+
+f) Volume Fade Algorithms
+   - Step-based fade using setInterval (40 steps over 2 seconds)
+   - Linear interpolation: volume = targetVolume * (step / totalSteps)
+   - Used for BGM ambient fade-in and landing BGM crossfade
+
+
+6. ANIMATION & RENDERING
+---------------------------
+
+a) Framer Motion
+   - Page transitions (initial, animate, exit)
+   - Element animations with delay and duration control
+   - AnimatePresence for unmount animations
+
+b) CSS Keyframes
+   - radarSweep: 360-degree rotation for radar
+   - twinkle: opacity animation for stars
+   - scan: vertical scanline moving down the screen
+   - pulse: breathing glow effect
+   - deniedShake: horizontal shake for access denied
+   - grantedGlow: expanding/contracting glow for access granted
+
+c) Canvas API
+   - MissionControlCanvas: custom-drawn mission control graphics
+   - MissionsTitleCanvas: animated dripping/reforming letter effect
+   - Direct pixel manipulation for complex animations
+
+d) SVG Animation
+   - Radar with rotating sweep line and fading trail
+   - Blinking/blipping target dots with <animate>
+   - Constellation lines and grid overlays
+
+e) RequestAnimationFrame
+   - Landing animation HUD telemetry updates at ~60fps
+   - Smooth number transitions for altitude, speed, fuel, etc.
+
+f) CSS Transforms
+   - translateX for shake effect
+   - rotate for radar sweep
+   - scale for hover effects
+   - clip-path for parallelogram-shaped inputs and buttons
+
+
+7. PERFORMANCE OPTIMIZATION
+------------------------------
+
+a) Memoization
+   - useMemo for star fields, constellation points, visualization data
+   - Prevents recalculation on every render
+
+b) Lazy Initialization
+   - AudioContext created only on first sound play
+   - BGM starts only on first user interaction (browser autoplay policy)
+
+c) Efficient Data Structures
+   - Sliding window (2 variables) vs full array for nth-value computation
+   - O(1) space for single value, O(n) space for full sequence
+
+d) Cleanup on Unmount
+   - Clearing intervals, timeouts, audio refs to prevent memory leaks
+   - timersRef stores all setTimeout IDs for batch cleanup
+
+
+8. TYPESCRIPT FEATURES
+------------------------
+
+a) Type Annotations
+   - Function parameters and return types explicitly typed
+   - Example: function collatzSequence(start: number): number[]
+
+b) Union Types
+   - AuthState = 'PENDING' | 'VERIFYING' | 'GRANTED' | 'DENIED'
+   - AppPage = 'login' | 'loading' | 'dashboard' | 'mission' | ...
+
+c) Interface Definitions
+   - MissionProgress, Achievement, UserProgress
+   - AppState in Zustand store
+   - Component prop interfaces
+
+d) Type Narrowing
+   - if (validation.parsed === null) narrows the type
+   - Discriminated unions for validation results
+
+e) Optional Properties
+   - subtext?, noBar?, fullWidth? in component props
+   - quizScore?: number | null — can be undefined, null, or a number
+
+f) Generic Typing
+   - Array.from<T>(), useRef<HTMLAudioElement | null>()
+   - create<AppState>() for Zustand store typing
+
+
+9. SOFTWARE DESIGN PRINCIPLES
+-------------------------------
+
+a) Separation of Concerns
+   - Algorithms in mathAlgorithms.ts
+   - Mission data in missionData.ts
+   - Progress tracking in progressTracker.ts
+   - Sound engine in soundEngine.ts
+   - UI components in their own files
+
+b) Single Responsibility Principle
+   - fibonacciSequence() generates the full sequence
+   - fibonacciNth() returns only the nth value
+   - Each function does ONE thing
+
+c) DRY (Don't Repeat Yourself)
+   - Shared validators: validateIntegerInput(), validateDualIntegerInput()
+   - Common sound engine instead of per-component audio code
+   - Shared color palette constants (P object)
+
+d) Factory Pattern
+   - missionColors lookup object maps mission ID to color scheme
+   - getDefaultProgress() creates fresh progress objects
+   - ACHIEVEMENTS array as a data-driven achievement factory
+
+e) Strategy Pattern
+   - handleCompute() branches by mission ID but uses same interface
+   - Each mission has the same tabs (Overview, Formula, etc.) but
+     different content rendered by the same component
+
+f) Defensive Programming
+   - Every algorithm validates input before computing
+   - Audio fallback: if file fails, synthetic sound plays instead
+   - Boundary checks prevent overflow and infinite loops
+
+g) Fallback Pattern
+   - playAudioFile() tries to play an audio file first
+   - If file fails (not found, autoplay blocked), falls back to
+     synthetic sound generated by the Web Audio API
+
+
+================================================================================
+  PART 2: OOP (OBJECT-ORIENTED PROGRAMMING) CONCEPTS
+================================================================================
+
+
+1. ENCAPSULATION
+------------------
+
+Definition: Bundling data and methods together, hiding internal state
+from outside access.
+
+WHERE IT'S USED:
+
+a) SoundEngine Class (soundEngine.ts)
+   - Private fields: audioContext, volume, muted, bgAudioRef
+     (marked with `private` — cannot be accessed from outside)
+   - Public methods: playBGM(), stopBGM(), success(), errorBuzzer()
+     (the only way to interact with the sound engine)
+   - Internal state (AudioContext, volume level) is hidden
+   - The outside world only calls methods — it never touches the
+     audio context or gain nodes directly
+
+   Example:
+   ```typescript
+   class SoundEngine {
+     private audioContext: AudioContext | null = null;  // HIDDEN
+     private volume = 0.3;                               // HIDDEN
+     private muted = false;                              // HIDDEN
+     
+     // Public API — the only way to interact
+     playBGM() { ... }
+     success() { ... }
+     errorBuzzer() { ... }
+   }
+   ```
+
+b) LandingAnimation Component
+   - bgmRef, sfxRef, bgmStarted are internal refs
+   - startLandingBGM() and stopLandingBGM() are internal callbacks
+   - The component manages its own audio lifecycle internally
+
+c) Progress Tracker Module
+   - STORAGE_KEY is module-private (not exported)
+   - Only exported functions (loadProgress, saveProgress) expose
+     controlled access to the data
+
+
+2. ABSTRACTION
+---------------
+
+Definition: Hiding complex implementation details and exposing only
+what the user/developer needs.
+
+WHERE IT'S USED:
+
+a) SoundEngine — High-level API
+   - To play a success sound, you just call: soundEngine.success()
+   - You DON'T need to know about:
+     * Creating an AudioContext
+     * Creating OscillatorNodes
+     * Setting frequency values (523.25, 659.25, 783.99)
+     * Connecting gain nodes
+     * Scheduling start/stop times
+   - All that complexity is hidden behind ONE method call
+
+b) Validation Functions — Abstract Input Checking
+   - validateFibonacciInput("abc") returns { valid: false, error: "..." }
+   - You DON'T need to know about:
+     * The regex patterns used internally
+     * The order of checks (empty → letters → special → alphanumeric → decimal)
+     * The specific error messages for each case
+   - Just call the function and check .valid
+
+c) Algorithm Functions — Abstract Math
+   - fibonacciSequence(10) returns [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+   - You DON'T need to know about:
+     * The seed values [0, 1]
+     * The loop implementation
+     * The array building process
+   - The math complexity is hidden behind a function name
+
+d) playAudioFile() — File + Fallback Abstraction
+   - Tries to play an audio file
+   - If it fails, automatically falls back to synthetic sound
+   - The caller doesn't know or care which method was actually used
+
+
+3. INHERITANCE
+----------------
+
+Definition: Creating new classes that inherit properties and methods
+from a parent class.
+
+WHERE IT'S USED:
+
+a) React Component Inheritance
+   - Every component implicitly extends React's base component
+   - 'use client' components inherit React lifecycle methods
+     (useState, useEffect, useMemo, useCallback)
+   - They inherit the component rendering pipeline
+
+b) CSS Inheritance (Cascading)
+   - Child elements inherit font-family, color from parents
+   - The root font-family is set once, all children inherit it
+   - Tailwind's @apply and CSS variables propagate down the DOM tree
+
+Note: JavaScript/TypeScript is multi-paradigm. The codebase uses
+composition more than inheritance (see below), which is actually
+the recommended modern approach ("Composition over Inheritance").
+
+
+4. POLYMORPHISM
+-----------------
+
+Definition: The ability to treat different types/objects uniformly
+through a common interface.
+
+WHERE IT'S USED:
+
+a) Mission Data Interface — Same Shape, Different Content
+   - All 7 missions share the SAME interface:
+     { id, title, description, overview, formulaDescription, ... }
+   - handleCompute() treats them all the same way:
+     branch by id, but each branch follows the same pattern
+   - The QuizComponent works with ANY mission's quiz data
+   - One component renders 7 different missions uniformly
+
+b) SoundEngine Methods — Same Interface, Different Sounds
+   - success(), failure(), errorBuzzer(), confirmChirp()
+   - All called the same way: soundEngine.methodName()
+   - But each produces a completely different sound
+   - The caller doesn't need to know the implementation
+
+c) Validation Results — Same Return Shape
+   - All validators return: { valid: boolean, error: string | null }
+   - Single-input validators add: parsed: number | null
+   - Dual-input validators add: parsed1, parsed2
+   - MissionPage.tsx handles ALL validation results the same way:
+     if (!validation.valid) { showError(validation.error) }
+
+d) Algorithm Return Types — Consistent Shapes
+   - Sequence algorithms return: number[]
+   - Step-based algorithms return: { steps: [...] }
+   - Palindrome returns: { isPalindrome, normalized, steps }
+   - Each type has a consistent shape that MissionPage renders uniformly
+
+
+5. COMPOSITION OVER INHERITANCE
+----------------------------------
+
+Definition: Building complex behavior by combining smaller, focused
+objects/components rather than inheriting from a base class.
+
+WHERE IT'S USED:
+
+a) UI Component Composition
+   - LoginPage is composed of: StatusDot + GridCell + BottomStatusItem
+   - Dashboard is composed of: GlitchPlanet + MissionCard + Progress bars
+   - MissionPage is composed of: Tabs + Input + QuizComponent + KaTeXFormula
+   - None of these inherit from a "Page" base class — they compose
+     smaller pieces
+
+b) Sound Engine Composition
+   - errorBuzzer() is composed of 3 layers:
+     * Layer 1: Square wave buzz (the base)
+     * Layer 2: Sawtooth alarm (the sting)
+     * Layer 3: Noise burst (the texture)
+   - Each layer is a separate sound, composed together
+   - confirmChirp() is also 3 layers: noise + chirp + ping
+
+c) BGM Crossfade Composition
+   - LandingAnimation composes: stop main BGM + start landing BGM
+   - After landing: stop landing BGM + start ambient main BGM
+   - Each step is independent, composed into a sequence
+
+d) Validation Composition
+   - validateIntegerInput() is used by:
+     validateCollatzInput(), validateFibonacciInput(),
+     validateTribonacciInput(), validateLucasInput()
+   - Each adds its own options (allowZero, maxValue, etc.)
+   - Shared logic is composed, not duplicated
+
+
+6. CLASSES AND OBJECTS
+------------------------
+
+Definition: Blueprints (classes) that create instances (objects)
+with their own state and behavior.
+
+WHERE IT'S USED:
+
+a) SoundEngine Class
+   - THE primary example of a class in the codebase
+   - Has state: audioContext, volume, muted, bgAudioRef
+   - Has behavior: 20+ methods for playing different sounds
+   - Exported as a singleton: export const soundEngine = new SoundEngine()
+   - This is the Singleton pattern (only one instance exists)
+
+b) Mission Data Objects
+   - Each mission is an object with the same structure:
+     { id: 'fibonacci', title: 'Mission Fibonacci', ... }
+   - They're created as plain objects (object literals)
+   - Follow a consistent interface (shape)
+
+c) Achievement Objects
+   - Each achievement is an object:
+     { id, name, description, icon, unlockedAt }
+   - Created from a template and customized per mission
+
+d) CSS-in-JS Style Objects
+   - The P (Palette) object in LoginPage.tsx:
+     const P = { bg: '#020a12', primary: '#00CEC9', ... }
+   - Style objects passed to component style props
+
+
+7. INTERFACES / CONTRACTS
+----------------------------
+
+Definition: Defining the shape that objects must follow — a contract
+that specifies what properties and methods exist.
+
+WHERE IT'S USED:
+
+a) TypeScript Interfaces
+   - MissionProgress: { id, completed, quizScore, quizPassed, ... }
+   - Achievement: { id, name, description, icon, unlockedAt }
+   - UserProgress: { username, missions, achievements, totalQuizzesPassed }
+   - AppState: { currentPage, username, progress, soundEnabled, ... }
+
+b) Function Signatures as Contracts
+   - validateIntegerInput returns:
+     { valid: boolean; error: string | null; parsed: number | null }
+   - divisionAlgorithm returns:
+     { quotient: number; remainder: number; steps: string[] }
+   - These return types ARE interfaces — they define the contract
+
+c) Component Props as Interfaces
+   - GridCell has a defined props interface:
+     { label, value, subtext?, barPercent, barColor, ... }
+   - Any component using GridCell MUST provide these props
+   - TypeScript enforces the contract at compile time
+
+d) React Component Interface
+   - Every component follows the same pattern:
+     function ComponentName(props) => return JSX
+   - This IS an interface — React expects components to behave this way
+
+
+8. SINGLETON PATTERN
+-----------------------
+
+Definition: Ensuring a class has only one instance, providing a
+global point of access to it.
+
+WHERE IT'S USED:
+
+a) SoundEngine Singleton
+   - const soundEngine = new SoundEngine() — created ONCE
+   - Exported and imported by every component that needs sound
+   - ALL components share the SAME AudioContext and volume state
+   - If Dashboard changes the volume, MissionPage sees the change
+   - If LoginPage starts BGM, Dashboard can stop it
+
+b) Zustand Store Singleton
+   - const useAppStore = create<AppState>(...)
+   - One global store shared across all components
+   - All components read/write the same state
+
+
+9. DATA ENCAPSULATION (MODULE PATTERN)
+-----------------------------------------
+
+Definition: Using module scope to create private state that can't
+be accessed from outside the module.
+
+WHERE IT'S USED:
+
+a) progressTracker.ts
+   - STORAGE_KEY is declared at module level but NOT exported
+   - Only the module's exported functions can access it
+   - External code can't directly read/write localStorage with
+     the wrong key
+
+b) mathAlgorithms.ts
+   - Helper functions like isEmptyOrWhitespace(), isIntegerString(),
+     isDecimalString(), hasAlphabeticChars(), hasSpecialChars(),
+     isAlphanumeric() are NOT exported
+   - They're private to the module — only the validate* functions
+     use them
+   - This is JavaScript's module-level encapsulation
+
+
+10. METHOD OVERLOADING (SIMULATED)
+-------------------------------------
+
+Definition: Providing different behaviors based on the type or
+number of arguments. (JS doesn't have true overloading, but we
+simulate it.)
+
+WHERE IT'S USED:
+
+a) playAudioFile() with Fallback
+   - Primary behavior: play an audio file from /audio/
+   - Fallback behavior: call a synthetic function
+   - The same method adapts its behavior based on whether
+     the file loads successfully
+
+b) validateIntegerInput() with Options
+   - Same function, different behavior based on options:
+     allowZero: true/false → different error for zero
+     allowNegative: true/false → different error for negatives
+     mustBePositive: true → Collatz-specific error message
+   - One function handles 4 different mission types by configuration
+
+c) soundEngine.setMuted()
+   - muted = true → pauses BGM
+   - muted = false → resumes BGM
+   - Same method, opposite behavior based on argument
+
+
+================================================================================
+  SUMMARY TABLE: OOP CONCEPTS AND WHERE THEY APPEAR
+================================================================================
+
+OOP Concept              | Primary Example(s)
+-------------------------|------------------------------------------------
+Encapsulation            | SoundEngine class (private fields + public methods)
+                         | progressTracker module (private STORAGE_KEY)
+                         | LandingAnimation internal refs
+-------------------------|------------------------------------------------
+Abstraction              | soundEngine.success() hides 3-note chord creation
+                         | validateFibonacciInput() hides regex chain
+                         | fibonacciSequence() hides loop implementation
+                         | playAudioFile() hides file-vs-synthetic logic
+-------------------------|------------------------------------------------
+Inheritance              | React components inherit lifecycle methods
+                         | CSS cascade (child inherits parent styles)
+-------------------------|------------------------------------------------
+Polymorphism             | Missions share same interface, different content
+                         | Validation results have same shape
+                         | Sound methods same call, different sounds
+                         | Algorithm returns consistent shapes
+-------------------------|------------------------------------------------
+Composition              | LoginPage = StatusDot + GridCell + BottomStatusItem
+                         | errorBuzzer = buzz layer + alarm layer + noise layer
+                         | Validators compose validateIntegerInput()
+-------------------------|------------------------------------------------
+Classes & Objects        | SoundEngine class with state + behavior
+                         | Mission data objects (consistent shape)
+                         | Achievement objects
+                         | Palette objects (P = { bg, primary, ... })
+-------------------------|------------------------------------------------
+Interfaces / Contracts   | TypeScript interfaces (MissionProgress, Achievement)
+                         | Function return types as contracts
+                         | Component props interfaces
+                         | React component interface
+-------------------------|------------------------------------------------
+Singleton Pattern        | soundEngine = new SoundEngine() (one instance)
+                         | useAppStore = create(...) (one store)
+-------------------------|------------------------------------------------
+Data Encapsulation       | Module-private helpers in mathAlgorithms.ts
+(Module Pattern)         | STORAGE_KEY in progressTracker.ts
+-------------------------|------------------------------------------------
+Method Overloading       | validateIntegerInput() with options object
+(Simulated)              | setMuted() with true/false
+                         | playAudioFile() with fallback
+-------------------------|------------------------------------------------
+
+
+================================================================================
+  END OF DOCUMENT
+================================================================================
