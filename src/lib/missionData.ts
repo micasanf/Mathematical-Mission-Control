@@ -28,7 +28,7 @@ export const missions: MissionData[] = [
     color: 'solar',
     overview: `The Collatz conjecture is one of mathematics' most famous unsolved problems. Proposed by Lothar Collatz in 1937, it states that if you start with any positive integer and repeatedly apply two simple rules, you will always eventually reach 1.\n\nThe rules are:\n• If the number is even, divide it by 2\n• If the number is odd, multiply it by 3 and add 1\n\nDespite its simplicity, no one has been able to prove that this always works for every starting number. The conjecture has been verified for all starting values up to at least 2⁶⁸ (approximately 2.95 × 10²⁰), but a formal proof remains elusive.`,
     formula: 'f(n) = \\begin{cases} n/2 & \\text{if } n \\text{ is even} \\\\ 3n+1 & \\text{if } n \\text{ is odd} \\end{cases}',
-    formulaDescription: 'The Collatz function applies one of two operations depending on whether the input is even or odd. The conjecture states that repeated application always reaches the cycle 4 → 2 → 1.',
+    formulaDescription: 'The Collatz function applies one of two operations depending on whether the input is even or odd. The conjecture states that repeated application always reaches the cycle 4, 2, 1.',
     workedExample: {
       title: 'Starting with n = 6',
       steps: [
@@ -40,7 +40,7 @@ export const missions: MissionData[] = [
         'n = 8 (even) → 8 ÷ 2 = 4',
         'n = 4 (even) → 4 ÷ 2 = 2',
         'n = 2 (even) → 2 ÷ 2 = 1 [OK]',
-        'Sequence: 6 → 3 → 10 → 5 → 16 → 8 → 4 → 2 → 1',
+        'Sequence: 6, 3, 10, 5, 16, 8, 4, 2, 1',
         'Total steps: 8'
       ]
     },
@@ -57,11 +57,11 @@ export const missions: MissionData[] = [
     quiz: [
       { question: 'What is the first step when applying the Collatz function to n = 7?', options: ['7 ÷ 2 = 3.5', '3 × 7 + 1 = 22', '7 + 1 = 8', '7 - 1 = 6'], correct: 1 },
       { question: 'What happens when you apply the Collatz function to an even number?', options: ['Multiply by 3 and add 1', 'Divide by 2', 'Subtract 1', 'Add 1'], correct: 1 },
-      { question: 'What is the Collatz sequence starting from n = 4?', options: ['4 → 2 → 1', '4 → 12 → 6 → 3 → 10 → 5 → 16 → 8 → 4', '4 → 1', '4 → 8 → 16 → 32'], correct: 0 },
+      { question: 'What is the Collatz sequence starting from n = 4?', options: ['4, 2, 1', '4, 12, 6, 3, 10, 5, 16, 8, 4', '4, 1', '4, 8, 16, 32'], correct: 0 },
       { question: 'Has the Collatz conjecture been proven?', options: ['Yes, in 1995', 'Yes, in 2019', 'No, it remains unproven', 'It was disproven in 2005'], correct: 2 },
       { question: 'What number does every Collatz sequence supposedly reach?', options: ['0', '2', '1', '3'], correct: 2 },
       { question: 'Who proposed the Collatz conjecture?', options: ['Leonhard Euler', 'Lothar Collatz', 'Carl Friedrich Gauss', 'Stanisław Ulam'], correct: 1 },
-      { question: 'What is the Collatz sequence for n = 10?', options: ['10 → 5 → 16 → 8 → 4 → 2 → 1', '10 → 30 → 15 → 46 → 23 → 70', '10 → 5 → 15 → 45 → 135', '10 → 20 → 40 → 80'], correct: 0 },
+      { question: 'What is the Collatz sequence for n = 10?', options: ['10, 5, 16, 8, 4, 2, 1', '10, 30, 15, 46, 23, 70', '10, 5, 15, 45, 135', '10, 20, 40, 80'], correct: 0 },
     ]
   },
   {

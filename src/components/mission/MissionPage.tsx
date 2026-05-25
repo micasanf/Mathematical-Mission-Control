@@ -169,7 +169,7 @@ export default function MissionPage() {
               Collatz Sequence from {n}
             </div>
             <div className="text-slate-300 font-mono text-sm break-all">
-              {seq.join(' → ')}
+              {seq.join(', ')}
             </div>
             <div className="text-sm text-slate-400">
               Total steps: <span className="text-white font-bold">{steps.length - 1}</span> | Peak value: <span className="text-white font-bold">{Math.max(...seq)}</span>
