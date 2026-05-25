@@ -132,10 +132,10 @@ export function LoginPage() {
           }, 3500);
         } else {
           setAuthState('DENIED');
-          if (soundEnabled) soundEngine.errorBuzzer();
           // Wait for bar to finish dropping (2s), THEN update display
           setTimeout(() => {
             setDisplayState('DENIED');
+            if (soundEnabled) soundEngine.errorBuzzer();
           }, 2000);
           // Then reset after showing DENIED
           setTimeout(() => {
