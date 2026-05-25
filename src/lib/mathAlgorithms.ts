@@ -303,11 +303,11 @@ export function collatzSteps(start: number): { step: number; value: number; rule
     step++;
     if (current % 2 === 0) {
       current = current / 2;
-      steps.push({ step, value: current, rule: `${current * 2} is even → ${current * 2} ÷ 2 = ${current}` });
+      steps.push({ step, value: current, rule: `${current * 2} is even , ${current * 2} ÷ 2 = ${current}` });
     } else {
       const prev = current;
       current = 3 * current + 1;
-      steps.push({ step, value: current, rule: `${prev} is odd → 3 × ${prev} + 1 = ${current}` });
+      steps.push({ step, value: current, rule: `${prev} is odd , 3 × ${prev} + 1 = ${current}` });
     }
   }
   return steps;
@@ -613,7 +613,7 @@ export function palindromeCheck(input: string): { isPalindrome: boolean; normali
     const left = normalized[i];
     const right = normalized[len - 1 - i];
     if (left !== right) {
-      steps.push(`Position ${i}: '${left}' ≠ '${right}' (position ${len - 1 - i}) → MISMATCH`);
+      steps.push(`Position ${i}: '${left}' ≠ '${right}' (position ${len - 1 - i}) , MISMATCH`);
       isPalindrome = false;
       break;
     } else {
@@ -622,9 +622,9 @@ export function palindromeCheck(input: string): { isPalindrome: boolean; normali
   }
 
   if (isPalindrome) {
-    steps.push(`All character pairs match → "${normalized}" IS a palindrome!`);
+    steps.push(`All character pairs match , "${normalized}" IS a palindrome!`);
   } else {
-    steps.push(`Mismatch found → "${normalized}" is NOT a palindrome.`);
+    steps.push(`Mismatch found , "${normalized}" is NOT a palindrome.`);
   }
 
   return { isPalindrome, normalized, steps };
