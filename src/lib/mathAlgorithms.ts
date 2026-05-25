@@ -470,25 +470,26 @@ export function validateEuclideanInput(input1: string, input2: string): { valid:
 
 export function divisionAlgorithm(dividend: number, divisor: number): { quotient: number; remainder: number; steps: string[] } {
   const steps: string[] = [];
-  const absDividend = Math.abs(dividend);
-  const absDivisor = Math.abs(divisor);
+  const absB = Math.abs(divisor);
 
-  if (absDivisor === 0) {
+  if (absB === 0) {
     return { quotient: 0, remainder: 0, steps: ['Division by zero is undefined'] };
   }
 
-  const quotient = Math.floor(absDividend / absDivisor);
-  const remainder = absDividend % absDivisor;
+  // Division Algorithm: a = bq + r, where 0 ≤ r < |b|
+  // Fix for negative dividends: JS % can return negative remainders
+  const r = ((dividend % absB) + absB) % absB;
+  const q = (dividend - r) / divisor;
 
-  steps.push(`Dividend = ${absDividend}, Divisor = ${absDivisor}`);
-  steps.push(`${absDividend} ÷ ${absDivisor} = ${quotient} remainder ${remainder}`);
-  steps.push(`Quotient (q) = ${quotient}`);
-  steps.push(`Remainder (r) = ${remainder}`);
-  steps.push(`Verification: ${absDivisor} × ${quotient} + ${remainder} = ${absDivisor * quotient + remainder} = ${absDividend}`);
+  steps.push(`Dividend = ${dividend}, Divisor = ${divisor}`);
+  steps.push(`${dividend} ÷ ${divisor} = ${q} remainder ${r}`);
+  steps.push(`Quotient (q) = ${q}`);
+  steps.push(`Remainder (r) = ${r}`);
+  steps.push(`Verification: ${divisor} × ${q} + ${r} = ${divisor * q + r} = ${dividend}`);
   steps.push(`Division Algorithm: a = bq + r where 0 ≤ r < |b|`);
-  steps.push(`${absDividend} = ${absDivisor} × ${quotient} + ${remainder}`);
+  steps.push(`${dividend} = ${divisor} × ${q} + ${r}`);
 
-  return { quotient, remainder, steps };
+  return { quotient: q, remainder: r, steps };
 }
 
 /** Validate Division Algorithm input — two integers, divisor cannot be zero, negatives accepted */
@@ -532,11 +533,10 @@ export function validateDivisionInput(input1: string, input2: string): { valid: 
 export function palindromeCheck(input: string): { isPalindrome: boolean; normalized: string; steps: string[] } {
   const steps: string[] = [];
 
-  // Step 1: Remove non-alphanumeric characters and convert to lowercase
-  // This strips spaces, parentheses, commas, punctuation, etc. — only letters and digits remain
-  const normalized = input.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  // Step 1: Remove spaces and convert to lowercase — keep ALL other characters (letters, digits, punctuation, special chars)
+  const normalized = input.replace(/\s/g, '').toLowerCase();
   steps.push(`Original input: "${input}"`);
-  steps.push(`Strip non-alphanumeric characters and convert to lowercase: "${normalized}"`);
+  steps.push(`Remove spaces and convert to lowercase: "${normalized}"`);
 
   // Step 2: Check each character pair
   let isPalindrome = true;
@@ -544,7 +544,7 @@ export function palindromeCheck(input: string): { isPalindrome: boolean; normali
   steps.push(`String length: ${len} characters`);
 
   if (len === 0) {
-    steps.push(`No alphanumeric characters found — nothing to compare.`);
+    steps.push(`No characters to compare.`);
     return { isPalindrome: true, normalized, steps };
   }
 
